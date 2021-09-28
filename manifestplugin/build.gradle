@@ -1,6 +1,8 @@
-//<方案一 使用groovy语言> 步骤一
+//<方案一 使用groovy> 步骤一
 apply plugin: 'groovy'
 apply plugin: 'maven'
+//<方案二 使用kotlin> Gradle 2.1版本之后,仅需要引入即可
+apply plugin: 'org.jetbrains.kotlin.jvm'
 
 dependencies {
     //gradle sdk
@@ -9,6 +11,10 @@ dependencies {
     //<方案一 使用groovy语言> 步骤二
     // groovy sdk
     implementation localGroovy()
+}
+
+sourceSets{
+
 }
 
 repositories {
@@ -28,8 +34,6 @@ uploadArchives {
 //            }
             //提交到本地
             repository(url: uri('../plugins'))
-
         }
     }
-
 }
