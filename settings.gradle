@@ -82,7 +82,7 @@ this.gradle.taskGraph.afterTask {
 }
 
 void systemPrintln(String info) {
-    if (true) {
+    if (false) {
         println("<= settings.build => " + info)
     }
 }
