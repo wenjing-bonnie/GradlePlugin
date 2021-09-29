@@ -3,6 +3,15 @@ plugins {
     id 'kotlin-android'
     id 'com.wj.manifest'
 }
+//第三种：监听Project配置阶段
+this.beforeEvaluate {
+
+}
+
+this.afterEvaluate {
+
+}
+
 
 android {
     compileSdkVersion 31

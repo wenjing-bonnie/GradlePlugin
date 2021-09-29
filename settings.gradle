@@ -1,3 +1,88 @@
 rootProject.name = "GradlePlugin"
 include ':app'
 include ':manifestplugin'
+//生命周期的监听
+this.gradle.addBuildListener(new BuildListener() {
+    @Override
+    void buildStarted(Gradle gradle) {
+        //项目编译开始
+        systemPrintln("buildStarted 项目编译开始")
+    }
+
+    @Override
+    void settingsEvaluated(Settings settings) {
+        //setting.gradle初始化完成
+        systemPrintln("settingsEvaluated setting.gradle初始化完成 root project name  = " + settings.rootProject.name)
+    }
+
+    @Override
+    void projectsLoaded(Gradle gradle) {
+        //完成项目构建初始化阶段
+        systemPrintln("projectsLoaded project 完成项目构建初始化阶段")
+    }
+
+    @Override
+    void projectsEvaluated(Gradle gradle) {
+        //完成项目的配置阶段
+        systemPrintln("projectsEvaluated 完成项目的配置阶段")
+    }
+
+    @Override
+    void buildFinished(BuildResult buildResult) {
+        //完成项目的编译
+        systemPrintln("buildFinished 完成项目的编译")
+    }
+})
+//单个生命周期监听
+this.gradle.settingsEvaluated {
+    Settings settings ->
+        systemPrintln("single settingsEvaluated setting.gradle初始化完成 root project name  = " + settings.rootProject.name)
+}
+
+//this.gradle.projectsLoaded {
+//    systemPrintln("single projectsLoaded 完成项目构建初始化阶段")
+//}
+
+//第一种：监听每个Project的配置过程
+this.gradle.beforeProject {
+    systemPrintln(String.format("%s , before project ", it.name))
+}
+this.gradle.afterProject {
+    systemPrintln(String.format("%s , after project ", it.name))
+}
+
+//第二种：监听每个Project的配置过程
+this.gradle.allprojects {
+    Project it ->
+        //systemPrintln("all projects , the project name = " + it.name)
+        it.beforeEvaluate {
+            systemPrintln(String.format("%s , before Evaluate", it.name))
+        }
+
+        it.afterEvaluate {
+            systemPrintln(String.format("%s , after Evaluate", it.name))
+        }
+        it.getTasks().each {
+
+        }
+}
+
+//执行阶段生命周期监听
+this.gradle.taskGraph.whenReady {
+    gradle.taskGraph.allTasks.each {
+        systemPrintln("Task each  = " + it.name)
+    }
+}
+this.gradle.taskGraph.beforeTask {
+    systemPrintln("Task before  = " + it.name)
+}
+
+this.gradle.taskGraph.afterTask {
+    systemPrintln("Task after  = " + it.name)
+}
+
+void systemPrintln(String info) {
+    if (true) {
+        println("<= settings.build => " + info)
+    }
+}
