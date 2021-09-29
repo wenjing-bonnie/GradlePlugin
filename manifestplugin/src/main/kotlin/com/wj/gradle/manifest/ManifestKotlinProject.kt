@@ -5,7 +5,7 @@ import org.gradle.api.Project
 
 /**
  * Created by wenjing.liu on 2021/9/27 in J1.
- *
+ * 插件入口类
  * @author wenjing.liu
  */
 class ManifestKotlinProject : Plugin<Project> {
