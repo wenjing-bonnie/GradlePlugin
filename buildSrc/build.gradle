@@ -1,9 +1,17 @@
 plugins {
     id 'groovy'
+    //kotlin
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
 }
 
 
 dependencies {
     implementation gradleApi()
+    //groovy
     implementation localGroovy()
+}
+
+repositories {
+    //若使用kotlin，必须要添加。否则会抛出Cannot resolve external dependency org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31 because no repositories are defined.
+    mavenCentral()
 }
