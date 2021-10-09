@@ -23,8 +23,19 @@ object SystemPrint {
      * 日志输出
      */
     fun outPrintln(tag: String, info: String) {
-        if (DEBUG) {
-            println("<- $tag -> : $info")
+        if (!DEBUG) {
+            return
         }
+        var length = tag.length
+        if (length > 30)
+            println(
+                "<- ${tag.subSequence(0, 15)}...${
+                    tag.subSequence(
+                        length - 14,
+                        length
+                    )
+                } -> : $info"
+            )
+
     }
 }

@@ -1,5 +1,6 @@
 package com.wj.gradle.manifest
 
+import com.wj.gradle.manifest.task.AddExportForPackageManifestNonIncrementalTask
 import com.wj.gradle.manifest.task.AddExportForPackageManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
@@ -33,9 +34,26 @@ class ManifestKotlinProject : Plugin<Project> {
             AddExportForPackageManifestTask.TAG,
             AddExportForPackageManifestTask::class.javaObjectType
         )
+        val nonIncrementalTask = project.tasks.create(
+            AddExportForPackageManifestNonIncrementalTask.TAG,
+            AddExportForPackageManifestNonIncrementalTask::class.javaObjectType
+        )
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it, exportTask)
+            testAddNonIncrementalTaskAfterEvaluate(it, nonIncrementalTask)
         }
+    }
+
+    /**
+     *  测试 增加NewIncrementalTask
+     */
+    private fun testAddNonIncrementalTaskAfterEvaluate(
+        project: Project,
+        task: AddExportForPackageManifestNonIncrementalTask
+    ) {
+        var preBuildTask = project.tasks.getByName("processDebugManifest")
+        task.variantName = variantName
+        preBuildTask.dependsOn(task)
     }
 
     /**

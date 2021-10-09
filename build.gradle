@@ -4,8 +4,9 @@ buildscript {
     ext.gradle_version = "4.2.2"
     repositories {
         google()
+        //方法的调用
         mavenCentral()
-        //配置自定义插件的maven依赖
+        //配置自定义插件的maven依赖。闭包的调用
         maven{
             url uri('plugins')
         }

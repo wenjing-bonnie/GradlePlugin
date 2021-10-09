@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by wenjing.liu on 2021/9/30 in J1.
  *
+ * NonIncrementalTask
  * @author wenjing.liu
  */
 open class AddExportForPackageManifestTask : DefaultTask() {
