@@ -9,9 +9,9 @@ import com.wj.gradle.manifest.utils.SystemPrint
  * NonIncrementalTask为抽象类,需要复写里面的抽象方法和抽象属性
  * @author wenjing.liu
  */
-abstract class AddExportForPackageManifestNonIncrementalTask : NonIncrementalTask() {
+abstract class CustomNonIncrementalTask : NonIncrementalTask() {
     companion object {
-        const val TAG: String = "AddExportForPackageManifestNonIncremental"
+        const val TAG: String = "CustomNonIncremental"
     }
 
     /**

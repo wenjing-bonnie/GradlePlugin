@@ -27,15 +27,18 @@ object SystemPrint {
             return
         }
         var length = tag.length
-        if (length > 30)
-            println(
-                "<- ${tag.subSequence(0, 15)}...${
-                    tag.subSequence(
-                        length - 14,
-                        length
-                    )
-                } -> : $info"
-            )
+        if (length <= 30) {
+            println("<- $tag -> : $info")
+            return
+        }
 
+        println(
+            "<- ${tag.subSequence(0, 15)}...${
+                tag.subSequence(
+                    length - 14,
+                    length
+                )
+            } -> : $info"
+        )
     }
 }

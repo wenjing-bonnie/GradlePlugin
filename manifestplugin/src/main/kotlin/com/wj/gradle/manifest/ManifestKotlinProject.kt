@@ -1,7 +1,11 @@
 package com.wj.gradle.manifest
 
-import com.wj.gradle.manifest.task.AddExportForPackageManifestNonIncrementalTask
+import com.android.build.gradle.internal.tasks.AndroidVariantTask
+import com.android.build.gradle.internal.tasks.BaseTask
+import com.wj.gradle.manifest.task.CustomNonIncrementalTask
 import com.wj.gradle.manifest.task.AddExportForPackageManifestTask
+import com.wj.gradle.manifest.task.CustomIncrementalTask
+import com.wj.gradle.manifest.task.CustomNonIncrementalGlobalTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -23,37 +27,58 @@ class ManifestKotlinProject : Plugin<Project> {
             return
         }
         SystemPrint.outPrintln("Welcome ManifestKotlinProject")
-        addTaskForVariantAfterEvaluate(p0)
+        addTasksForVariantAfterEvaluate(p0)
     }
 
     /**
      *在项目配置完之后添加自定义的Task
      */
-    private fun addTaskForVariantAfterEvaluate(project: Project) {
-        val exportTask = project.tasks.create(
+    private fun addTasksForVariantAfterEvaluate(project: Project) {
+        //创建自定义Task
+        var exportTask = project.tasks.create(
             AddExportForPackageManifestTask.TAG,
             AddExportForPackageManifestTask::class.javaObjectType
         )
-        val nonIncrementalTask = project.tasks.create(
-            AddExportForPackageManifestNonIncrementalTask.TAG,
-            AddExportForPackageManifestNonIncrementalTask::class.javaObjectType
+        var nonIncrementalTask = project.tasks.create(
+            CustomNonIncrementalTask.TAG,
+            CustomNonIncrementalTask::class.javaObjectType
         )
+        var incrementalTask = project.tasks.create(
+            CustomIncrementalTask.TAG,
+            CustomIncrementalTask::class.javaObjectType
+        )
+        var nonIncrementalGlobalTask = project.tasks.create(
+            CustomNonIncrementalGlobalTask.TAG,
+            CustomNonIncrementalGlobalTask::class.javaObjectType
+        )
+        //每次都运行一个任务,那么您可以指定它永远不会是最新的
+        // incrementalTask.outputs.upToDateWhen {  false }
+        //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it, exportTask)
-            testAddNonIncrementalTaskAfterEvaluate(it, nonIncrementalTask)
+            testAddTaskAfterEvaluate(
+                it,
+                //nonIncrementalTask,
+                nonIncrementalGlobalTask,
+               // incrementalTask
+            )
         }
     }
 
     /**
      *  测试 增加NewIncrementalTask
      */
-    private fun testAddNonIncrementalTaskAfterEvaluate(
+    private fun testAddTaskAfterEvaluate(
         project: Project,
-        task: AddExportForPackageManifestNonIncrementalTask
+        vararg tasks: BaseTask
     ) {
-        var preBuildTask = project.tasks.getByName("processDebugManifest")
-        task.variantName = variantName
-        preBuildTask.dependsOn(task)
+        var preBuildTask = project.tasks.getByName("pre${variantName}Build")
+        for (task in tasks) {
+            if (task is AndroidVariantTask) {
+                task.variantName = variantName
+            }
+            preBuildTask.finalizedBy(task)
+        }
     }
 
     /**
