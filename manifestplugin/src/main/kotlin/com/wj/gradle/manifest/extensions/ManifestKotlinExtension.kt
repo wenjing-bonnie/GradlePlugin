@@ -29,55 +29,34 @@ open class ManifestKotlinExtension {
         const val TAG: String = "manifestKotlin"
     }
 
-    private var compileSdkVersion: Int = 0
-    private var buildToolVersion: String = ""
-   // private var defaultConfig: DefaultConfig = DefaultConfig()
+    private var compileSdkVersionOfManifest: Int = 0
+    private var buildToolVersionOfManifest: String = ""
+    private var defaultConfigOfManifest: DefaultConfigOfManifest = DefaultConfigOfManifest()
 
-    open fun setCompileSdkVersion(sdk: Int) {
-        this.compileSdkVersion = sdk
+    open fun compileSdkVersionOfManifest(sdk: Int) {
+        this.compileSdkVersionOfManifest = sdk
     }
 
-    open fun setBuildToolVersion(version: String) {
-        this.buildToolVersion = version
+    open fun buildToolVersionOfManifest(version: String) {
+        this.buildToolVersionOfManifest = version
     }
 
-    open fun getCompileSdkVersion(): Int {
-        return this.compileSdkVersion
+    open fun getCompileSdkVersionOfManifest(): Int {
+        return this.compileSdkVersionOfManifest
     }
 
-    open fun getBuildToolVersion(): String {
-        return this.buildToolVersion
+    open fun getBuildToolVersionOfManifest(): String {
+        return this.buildToolVersionOfManifest
     }
 
-//    open fun setDefaultConfig(action: Action<DefaultConfig>) {
-//        action.execute(defaultConfig)
-//    }
-
-    open class DefaultConfig {
-        private var applicationId: String = ""
-        private var minSdkVersion: Int = 0
-
-        open fun setApplicationId(id: String) {
-            this.applicationId = id
-        }
-
-        open fun getApplicationId(): String {
-            return this.applicationId
-        }
-
-        open fun setMinSdkVersion(sdk: Int) {
-            this.minSdkVersion = sdk
-        }
-
-        open fun getMinSdkVersion(): Int {
-            return this.minSdkVersion
-        }
+    open fun defaultConfigOfManifest(action: Action<DefaultConfigOfManifest>) {
+        action.execute(defaultConfigOfManifest)
     }
 
-//    override fun toString(): String {
-//        return "compileSdkVersion: ${compileSdkVersion}\n buildToolVersion: ${buildToolVersion}\n" +
-//                "defaultConfig: {applicationId: ${defaultConfig.getApplicationId()}\n minSdkVersion: ${defaultConfig.getMinSdkVersion()}\n" +
-//                " }"
-//    }
+    override fun toString(): String {
+        return "\ncompileSdkVersion: ${compileSdkVersionOfManifest}\nbuildToolVersion: ${buildToolVersionOfManifest}\n" +
+                "defaultConfig: {\n  applicationId: ${defaultConfigOfManifest.getApplicationIdOfManifest()}\n  minSdkVersion: ${defaultConfigOfManifest.getMinSdkVersionOfManifest()}" +
+                " }"
+    }
 
 }
