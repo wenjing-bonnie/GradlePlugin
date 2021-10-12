@@ -1,7 +1,7 @@
 package com.wj.gradle.manifest.tasks
 
 import com.android.build.gradle.internal.tasks.NonIncrementalGlobalTask
-import com.wj.gradle.manifest.extensions.utils.SystemPrint
+import com.wj.gradle.manifest.utils.SystemPrint
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.

@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.extensions.utils
+package com.wj.gradle.manifest.extensions
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.

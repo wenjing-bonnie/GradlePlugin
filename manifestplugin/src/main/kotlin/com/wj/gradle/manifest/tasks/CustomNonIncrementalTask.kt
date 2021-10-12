@@ -2,8 +2,7 @@ package com.wj.gradle.manifest.tasks
 
 import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NonIncrementalTask
-import com.wj.gradle.manifest.extensions.utils.SystemPrint
-import org.gradle.api.provider.Property
+import com.wj.gradle.manifest.utils.SystemPrint
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.

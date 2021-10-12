@@ -2,10 +2,7 @@ package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
-import com.wj.gradle.manifest.tasks.CustomIncrementalTask
-import com.wj.gradle.manifest.tasks.CustomNonIncrementalGlobalTask
-import com.wj.gradle.manifest.tasks.CustomNonIncrementalTask
-import com.wj.gradle.manifest.extensions.utils.SystemPrint
+import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task

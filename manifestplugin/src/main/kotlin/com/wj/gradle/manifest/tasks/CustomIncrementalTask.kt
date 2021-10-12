@@ -1,10 +1,7 @@
 package com.wj.gradle.manifest.tasks
 
-import com.android.build.gradle.internal.tasks.IncrementalTask
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.manifest.extensions.utils.SystemPrint
-import org.gradle.api.internal.TaskOutputsInternal
-import org.gradle.api.tasks.TaskOutputs
+import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.work.InputChanges
 
 /**
