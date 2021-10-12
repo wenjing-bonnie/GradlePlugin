@@ -13,10 +13,6 @@ dependencies {
     implementation localGroovy()
 }
 
-sourceSets{
-
-}
-
 repositories {
     mavenCentral()
 }

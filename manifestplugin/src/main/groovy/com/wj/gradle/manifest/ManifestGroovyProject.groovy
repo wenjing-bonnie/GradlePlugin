@@ -7,5 +7,7 @@ class ManifestGroovyProject implements Plugin<Project> {
     @Override
     void apply(Project project) {
         System.out.println("Welcome ManifestGroovyProject")
+
+        project.getExtensions().create(Extensions.TAG, Extensions)
     }
 }

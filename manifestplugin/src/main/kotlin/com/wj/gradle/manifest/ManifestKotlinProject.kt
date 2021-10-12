@@ -1,6 +1,7 @@
 package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
+import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
@@ -20,6 +21,8 @@ class ManifestKotlinProject : Plugin<Project> {
     private var variantName: String = ""
 
     override fun apply(p0: Project) {
+        //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
+        createExtension(p0)
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
@@ -28,7 +31,18 @@ class ManifestKotlinProject : Plugin<Project> {
     }
 
     /**
-     *在项目配置完之后添加自定义的Task
+     * 创建属性扩展
+     */
+    private fun createExtension(project: Project) {
+        project.extensions.create(
+            ManifestKotlinExtension.TAG,
+            ManifestKotlinExtension::class.javaObjectType
+        )
+    }
+
+
+    /**
+     * 在项目配置完之后添加自定义的Task
      */
     private fun addTasksForVariantAfterEvaluate(project: Project) {
         //创建自定义Task
@@ -60,7 +74,18 @@ class ManifestKotlinProject : Plugin<Project> {
 //                //nonIncrementalGlobalTask,
 //                //incrementalTask
 //            )
+            testExtension(it)
         }
+    }
+
+
+    private fun testExtension(project: Project) {
+        var extension =
+            project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
+        if (extension == null) {
+            return
+        }
+        SystemPrint.outPrintln("extension: $extension")
     }
 
     /**
