@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.task
+package com.wj.gradle.manifest.tasks
 
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
