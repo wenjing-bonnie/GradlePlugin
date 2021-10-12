@@ -29,33 +29,33 @@ open class ManifestKotlinExtension {
         const val TAG: String = "manifestKotlin"
     }
 
-    private var compileSdkVersionOfManifest: Int = 0
-    private var buildToolVersionOfManifest: String = ""
-    private var defaultConfigOfManifest: DefaultConfigOfManifest = DefaultConfigOfManifest()
+    private var compileSdkVersion: Int = 0
+    private var buildToolVersion: String = ""
+    private var defaultConfig: DefaultConfig = DefaultConfig()
 
-    open fun compileSdkVersionOfManifest(sdk: Int) {
-        this.compileSdkVersionOfManifest = sdk
+    open fun compileSdkVersion(sdk: Int) {
+        this.compileSdkVersion = sdk
     }
 
-    open fun buildToolVersionOfManifest(version: String) {
-        this.buildToolVersionOfManifest = version
+    open fun buildToolVersion(version: String) {
+        this.buildToolVersion = version
     }
 
-    open fun getCompileSdkVersionOfManifest(): Int {
-        return this.compileSdkVersionOfManifest
+    open fun getCompileSdkVersion(): Int {
+        return this.compileSdkVersion
     }
 
-    open fun getBuildToolVersionOfManifest(): String {
-        return this.buildToolVersionOfManifest
+    open fun getBuildToolVersion(): String {
+        return this.buildToolVersion
     }
 
-    open fun defaultConfigOfManifest(action: Action<DefaultConfigOfManifest>) {
-        action.execute(defaultConfigOfManifest)
+    open fun defaultConfig(action: Action<DefaultConfig>) {
+        action.execute(defaultConfig)
     }
 
     override fun toString(): String {
-        return "\ncompileSdkVersion: ${compileSdkVersionOfManifest}\nbuildToolVersion: ${buildToolVersionOfManifest}\n" +
-                "defaultConfig: {\n  applicationId: ${defaultConfigOfManifest.getApplicationIdOfManifest()}\n  minSdkVersion: ${defaultConfigOfManifest.getMinSdkVersionOfManifest()}" +
+        return "\ncompileSdkVersion: ${compileSdkVersion}\nbuildToolVersion: ${buildToolVersion}\n" +
+                "defaultConfig: {\n  applicationId: ${defaultConfig.getApplicationId()}\n  minSdkVersion: ${defaultConfig.getMinSdkVersion()}" +
                 " }"
     }
 

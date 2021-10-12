@@ -5,23 +5,23 @@ package com.wj.gradle.manifest.extensions
  *
  * @author wenjing.liu
  */
-open class DefaultConfigOfManifest {
-    private var applicationIdOfManifest: String = ""
-    private var minSdkVersionOfManifest: Int = 0
+open class DefaultConfig {
+    private var applicationId: String = ""
+    private var minSdkVersion: Int = 0
 
-    open fun applicationIdOfManifest(id: String) {
-        this.applicationIdOfManifest = id
+    open fun applicationId(id: String) {
+        this.applicationId = id
     }
 
-    open fun getApplicationIdOfManifest(): String {
-        return this.applicationIdOfManifest
+    open fun getApplicationId(): String {
+        return this.applicationId
     }
 
-    open fun minSdkVersionOfManifest(sdk: Int) {
-        this.minSdkVersionOfManifest = sdk
+    open fun minSdkVersion(sdk: Int) {
+        this.minSdkVersion = sdk
     }
 
-    open fun getMinSdkVersionOfManifest(): Int {
-        return this.minSdkVersionOfManifest
+    open fun getMinSdkVersion(): Int {
+        return this.minSdkVersion
     }
 }
