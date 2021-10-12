@@ -5,7 +5,7 @@ import org.gradle.api.Action
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
  * 扩展属性
- * 仿android{}的配置项
+ * 类似于android gradle plugin中的
 //android {
 //    compileSdkVersion 31
 //    buildToolsVersion "30.0.3"
@@ -18,7 +18,7 @@ import org.gradle.api.Action
 //    buildTypes {
 //        release {
 //            minifyEnabled false
-//            versionFile  file("version.xml")
+//            proguardFiles file("version.xml")
 //        }
 //    }
 //}
@@ -41,11 +41,11 @@ open class ManifestKotlinExtension {
         this.buildToolVersion = version
     }
 
-    open fun getCompileSdkVersion(): Int {
+    open fun compileSdkVersion(): Int {
         return this.compileSdkVersion
     }
 
-    open fun getBuildToolVersion(): String {
+    open fun buildToolVersion(): String {
         return this.buildToolVersion
     }
 
@@ -54,8 +54,8 @@ open class ManifestKotlinExtension {
     }
 
     override fun toString(): String {
-        return "\ncompileSdkVersion: ${compileSdkVersion}\nbuildToolVersion: ${buildToolVersion}\n" +
-                "defaultConfig: {\n  applicationId: ${defaultConfig.getApplicationId()}\n  minSdkVersion: ${defaultConfig.getMinSdkVersion()}" +
+        return "\ncompileSdkVersion: ${compileSdkVersion()}\nbuildToolVersion: ${buildToolVersion()}\n" +
+                "defaultConfig: {\n  applicationId: ${defaultConfig.applicationId()}\n  minSdkVersion: ${defaultConfig.minSdkVersion()}" +
                 " }"
     }
 

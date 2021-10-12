@@ -2,7 +2,13 @@ package com.wj.gradle.manifest.extensions
 
 /**
  * Created by wenjing.liu on 2021/10/12 in J1.
- *
+ * 类似于android gradle plugin中的
+//android {
+//    defaultConfig {
+//        applicationId "com.wj.gradle.plugin"
+//        minSdkVersion 23
+//    }
+//}
  * @author wenjing.liu
  */
 open class DefaultConfig {
@@ -13,7 +19,7 @@ open class DefaultConfig {
         this.applicationId = id
     }
 
-    open fun getApplicationId(): String {
+    open fun applicationId(): String {
         return this.applicationId
     }
 
@@ -21,7 +27,7 @@ open class DefaultConfig {
         this.minSdkVersion = sdk
     }
 
-    open fun getMinSdkVersion(): Int {
+    open fun minSdkVersion(): Int {
         return this.minSdkVersion
     }
 }
