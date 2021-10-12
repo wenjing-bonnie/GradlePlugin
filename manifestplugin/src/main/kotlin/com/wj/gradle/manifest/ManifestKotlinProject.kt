@@ -1,14 +1,14 @@
 package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
-import com.android.build.gradle.internal.tasks.BaseTask
-import com.wj.gradle.manifest.task.CustomNonIncrementalTask
 import com.wj.gradle.manifest.task.AddExportForPackageManifestTask
 import com.wj.gradle.manifest.task.CustomIncrementalTask
 import com.wj.gradle.manifest.task.CustomNonIncrementalGlobalTask
+import com.wj.gradle.manifest.task.CustomNonIncrementalTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import java.util.regex.Pattern
 
 /**
@@ -35,33 +35,34 @@ class ManifestKotlinProject : Plugin<Project> {
      */
     private fun addTasksForVariantAfterEvaluate(project: Project) {
         //创建自定义Task
-        var exportTask = project.tasks.create(
+        var exportTask = project.tasks.register(
             AddExportForPackageManifestTask.TAG,
             AddExportForPackageManifestTask::class.javaObjectType
-        )
-        var nonIncrementalTask = project.tasks.create(
-            CustomNonIncrementalTask.TAG,
-            CustomNonIncrementalTask::class.javaObjectType
-        )
-        var incrementalTask = project.tasks.create(
-            CustomIncrementalTask.TAG,
-            CustomIncrementalTask::class.javaObjectType
-        )
-        var nonIncrementalGlobalTask = project.tasks.create(
-            CustomNonIncrementalGlobalTask.TAG,
-            CustomNonIncrementalGlobalTask::class.javaObjectType
-        )
+        ).get()
+        //用Provider.get()获取task值的时候，才会去创建这个task。
+//        var nonIncrementalTask = project.tasks.register(
+//            CustomNonIncrementalTask.TAG,
+//            CustomNonIncrementalTask::class.javaObjectType
+//        ).get()
+//        var incrementalTask = project.tasks.register(
+//            CustomIncrementalTask.TAG,
+//            CustomIncrementalTask::class.javaObjectType
+//        ).get()
+//        var nonIncrementalGlobalTask = project.tasks.register(
+//            CustomNonIncrementalGlobalTask.TAG,
+//            CustomNonIncrementalGlobalTask::class.javaObjectType
+//        ).get()
         //每次都运行一个任务,那么您可以指定它永远不会是最新的
         // incrementalTask.outputs.upToDateWhen {  false }
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it, exportTask)
-            testAddTaskAfterEvaluate(
-                it,
-                //nonIncrementalTask,
-                nonIncrementalGlobalTask,
-               // incrementalTask
-            )
+//            testAddTaskAfterEvaluate(
+//                it,
+//                nonIncrementalTask//,
+//                //nonIncrementalGlobalTask,
+//                //incrementalTask
+//            )
         }
     }
 
@@ -70,7 +71,7 @@ class ManifestKotlinProject : Plugin<Project> {
      */
     private fun testAddTaskAfterEvaluate(
         project: Project,
-        vararg tasks: BaseTask
+        vararg tasks: Task
     ) {
         var preBuildTask = project.tasks.getByName("pre${variantName}Build")
         for (task in tasks) {

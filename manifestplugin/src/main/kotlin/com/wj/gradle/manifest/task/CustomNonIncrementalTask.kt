@@ -1,7 +1,9 @@
 package com.wj.gradle.manifest.task
 
+import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NonIncrementalTask
 import com.wj.gradle.manifest.utils.SystemPrint
+import org.gradle.api.provider.Property
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
@@ -22,8 +24,10 @@ abstract class CustomNonIncrementalTask : NonIncrementalTask() {
      */
 //    override val analyticsService: Property<AnalyticsService>
 //        get() {
-//            return  null
+//            return AnalyticsService.RegistrationAction(project).execute()
 //        }
+
+
 
     /**
      * WorkerExecutor用于异步执行task任务,可以安全并发的执行Task
@@ -36,6 +40,8 @@ abstract class CustomNonIncrementalTask : NonIncrementalTask() {
 
     override fun doTaskAction() {
         SystemPrint.outPrintln(TAG, "is running")
+        val d = AnalyticsService.RegistrationAction(project).execute()
+        SystemPrint.outPrintln(d.toString())
     }
 
 
