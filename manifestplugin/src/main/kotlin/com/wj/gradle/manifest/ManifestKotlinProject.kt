@@ -80,14 +80,16 @@ class ManifestKotlinProject : Plugin<Project> {
         }
     }
 
-
+    /**
+     * 测试设置extension
+     */
     private fun testExtension(project: Project) {
         var extension =
             project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
         if (extension == null) {
             return
         }
-        SystemPrint.outPrintln("extension: $extension")
+        SystemPrint.outPrintln("test set manifestKotlin{} extension: $extension \n")
     }
 
     /**
