@@ -12,6 +12,16 @@ manifestKotlin {
         applicationId "com.wj.gradle.plugin"
         minSdkVersion 23
     }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles file("proguard-rules.pro")
+        }
+        dev{
+            minifyEnabled true
+            proguardFiles file("proguard-rules.pro")
+        }
+    }
 }
 
 //第三种：监听Project配置阶段

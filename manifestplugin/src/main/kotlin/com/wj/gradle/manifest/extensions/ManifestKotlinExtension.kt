@@ -1,6 +1,7 @@
 package com.wj.gradle.manifest.extensions
 
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
@@ -24,7 +25,8 @@ import org.gradle.api.Action
 //}
  * @author wenjing.liu
  */
-open class ManifestKotlinExtension {
+open class ManifestKotlinExtension(var buildTypes: NamedDomainObjectContainer<BuildType>) {
+
     companion object {
         const val TAG: String = "manifestKotlin"
     }
@@ -53,10 +55,24 @@ open class ManifestKotlinExtension {
         action.execute(defaultConfig)
     }
 
+    open fun buildTypes(action: Action<NamedDomainObjectContainer<BuildType>>) {
+        action.execute(buildTypes)
+    }
+
+    open fun buildTypes(): NamedDomainObjectContainer<BuildType> {
+        return this.buildTypes
+
+    }
+
     override fun toString(): String {
+        val buildBuffer = StringBuffer()
+        for (build in buildTypes()) {
+            buildBuffer.append("${build}\n")
+        }
+
         return "\ncompileSdkVersion: ${compileSdkVersion()}\nbuildToolVersion: ${buildToolVersion()}\n" +
                 "defaultConfig: {\n  applicationId: ${defaultConfig.applicationId()}\n  minSdkVersion: ${defaultConfig.minSdkVersion()}" +
-                " }"
+                " }\nbuildTypes:{\n ${buildBuffer}}"
     }
 
 }

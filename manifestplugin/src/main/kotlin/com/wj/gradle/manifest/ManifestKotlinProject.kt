@@ -1,6 +1,7 @@
 package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
+import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
@@ -36,7 +37,8 @@ class ManifestKotlinProject : Plugin<Project> {
     private fun createExtension(project: Project) {
         project.extensions.create(
             ManifestKotlinExtension.TAG,
-            ManifestKotlinExtension::class.javaObjectType
+            ManifestKotlinExtension::class.javaObjectType,
+            project.container(BuildType::class.javaObjectType)
         )
     }
 
