@@ -165,7 +165,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
     private fun handlerNodeAddExportedForMainManifest(name: String) {
         SystemPrint.errorPrintln(
             TAG, "<<!!! error \n " +
-                    "必须为 < ${name} > 添加android:exported属性,错误原因见Build Output的编译错误或https://developer.android.com/guide/topics/manifest/activity-element#exported  >>"
+                    "必须为 < $name > 添加android:exported属性,错误原因见Build Output的编译错误或https://developer.android.com/guide/topics/manifest/activity-element#exported  >>"
         )
     }
 
@@ -173,8 +173,8 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      * 处理被打包到APP的其他manifest文件中添加android:exported
      */
     private fun handlerNodeAddExportedForPackagedManifest(node: Node, name: String) {
-        SystemPrint.outPrintln(TAG, "为 < ${name} > 添加android:exported=true")
-        node.attributes().put("android:exported", true)
+        SystemPrint.outPrintln(TAG, "为 < $name > 添加android:exported=true")
+        node.attributes()["android:exported"] = true
     }
 
 
@@ -199,7 +199,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      */
     private fun notFindRightNode(node: Any?, name: String): Boolean {
         return node !is Node ||
-                (!(name).equals(node.name().toString()))
+                ((name) != node.name().toString())
     }
 
     /**
@@ -208,7 +208,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
     private fun hasAttributeExportedInNode(node: Node): Boolean {
         var attributes = node.attributes()
         for (key in attributes.keys) {
-            if (ATTRUBUTE_EXPORTED.equals(key.toString())) {
+            if (ATTRUBUTE_EXPORTED == key.toString()) {
                 return true
             }
         }
@@ -221,8 +221,8 @@ open class AddExportForPackageManifestTask : DefaultTask() {
     private fun attributeWithoutExportedName(node: Node): String {
         var attributes = node.attributes()
         for (key in attributes.keys) {
-            if (ATTRUBUTE_NAME.equals(key.toString())) {
-                return attributes.get(key).toString()
+            if (ATTRUBUTE_NAME == key.toString()) {
+                return attributes[key].toString()
             }
         }
         return ""
