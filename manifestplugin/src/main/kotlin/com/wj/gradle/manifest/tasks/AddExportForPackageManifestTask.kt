@@ -70,7 +70,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
                     "因为操作的第三方的manifest,所以该属性为true   >>"
         )
         for (input in inputManifests) {
-            handlerManifestForExported(input)
+            readAndWriteManifestForExported(input)
         }
     }
 
@@ -85,13 +85,13 @@ open class AddExportForPackageManifestTask : DefaultTask() {
                     "开始为 \"app的manifest文件\" 检查和报错提示 \"android:exported\"\n" +
                     "开发者需要根据报错的组件,按照实际开发需要设置属性值   >>"
         )
-        handlerManifestForExported(inputMainManifest)
+        readAndWriteManifestForExported(inputMainManifest)
     }
 
     /**
      * 处理非app下的manifest文件
      */
-    private fun handlerManifestForExported(manifest: File) {
+    private fun readAndWriteManifestForExported(manifest: File) {
         if (!manifest.exists()) {
             return
         }
@@ -228,10 +228,4 @@ open class AddExportForPackageManifestTask : DefaultTask() {
         return ""
     }
 
-    /**
-     * 该结点中含有intent-filter
-     */
-    private fun hasIntentFilterInNode(node: Node): Boolean {
-        return !notFindRightNode(node, "intent-filter")
-    }
 }
