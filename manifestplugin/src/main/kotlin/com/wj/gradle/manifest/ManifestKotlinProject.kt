@@ -1,6 +1,7 @@
 package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
+import com.android.build.gradle.tasks.ProcessApplicationManifest
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
@@ -46,11 +47,7 @@ class ManifestKotlinProject : Plugin<Project> {
      * 在项目配置完之后添加自定义的Task
      */
     private fun addTasksForVariantAfterEvaluate(project: Project) {
-        //创建自定义Task
-        var exportTask = project.tasks.register(
-            AddExportForPackageManifestTask.TAG,
-            AddExportForPackageManifestTask::class.javaObjectType
-        ).get()
+
         //用Provider.get()获取task值的时候，才会去创建这个task。
 //        var nonIncrementalTask = project.tasks.register(
 //            CustomNonIncrementalTask.TAG,
@@ -68,7 +65,7 @@ class ManifestKotlinProject : Plugin<Project> {
         // incrementalTask.outputs.upToDateWhen {  false }
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            addExportForPackageManifestAfterEvaluate(it, exportTask)
+            addExportForPackageManifestAfterEvaluate(it)
 //            testAddTaskAfterEvaluate(
 //                it,
 //                nonIncrementalTask//,
@@ -82,11 +79,20 @@ class ManifestKotlinProject : Plugin<Project> {
     /**
      * 找到该APP在打包过程中的所有Manifest文件,在打包编译报错的processDebugManifest执行之前为符合条件的组件添加android:exported
      */
-    private fun addExportForPackageManifestAfterEvaluate(
-        project: Project,
-        exportTask: AddExportForPackageManifestTask
-    ) {
-        val processManifestTask = project.tasks.getByName("process${variantName}MainManifest")
+    private fun addExportForPackageManifestAfterEvaluate(project: Project) {
+
+        val processManifestTask =
+            project.tasks.getByName("process${variantName}MainManifest")
+        if (processManifestTask !is ProcessApplicationManifest) {
+            return
+        }
+        //创建自定义Task
+        var exportTask = project.tasks.register(
+            AddExportForPackageManifestTask.TAG,
+            AddExportForPackageManifestTask::class.javaObjectType,
+        ).get()
+        exportTask.setInputMainManifest(processManifestTask.mainManifest.get())
+        exportTask.setInputManifests(processManifestTask.getManifests())
         processManifestTask.dependsOn(exportTask)
     }
 

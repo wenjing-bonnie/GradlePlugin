@@ -1,5 +1,8 @@
 package com.wj.gradle.manifest.utils
 
+import com.android.build.gradle.internal.cxx.logging.errorln
+import com.android.build.gradle.internal.cxx.logging.warnln
+
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
  *
@@ -26,19 +29,49 @@ object SystemPrint {
         if (!DEBUG) {
             return
         }
-        var length = tag.length
-        if (length <= 30) {
-            println("<- $tag -> : $info")
+        println(
+            "<- ${getTag(tag)} -> : $info"
+        )
+    }
+
+    /**
+     * 输出红色log
+     */
+    fun errorPrintln(tag: String, info: String) {
+        if (!DEBUG) {
             return
         }
-
-        println(
-            "<- ${tag.subSequence(0, 15)}...${
-                tag.subSequence(
-                    length - 14,
-                    length
-                )
-            } -> : $info"
+        errorln(
+            "<- ${getTag(tag)} -> : $info"
         )
+    }
+
+    /**
+     * 警告log
+     */
+    fun warnPrintln(tag: String, info: String) {
+        if (!DEBUG) {
+            return
+        }
+        warnln(
+            "<- ${getTag(tag)} -> : $info"
+        )
+    }
+
+    /**
+     * 获取可用的tag
+     */
+    private fun getTag(tag: String): String {
+        var length = tag.length
+        if (length <= 30) {
+            return tag
+        }
+
+        return "${tag.subSequence(0, 15)}...${
+            tag.subSequence(
+                length - 14,
+                length
+            )
+        }"
     }
 }
