@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.wj.manifest'
+    //测试Android 12 的适配
+    id 'com.mob.sdk'
 }
 
 /**com.wj.manifest中配置的扩展属性*/
@@ -17,7 +19,7 @@ manifestKotlin {
             minifyEnabled false
             proguardFiles file("proguard-rules.pro")
         }
-        dev{
+        dev {
             minifyEnabled true
             proguardFiles file("proguard-rules.pro")
         }

@@ -108,19 +108,23 @@ open class AddExportForPackageManifestTask : DefaultTask() {
         var node = xmlParser.parse(manifest)
         //node.attributes();获取的一级内容<?xml> <manifest>里设置的内容如:key为package、encoding,value为对应的值
         //node.children();获取的二级内容 <application> <uses-sdk>
-
         var firstChildren = node.children()
-        for (application in firstChildren) {
-            if (notFindRightNode(application, "application")) {
+        //从集合中找到application的结点
+        for (child in firstChildren) {
+            if (notFindRightNode(child, "application")) {
                 continue
             }
-            //选择"application"这个结点,找到里面的activity结点
-            var secondChild = (application as Node).children()
-            for (component in secondChild) {
-                if (notFindRightNode(component, "activity")) {
+            //选择"application"这个结点
+            var application = (child as Node).children()
+            //从集合中找到里面的activity、service、receiver结点
+            for (component in application) {
+                if (notFindRightNode(component, "activity") &&
+                    notFindRightNode(component, "service") &&
+                    notFindRightNode(component, "receiver")
+                ) {
                     continue
                 }
-                //处理activity结点的属性
+                //处理activity、service、receiver结点的属性
                 handlerNodeWithoutExported(component as Node)
             }
         }
@@ -142,6 +146,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
             if (notFindRightNode(intentFilter, "intent-filter")) {
                 continue
             }
+            //处理含有intent-filter所在的父结点上添加android:exported属性
             var name = attributeWithoutExportedName(node)
             handlerNodeAddExported(node, name)
         }
