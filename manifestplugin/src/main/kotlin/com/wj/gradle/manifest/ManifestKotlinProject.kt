@@ -53,30 +53,10 @@ class ManifestKotlinProject : Plugin<Project> {
      */
     private fun addTasksForVariantAfterEvaluate(project: Project) {
 
-        //用Provider.get()获取task值的时候，才会去创建这个task。
-//        var nonIncrementalTask = project.tasks.register(
-//            CustomNonIncrementalTask.TAG,
-//            CustomNonIncrementalTask::class.javaObjectType
-//        ).get()
-//        var incrementalTask = project.tasks.register(
-//            CustomIncrementalTask.TAG,
-//            CustomIncrementalTask::class.javaObjectType
-//        ).get()
-//        var nonIncrementalGlobalTask = project.tasks.register(
-//            CustomNonIncrementalGlobalTask.TAG,
-//            CustomNonIncrementalGlobalTask::class.javaObjectType
-//        ).get()
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
-//            testAddTaskAfterEvaluate(
-//                it,
-//                nonIncrementalTask//,
-//                //nonIncrementalGlobalTask,
-//                //incrementalTask
-//            )
-//            testExtension(it)
         }
     }
 
@@ -156,30 +136,4 @@ class ManifestKotlinProject : Plugin<Project> {
         }
         return true
     }
-
-    /**
-     * 测试设置extension
-     */
-    private fun testExtension(project: Project) {
-        var extension: ManifestKotlinExtension? =
-            project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType) ?: return
-        SystemPrint.outPrintln("test set manifestKotlin{} extension: $extension \n")
-    }
-
-    /**
-     *  测试 增加NewIncrementalTask
-     */
-    private fun testAddTaskAfterEvaluate(
-        project: Project,
-        vararg tasks: Task
-    ) {
-        var preBuildTask = project.tasks.getByName("pre${variantName}Build")
-        for (task in tasks) {
-            if (task is AndroidVariantTask) {
-                task.variantName = variantName
-            }
-            preBuildTask.finalizedBy(task)
-        }
-    }
-
 }
