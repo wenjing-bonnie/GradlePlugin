@@ -9,7 +9,7 @@ import java.io.File
 //    buildTypes {
 //        release {
 //            minifyEnabled false
-//            proguardFiles  file("version.xml")
+//            proguardFiles  file("versiondemo.xml")
 //        }
 //    }
  * @author wenjing.liu

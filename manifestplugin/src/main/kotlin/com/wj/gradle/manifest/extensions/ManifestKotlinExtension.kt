@@ -2,6 +2,7 @@ package com.wj.gradle.manifest.extensions
 
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
+import java.io.File
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
@@ -19,7 +20,7 @@ import org.gradle.api.NamedDomainObjectContainer
 //    buildTypes {
 //        release {
 //            minifyEnabled false
-//            proguardFiles file("version.xml")
+//            proguardFiles file("versiondemo.xml")
 //        }
 //    }
 //}
@@ -34,6 +35,21 @@ open class ManifestKotlinExtension(var buildTypes: NamedDomainObjectContainer<Bu
     private var compileSdkVersion: Int = 0
     private var buildToolVersion: String = ""
     private var defaultConfig: DefaultConfig = DefaultConfig()
+    private var versionManager: File = File("")
+
+    /**
+     * 设置版本管理文件
+     */
+    open fun versionManager(file: File) {
+        this.versionManager = file
+    }
+
+    /**
+     * 返回版本管理文件
+     */
+    open fun versionManager(): File {
+        return this.versionManager
+    }
 
     open fun compileSdkVersion(sdk: Int) {
         this.compileSdkVersion = sdk

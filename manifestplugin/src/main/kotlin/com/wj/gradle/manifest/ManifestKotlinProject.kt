@@ -2,13 +2,16 @@ package com.wj.gradle.manifest
 
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.android.build.gradle.tasks.ProcessApplicationManifest
+import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
+import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import java.io.File
 import java.util.regex.Pattern
 
 /**
@@ -34,6 +37,7 @@ class ManifestKotlinProject : Plugin<Project> {
 
     /**
      * 创建属性扩展
+     * @param project
      */
     private fun createExtension(project: Project) {
         project.extensions.create(
@@ -45,6 +49,7 @@ class ManifestKotlinProject : Plugin<Project> {
 
     /**
      * 在项目配置完之后添加自定义的Task
+     * @param project
      */
     private fun addTasksForVariantAfterEvaluate(project: Project) {
 
@@ -61,23 +66,23 @@ class ManifestKotlinProject : Plugin<Project> {
 //            CustomNonIncrementalGlobalTask.TAG,
 //            CustomNonIncrementalGlobalTask::class.javaObjectType
 //        ).get()
-        //每次都运行一个任务,那么您可以指定它永远不会是最新的
-        // incrementalTask.outputs.upToDateWhen {  false }
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it)
+            addSetLatestVersionForMergedManifestAfterEvaluate(it)
 //            testAddTaskAfterEvaluate(
 //                it,
 //                nonIncrementalTask//,
 //                //nonIncrementalGlobalTask,
 //                //incrementalTask
 //            )
-            testExtension(it)
+//            testExtension(it)
         }
     }
 
     /**
      * 找到该APP在打包过程中的所有Manifest文件,在打包编译报错的processDebugManifest执行之前为符合条件的组件添加android:exported
+     * @param project
      */
     private fun addExportForPackageManifestAfterEvaluate(project: Project) {
 
@@ -94,6 +99,38 @@ class ManifestKotlinProject : Plugin<Project> {
         exportTask.setInputMainManifest(processManifestTask.mainManifest.get())
         exportTask.setInputManifests(processManifestTask.getManifests())
         processManifestTask.dependsOn(exportTask)
+    }
+
+    /**
+     * 找到该APP最终的Manifest文件,通过[SetLatestVersionForMergedManifestTask]修改versionCode和versionName
+     * @param project
+     */
+    private fun addSetLatestVersionForMergedManifestAfterEvaluate(project: Project) {
+        val multiApkApplicationManifest =
+            project.tasks.getByName("process${variantName}Manifest")
+
+        if (multiApkApplicationManifest !is ProcessMultiApkApplicationManifest) {
+            return
+        }
+
+        var versionTask = project.tasks.create(
+            SetLatestVersionForMergedManifestTask.TAG,
+            SetLatestVersionForMergedManifestTask::class.javaObjectType
+        )
+        versionTask.setMainMergedManifest(multiApkApplicationManifest.mainMergedManifest.asFile.get())
+        versionTask.setInputVersionFile(getVersionManagerFromExtension(project))
+        multiApkApplicationManifest.finalizedBy(versionTask)
+    }
+
+    /**
+     * 从extension中获取version 管理文件
+     */
+    private fun getVersionManagerFromExtension(project: Project): File {
+        var extension = project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
+        if (extension == null) {
+            return File("")
+        }
+        return extension.versionManager()
     }
 
     /**
@@ -124,11 +161,8 @@ class ManifestKotlinProject : Plugin<Project> {
      * 测试设置extension
      */
     private fun testExtension(project: Project) {
-        var extension =
-            project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
-        if (extension == null) {
-            return
-        }
+        var extension: ManifestKotlinExtension? =
+            project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType) ?: return
         SystemPrint.outPrintln("test set manifestKotlin{} extension: $extension \n")
     }
 
