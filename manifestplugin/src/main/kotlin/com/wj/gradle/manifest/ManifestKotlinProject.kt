@@ -1,6 +1,5 @@
 package com.wj.gradle.manifest
 
-import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.manifest.extensions.BuildType
@@ -10,7 +9,6 @@ import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import java.io.File
 import java.util.regex.Pattern
 
