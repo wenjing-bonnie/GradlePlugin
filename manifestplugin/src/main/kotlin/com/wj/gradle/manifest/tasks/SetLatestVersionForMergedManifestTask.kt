@@ -35,9 +35,10 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         //true:the output is always up to date;false:始终执行
         //如果一个任务只定义了输出, 如果输出不变的话, 它就会被视为 up-to-date.
         // 每次在任务执行之前, Gradle 都会为输入和输出取一个新的快照, 如果这个快照和之前的快照一样, Gradle 就会假定这个任务已经是最新的 (up-to-date) 并且跳过任务, 反之亦然
-        outputs.upToDateWhen {
-            !inputs.hasInputs
-        }
+//        outputs.upToDateWhen {
+//            SystemPrint.errorPrintln(TAG, "is = " + inputs.files.isEmpty + " , " + inputs.hasInputs)
+//            !inputs.hasInputs
+//        }
         //https://www.tabnine.com/code/java/classes/org.gradle.api.internal.TaskOutputsInternal
 //        outputs.upToDateWhen(object : Spec<Task> {
 //            override fun isSatisfiedBy(p0: Task?): Boolean {
@@ -86,6 +87,13 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         ///Users/j1/Documents/android/code/GradlePlugin/app/verison.xml
         // determine which input files were out of date compared to a previous execution
         //是不是增量编译
+//        SystemPrint.outPrintln(TAG, "input  = " + inputs.files.isEmpty + " , " + inputs.hasInputs)
+//        inputs.files.forEach {
+//            SystemPrint.outPrintln(TAG, "path = " + it.absolutePath)
+//        }
+//        inputChanges.getFileChanges(inputs.files).forEach {
+//            SystemPrint.outPrintln(TAG, "type = " + it.changeType)
+//        }
 //        if (!inputChanges.isIncremental) {
 //            SystemPrint.outPrintln(TAG, "input not incremental , not need to change ")
 //            return
@@ -97,8 +105,11 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
      * 全量编译
      */
     private fun runFullTaskAction() {
-        if (inputs.hasInputs) {
-            handlerNoSources()
+        if (!inputs.hasInputs) {
+            SystemPrint.outPrintln(
+                TAG,
+                "NO-SOURCE interrupt the task , because input.hasInputs is false"
+            )
             return
         }
         handlerVersionForMainManifest()
@@ -118,7 +129,10 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
     private fun readVersionFromVersionManager() {
         var inputVersionFile = getVersionFileFromInputs()
         if (inputVersionFile == null) {
-            handlerNoSources()
+            SystemPrint.outPrintln(
+                TAG,
+                "NO-SOURCE interrupt the task , because input is null when read xml"
+            )
             return
         }
         var xmlParser = XmlParser()
@@ -168,7 +182,7 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
     private fun writeVersionToMainManifest() {
         var mainManifestFile = getMainManifestFileFromOutputs()
         if (mainManifestFile == null) {
-            SystemPrint.errorPrintln(TAG, "No Main Manifest xml")
+            SystemPrint.errorPrintln(TAG, "No Main Manifest xml , update the version FAILED")
             return
         }
         SystemPrint.outPrintln(
@@ -204,10 +218,6 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         }
     }
 
-    private fun handlerNoSources() {
-        SystemPrint.outPrintln(TAG, "NO-SOURCE ")
-    }
-
     /**
      * 删除所有的输出文件
      */
@@ -224,6 +234,9 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
 
     private fun getVersionFileFromInputs(): File? {
         for (file in inputs.files) {
+            if (!file.exists()) {
+                continue
+            }
             return file
         }
         return null
@@ -231,6 +244,9 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
 
     private fun getMainManifestFileFromOutputs(): File? {
         for (file in outputs.files) {
+            if (!file.exists()) {
+                continue
+            }
             return file
         }
         return null
