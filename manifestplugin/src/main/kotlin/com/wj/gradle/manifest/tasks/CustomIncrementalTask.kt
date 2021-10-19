@@ -13,6 +13,9 @@ abstract class CustomIncrementalTask : NewIncrementalTask() {
     companion object {
         const val TAG: String = "CustomIncremental"
     }
+    init {
+        outputs.upToDateWhen { false }
+    }
 
 
     override fun doTaskAction(inputChanges: InputChanges) {

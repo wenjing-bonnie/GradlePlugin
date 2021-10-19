@@ -4,7 +4,9 @@ import com.android.build.gradle.tasks.ProcessApplicationManifest
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
 import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
+import com.wj.gradle.manifest.tasks.CustomIncrementalTask
 import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
@@ -55,6 +57,7 @@ class ManifestKotlinProject : Plugin<Project> {
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
+            //testNewIncrementalTask(it)
         }
     }
 
@@ -84,32 +87,10 @@ class ManifestKotlinProject : Plugin<Project> {
      * @param project
      */
     private fun addSetLatestVersionForMergedManifestAfterEvaluate(project: Project) {
-        val multiApkApplicationManifest =
-            project.tasks.getByName("process${variantName}Manifest")
-
-        if (multiApkApplicationManifest !is ProcessMultiApkApplicationManifest) {
-            return
-        }
-
-        var versionTask = project.tasks.create(
-            SetLatestVersionForMergedManifestTask.TAG,
-            SetLatestVersionForMergedManifestTask::class.javaObjectType
-        )
-        versionTask.setMainMergedManifest(multiApkApplicationManifest.mainMergedManifest.asFile.get())
-        versionTask.setInputVersionFile(getVersionManagerFromExtension(project))
-        multiApkApplicationManifest.finalizedBy(versionTask)
+        var setLatestVersionManager = SetLatestVersionTaskManager(project, variantName)
+        setLatestVersionManager.addSetLatestVersionForMergedManifestAfterEvaluate()
     }
 
-    /**
-     * 从extension中获取version 管理文件
-     */
-    private fun getVersionManagerFromExtension(project: Project): File {
-        var extension = project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
-        if (extension == null) {
-            return File("")
-        }
-        return extension.versionManager()
-    }
 
     /**
      * 在build过程中获取variant name,需要注意这种方法不适用于sync.
@@ -133,5 +114,16 @@ class ManifestKotlinProject : Plugin<Project> {
             return false
         }
         return true
+    }
+
+    private fun testNewIncrementalTask(project: Project) {
+        var preBuild = project.tasks.getByName("preBuild")
+        var newIncrementalTask = project.tasks.create(
+            CustomIncrementalTask.TAG,
+            CustomIncrementalTask::class.javaObjectType
+        )
+        newIncrementalTask.variantName = variantName
+        preBuild.dependsOn(newIncrementalTask)
+
     }
 }
