@@ -97,7 +97,7 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
      * 全量编译
      */
     private fun runFullTaskAction() {
-        if (inputs.files.isEmpty) {
+        if (inputs.hasInputs) {
             handlerNoSources()
             return
         }
@@ -224,9 +224,6 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
 
     private fun getVersionFileFromInputs(): File? {
         for (file in inputs.files) {
-            if (!file.exists()) {
-                continue
-            }
             return file
         }
         return null
@@ -234,9 +231,6 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
 
     private fun getMainManifestFileFromOutputs(): File? {
         for (file in outputs.files) {
-            if (!file.exists()) {
-                continue
-            }
             return file
         }
         return null
