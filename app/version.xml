@@ -2,7 +2,7 @@
 <versions>
     <version latest="true">
         <versionDescription>新增购物车</versionDescription>
-        <versionCode>12</versionCode>
+        <versionCode>14</versionCode>
         <versionName>2.0.0</versionName>
         <date>2021/09/16</date>
     </version>

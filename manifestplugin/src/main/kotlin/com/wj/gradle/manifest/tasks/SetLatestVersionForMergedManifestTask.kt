@@ -34,7 +34,6 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         //如果一个任务只定义了输出, 如果输出不变的话, 它就会被视为 up-to-date.
         // 每次在任务执行之前, Gradle 都会为输入和输出取一个新的快照, 如果这个快照和之前的快照一样, Gradle 就会假定这个任务已经是最新的 (up-to-date) 并且跳过任务, 反之亦然
         outputs.upToDateWhen {
-            SystemPrint.errorPrintln(TAG, "${inputs.hasInputs} , ${outputs.hasOutput}")
             !inputs.hasInputs
         }
         //https://www.tabnine.com/code/java/classes/org.gradle.api.internal.TaskOutputsInternal
@@ -83,10 +82,10 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         ///Users/j1/Documents/android/code/GradlePlugin/app/verison.xml
         // determine which input files were out of date compared to a previous execution
         //是不是增量编译
-        if (!inputChanges.isIncremental) {
-            SystemPrint.outPrintln(TAG, "Not incremental build, clear the outputs ")
-            cleanUpTaskOutputs()
-        }
+//        if (!inputChanges.isIncremental) {
+//            SystemPrint.outPrintln(TAG, "input not incremental , not need to change ")
+//            return
+//        }
         runFullTaskAction()
     }
 
@@ -171,19 +170,19 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         }
         SystemPrint.outPrintln(
             TAG,
-            "正在将 versionCode: ${versionCode} , versionName: ${versionName} 写入到Manifest"
+            "正在将 versionCode: ${versionCode} , versionName: ${versionName} 写入到 Manifest"
         )
         var xmlParser = XmlParser()
         var node = xmlParser.parse(mainManifestFile)
         var count = 0
         var attrs = node.attributes()
         for (key in attrs.keys) {
-            if (key.toString() == "versionCode") {
+            if (key.toString().endsWith("versionCode")) {
                 node.attributes().replace(key, versionCode)
                 count++
                 continue
             }
-            if (key.toString() == "versionName") {
+            if (key.toString().endsWith("versionName")) {
                 node.attributes().replace(key, versionName)
                 count++
                 continue
