@@ -1,9 +1,11 @@
 package com.wj.gradle.manifest.tasks
 
 import com.android.utils.FileUtils
+import com.android.utils.XmlUtils
 import com.wj.gradle.manifest.utils.SystemPrint
 import groovy.util.Node
 import groovy.util.XmlParser
+import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.specs.Spec
@@ -43,6 +45,7 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
 //                return true
 //            }
 //        })
+        initInfo()
     }
 
     /**
@@ -55,11 +58,10 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
      */
     private var versionCode: String = ""
 
-    @Incremental
-    @InputFile
-    open fun setInputVersionFile(file: File) {
+
+    private fun initInfo() {
         SystemPrint.errorPrintln(
-            TAG, "!!!  警告信息非error \n    具体的版本管理文件的样式如下\n  " +
+            TAG, "!!!  警告信息非error !!!!  \n    具体的版本管理文件的样式如下\n  " +
                     "<versions>\n" +
                     "    <version latest=\"true\">\n" +
                     "        <versionDescription>新增购物车</versionDescription>\n" +
@@ -73,8 +75,10 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
                     "        <versionName>1.0.0</versionName>\n" +
                     "        <date>2021/09/15</date>\n" +
                     "    </version>\n" +
-                    "</versions>"
+                    "</versions> \n"
+
         )
+        SystemPrint.errorPrintln(TAG, "!!!  警告信息非error !!!!  \n")
     }
 
     @TaskAction
@@ -93,7 +97,6 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
      * 全量编译
      */
     private fun runFullTaskAction() {
-        SystemPrint.outPrintln(TAG, "Full action is Running ")
         if (inputs.files.isEmpty) {
             handlerNoSources()
             return
@@ -165,12 +168,13 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
     private fun writeVersionToMainManifest() {
         var mainManifestFile = getMainManifestFileFromOutputs()
         if (mainManifestFile == null) {
-            handlerNoSources()
+            SystemPrint.errorPrintln(TAG, "No Main Manifest xml")
             return
         }
         SystemPrint.outPrintln(
             TAG,
-            "正在将 versionCode: ${versionCode} , versionName: ${versionName} 写入到 Manifest"
+            "正在将 versionCode: ${versionCode} , versionName: ${versionName} 写入到 \n " +
+                    "${mainManifestFile.absolutePath}"
         )
         var xmlParser = XmlParser()
         var node = xmlParser.parse(mainManifestFile)
@@ -179,20 +183,25 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
         for (key in attrs.keys) {
             if (key.toString().endsWith("versionCode")) {
                 node.attributes().replace(key, versionCode)
+                SystemPrint.outPrintln(TAG, node.attribute(key).toString())
                 count++
                 continue
             }
             if (key.toString().endsWith("versionName")) {
                 node.attributes().replace(key, versionName)
+                SystemPrint.outPrintln(TAG, node.attribute(key).toString())
+
                 count++
                 continue
             }
         }
         if (count == 2) {
+            //写入到原manifest文件中
+            var result = XmlUtil.serialize(node)
+            mainManifestFile.writeText(result, Charsets.UTF_8)
             SystemPrint.outPrintln(TAG, "写入成功")
             return
         }
-
     }
 
     private fun handlerNoSources() {
