@@ -1,5 +1,7 @@
 package com.wj.gradle.manifest.taskmanager
 
+import com.android.build.gradle.tasks.ProcessApplicationManifest
+import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
 import org.gradle.api.Project
 
 /**
@@ -7,5 +9,23 @@ import org.gradle.api.Project
  *
  * @author wenjing.liu
  */
-open class AddExportedTaskManager(var project: Project) {
+open class AddExportedTaskManager(var project: Project, var variantName: String) {
+
+    open fun addExportForPackageManifestAfterEvaluate() {
+
+        val processManifestTask =
+            project.tasks.getByName("process${variantName}MainManifest")
+        if (processManifestTask !is ProcessApplicationManifest) {
+            return
+        }
+        //创建自定义Task
+        var exportTask = project.tasks.register(
+            AddExportForPackageManifestTask.TAG,
+            AddExportForPackageManifestTask::class.javaObjectType,
+        ).get()
+        exportTask.setInputMainManifest(processManifestTask.mainManifest.get())
+        exportTask.setInputManifests(processManifestTask.getManifests())
+        processManifestTask.dependsOn(exportTask)
+    }
+
 }

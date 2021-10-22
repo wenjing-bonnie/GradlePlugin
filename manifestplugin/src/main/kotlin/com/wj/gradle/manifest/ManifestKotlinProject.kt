@@ -1,17 +1,14 @@
 package com.wj.gradle.manifest
 
-import com.android.build.gradle.tasks.ProcessApplicationManifest
-import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.taskmanager.AddExportedTaskManager
 import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
-import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
-import com.wj.gradle.manifest.tasks.CustomIncrementalTask
+import com.wj.gradle.manifest.taskmanager.TestAddTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import java.io.File
 import java.util.regex.Pattern
 
 /**
@@ -57,7 +54,7 @@ class ManifestKotlinProject : Plugin<Project> {
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
-            //testNewIncrementalTask(it)
+            testNewIncrementalTask(it)
         }
     }
 
@@ -66,20 +63,8 @@ class ManifestKotlinProject : Plugin<Project> {
      * @param project
      */
     private fun addExportForPackageManifestAfterEvaluate(project: Project) {
-
-        val processManifestTask =
-            project.tasks.getByName("process${variantName}MainManifest")
-        if (processManifestTask !is ProcessApplicationManifest) {
-            return
-        }
-        //创建自定义Task
-        var exportTask = project.tasks.register(
-            AddExportForPackageManifestTask.TAG,
-            AddExportForPackageManifestTask::class.javaObjectType,
-        ).get()
-        exportTask.setInputMainManifest(processManifestTask.mainManifest.get())
-        exportTask.setInputManifests(processManifestTask.getManifests())
-        processManifestTask.dependsOn(exportTask)
+        var addExportedTaskManager = AddExportedTaskManager(project, variantName)
+        addExportedTaskManager.addExportForPackageManifestAfterEvaluate()
     }
 
     /**
@@ -116,14 +101,11 @@ class ManifestKotlinProject : Plugin<Project> {
         return true
     }
 
+    /**
+     * 用来测试
+     */
     private fun testNewIncrementalTask(project: Project) {
-        var preBuild = project.tasks.getByName("preBuild")
-        var newIncrementalTask = project.tasks.create(
-            CustomIncrementalTask.TAG,
-            CustomIncrementalTask::class.javaObjectType
-        )
-        newIncrementalTask.variantName = variantName
-        preBuild.dependsOn(newIncrementalTask)
-
+        var testNewTask = TestAddTaskDependsPreBuilderManager(project, variantName)
+        testNewTask.testIncrementalOnDefaultTask()
     }
 }
