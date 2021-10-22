@@ -19,4 +19,5 @@
 
 
 ![image](https://github.com/wenjing-bonnie/image/blob/master/wechat/wechat-qcode.jpg)
+![image](wechatqcode.png)
 
