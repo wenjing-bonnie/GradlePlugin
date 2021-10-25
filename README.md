@@ -17,8 +17,8 @@
 
   持续更新中...欢迎扫描关注
 
-
-![image](https://github.com/wenjing-bonnie/image/raw/master/wechat/wechat-qcode.jpg)
-
-![image](公众号二维码.png)
-
+<br/>
+![静姐有话说Android](https://github.com/wenjing-bonnie/image/raw/master/wechat/wechat-qcode.jpg)
+<br/>
+![静姐有话说Android](公众号二维码.png)
+<br/>
