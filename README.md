@@ -18,6 +18,7 @@
   持续更新中...欢迎扫描关注
 
 
-![image](https://github.com/wenjing-bonnie/image/blob/master/wechat/wechat-qcode.jpg)
-![image](wechatqcode.png)
+![image](https://github.com/wenjing-bonnie/image/raw/master/wechat/wechat-qcode.jpg)
+
+![image](公众号二维码.png)
 

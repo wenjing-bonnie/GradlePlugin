@@ -4,9 +4,8 @@ import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.*
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 
@@ -32,24 +31,24 @@ open abstract class IncrementalOnDefaultTask : DefaultTask() {
 
     @get:Incremental
     @get:InputFiles
+    //@get:PathSensitive(PathSensitivity.ABSOLUTE)
     abstract val testInputFiles: ConfigurableFileCollection
 
     @get:OutputDirectory
     @get:Incremental
     abstract val testOutputDir: DirectoryProperty
 
+    @get:Incremental
+    @get:InputFile
+    abstract val testInputFile: RegularFileProperty
+
 
     @TaskAction
     open fun runTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "running isIncremental ..." + inputChanges.isIncremental)
-        SystemPrint.outPrintln(TAG, "hasInputs = " + inputs.hasInputs)
-
-//        testFileCollection.forEach {
-//            SystemPrint.outPrintln(TAG, "collection in file  = " + it.absolutePath)
-//        }
 
         inputChanges.getFileChanges(testInputFiles).forEach {
-            SystemPrint.outPrintln(TAG, "type = " + it.changeType)
+            SystemPrint.outPrintln(TAG, "change type = " + it.changeType)
         }
     }
 

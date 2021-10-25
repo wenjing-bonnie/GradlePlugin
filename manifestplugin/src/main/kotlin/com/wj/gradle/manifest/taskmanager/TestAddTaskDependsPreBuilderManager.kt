@@ -1,6 +1,7 @@
 package com.wj.gradle.manifest.taskmanager
 
 import com.wj.gradle.manifest.tasks.IncrementalOnDefaultTask
+import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
 
@@ -25,15 +26,17 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
-        var path1 = "${project.buildDir}/test/1.txt"
-        var path2 = "${project.buildDir}/test/2.txt"
-        var path3 = "${project.buildDir}/test/3.txt"
+        SystemPrint.outPrintln(project.projectDir.absolutePath)
+        var path1 = "${project.projectDir.absolutePath}/inputs/1.txt"
+        var path2 = "${project.projectDir.absolutePath}/inputs/2.txt"
+        var path3 = "${project.projectDir.absolutePath}/inputs/3.txt"
         var sets = setOf(File(path1), File(path2))
 
 //        incremental.doFirst {
 //            SystemPrint.outPrintln("do first")
 //            sets.plus(File(path3))
 //        }
+        incremental.testInputFile.set(File(path1))
         incremental.testInputFiles.from(sets)
         incremental.testOutputDir.set(File("${project.buildDir}/outputs"))
 
