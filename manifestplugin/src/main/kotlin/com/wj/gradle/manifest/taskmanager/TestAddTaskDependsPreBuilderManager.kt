@@ -31,7 +31,7 @@ open class TestAddTaskDependsPreBuilderManager(
         )
 
         checkAndSetInputsOutputs(incremental)
-        doLastForIncrementalOnDefaultTask(incremental)
+       // doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
     }
 
@@ -46,8 +46,7 @@ open class TestAddTaskDependsPreBuilderManager(
     }
 
     private fun doLastForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
-
-        incremental.doLast() {
+        incremental.doLast {
             SystemPrint.outPrintln("do Last change the output")
             incremental.testOutFile.get().asFile.writeText("12", Charset.defaultCharset())
         }
