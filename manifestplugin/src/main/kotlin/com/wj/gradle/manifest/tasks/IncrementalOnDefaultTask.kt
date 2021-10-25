@@ -48,24 +48,24 @@ abstract class IncrementalOnDefaultTask : DefaultTask() {
     open fun runTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "running isIncremental ..." + inputChanges.isIncremental)
 
-        inputChanges.getFileChanges(testInputFiles).forEach {
-            SystemPrint.outPrintln(
-                TAG,
-                "testInputFiles file  = ${it.file.absolutePath} , change type is ${it.changeType}"
-            )
-        }
+//        inputChanges.getFileChanges(testInputFiles).forEach {
+//            SystemPrint.outPrintln(
+//                TAG,
+//                "testInputFiles file  = ${it.file.absolutePath} , change type is ${it.changeType}"
+//            )
+//        }
         inputChanges.getFileChanges(testInputFile).forEach {
             SystemPrint.outPrintln(
                 TAG,
                 "testInputFile file  = ${it.file.absolutePath} , change type is ${it.changeType}"
             )
         }
-        inputChanges.getFileChanges(testInputDir).forEach {
-            SystemPrint.outPrintln(
-                TAG,
-                "testInputDir file  = ${it.file.absolutePath} , change type is ${it.changeType}"
-            )
-        }
+//        inputChanges.getFileChanges(testInputDir).forEach {
+//            SystemPrint.outPrintln(
+//                TAG,
+//                "testInputDir file  = ${it.file.absolutePath} , change type is ${it.changeType}"
+//            )
+//        }
 
     }
 
