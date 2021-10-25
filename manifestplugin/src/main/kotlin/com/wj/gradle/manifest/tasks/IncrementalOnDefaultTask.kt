@@ -16,31 +16,32 @@ import org.gradle.work.InputChanges
  * https://docs.gradle.org/current/userguide/custom_tasks.html#sec:implementing_an_incremental_task
  * @author wenjing.liu
  */
-open abstract class IncrementalOnDefaultTask : DefaultTask() {
+abstract class IncrementalOnDefaultTask : DefaultTask() {
 
     companion object {
         const val TAG = "IncrementalOnDefaultTask"
     }
 
-    init {
-        outputs.upToDateWhen {
-            true
-        }
-        SystemPrint.errorPrintln(TAG, "init")
-    }
-
+    @get:SkipWhenEmpty
     @get:Incremental
     @get:InputFiles
     //@get:PathSensitive(PathSensitivity.ABSOLUTE)
     abstract val testInputFiles: ConfigurableFileCollection
 
-    @get:OutputDirectory
+    @get:SkipWhenEmpty
+    @get:InputDirectory
     @get:Incremental
-    abstract val testOutputDir: DirectoryProperty
+    abstract val testInputDir: DirectoryProperty
 
+    @get:SkipWhenEmpty
     @get:Incremental
     @get:InputFile
     abstract val testInputFile: RegularFileProperty
+
+    @get:SkipWhenEmpty
+    @get:OutputFile
+    @get:Incremental
+    abstract val testOutFile: RegularFileProperty
 
 
     @TaskAction
@@ -48,8 +49,24 @@ open abstract class IncrementalOnDefaultTask : DefaultTask() {
         SystemPrint.outPrintln(TAG, "running isIncremental ..." + inputChanges.isIncremental)
 
         inputChanges.getFileChanges(testInputFiles).forEach {
-            SystemPrint.outPrintln(TAG, "change type = " + it.changeType)
+            SystemPrint.outPrintln(
+                TAG,
+                "testInputFiles file  = ${it.file.absolutePath} , change type is ${it.changeType}"
+            )
         }
+        inputChanges.getFileChanges(testInputFile).forEach {
+            SystemPrint.outPrintln(
+                TAG,
+                "testInputFile file  = ${it.file.absolutePath} , change type is ${it.changeType}"
+            )
+        }
+        inputChanges.getFileChanges(testInputDir).forEach {
+            SystemPrint.outPrintln(
+                TAG,
+                "testInputDir file  = ${it.file.absolutePath} , change type is ${it.changeType}"
+            )
+        }
+
     }
 
 }
