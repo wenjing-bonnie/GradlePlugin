@@ -14,7 +14,7 @@ import javax.inject.Inject
  *
  * @author wenjing.liu
  */
-open abstract class CustomIncrementalTask : NewIncrementalTask() {
+ abstract class CustomIncrementalTask : NewIncrementalTask() {
     companion object {
         const val TAG: String = "CustomIncremental"
     }

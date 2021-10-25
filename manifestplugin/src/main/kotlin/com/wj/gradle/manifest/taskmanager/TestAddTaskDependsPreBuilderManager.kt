@@ -1,9 +1,12 @@
 package com.wj.gradle.manifest.taskmanager
 
+import com.wj.gradle.manifest.extensions.IncrementalExtension
+import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.IncrementalOnDefaultTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
+import java.nio.charset.Charset
 
 /**
  * Created by wenjing.liu on 2021/10/21 in J1.
@@ -26,20 +29,36 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
-        SystemPrint.outPrintln(project.projectDir.absolutePath)
-        var path1 = "${project.projectDir.absolutePath}/inputs/1.txt"
-        var path2 = "${project.projectDir.absolutePath}/inputs/2.txt"
-        var path3 = "${project.projectDir.absolutePath}/inputs/3.txt"
-        var sets = setOf(File(path1), File(path2))
 
-//        incremental.doFirst {
-//            SystemPrint.outPrintln("do first")
-//            sets.plus(File(path3))
-//        }
-        incremental.testInputFile.set(File(path1))
-        incremental.testInputFiles.from(sets)
-        incremental.testOutputDir.set(File("${project.buildDir}/outputs"))
-
+        checkAndSetInputsOutputs(incremental)
+        doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
+    }
+
+    /**
+     * 不做检查了，直接如果设置错误，Task就抛出异常更合理
+     */
+    private fun checkAndSetInputsOutputs(incremental: IncrementalOnDefaultTask) {
+        incremental.testInputFile.set(getIncrementalExtension().inputFile())
+        incremental.testInputFiles.from(getIncrementalExtension().inputFiles())
+        incremental.testInputDir.set(getIncrementalExtension().inputDir())
+        incremental.testOutFile.set(getIncrementalExtension().outputFile())
+    }
+
+    private fun doLastForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
+
+        incremental.doLast() {
+            SystemPrint.outPrintln("do Last change the output")
+            incremental.testOutFile.get().asFile.writeText("12", Charset.defaultCharset())
+        }
+    }
+
+
+    private fun getIncrementalExtension(): IncrementalExtension {
+        var extension = project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
+        if (extension == null) {
+            return IncrementalExtension()
+        }
+        return extension.incremental()
     }
 }

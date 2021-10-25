@@ -36,6 +36,7 @@ open class ManifestKotlinExtension(var buildTypes: NamedDomainObjectContainer<Bu
     private var buildToolVersion: String = ""
     private var defaultConfig: DefaultConfig = DefaultConfig()
     private var versionManager: File = File("")
+    private var incremental: IncrementalExtension = IncrementalExtension()
 
     /**
      * 设置版本管理文件
@@ -78,6 +79,14 @@ open class ManifestKotlinExtension(var buildTypes: NamedDomainObjectContainer<Bu
     open fun buildTypes(): NamedDomainObjectContainer<BuildType> {
         return this.buildTypes
 
+    }
+
+    open fun incremental(action: Action<IncrementalExtension>) {
+        action.execute(incremental)
+    }
+
+    open fun incremental(): IncrementalExtension {
+        return incremental
     }
 
     override fun toString(): String {

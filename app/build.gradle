@@ -25,6 +25,12 @@ manifestKotlin {
             proguardFiles file("proguard-rules.pro")
         }
     }
+    incremental {
+        inputFile file("inputs/1.txt")
+        inputFiles files("inputs")
+        inputDir file("inputs")
+        outputFile file("inputs/1.txt")
+    }
 }
 
 //第三种：监听Project配置阶段
