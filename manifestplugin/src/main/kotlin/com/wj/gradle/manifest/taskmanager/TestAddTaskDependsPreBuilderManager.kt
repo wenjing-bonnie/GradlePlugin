@@ -29,7 +29,7 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
-        doFirstForIncrementalOnDefaultTask(incremental)
+        //doFirstForIncrementalOnDefaultTask(incremental)
         checkAndSetInputsOutputs(incremental)
         // doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
