@@ -29,7 +29,7 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
-
+       // doFirstForIncrementalOnDefaultTask(incremental)
         checkAndSetInputsOutputs(incremental)
        // doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
@@ -43,6 +43,14 @@ open class TestAddTaskDependsPreBuilderManager(
         incremental.testInputFiles.from(getIncrementalExtension().inputFiles())
         incremental.testInputDir.set(getIncrementalExtension().inputDir())
         incremental.testOutFile.set(getIncrementalExtension().outputFile())
+    }
+
+    private fun doFirstForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
+        incremental.doFirst {
+            SystemPrint.outPrintln("do first change the output")
+            incremental.testInputFile.get().asFile.appendText("12", Charset.defaultCharset())
+            //incremental.testInputFiles
+        }
     }
 
     private fun doLastForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
