@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks.android
+package com.wj.gradle.manifest.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.manifest.utils.SystemPrint

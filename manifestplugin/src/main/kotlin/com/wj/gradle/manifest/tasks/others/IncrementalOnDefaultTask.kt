@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks
+package com.wj.gradle.manifest.tasks.others
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.DefaultTask

@@ -2,8 +2,8 @@ package com.wj.gradle.manifest.taskmanager
 
 import com.wj.gradle.manifest.extensions.IncrementalExtension
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
-import com.wj.gradle.manifest.tasks.android.CustomIncrementalTask
-import com.wj.gradle.manifest.tasks.IncrementalOnDefaultTask
+import com.wj.gradle.manifest.tasks.parallel.CustomIncrementalTask
+import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
