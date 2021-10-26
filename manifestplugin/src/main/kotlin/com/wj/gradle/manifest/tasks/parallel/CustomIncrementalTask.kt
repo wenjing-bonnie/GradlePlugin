@@ -1,7 +1,10 @@
 package com.wj.gradle.manifest.tasks.parallel
 
+import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.manifest.utils.SystemPrint
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.work.InputChanges
 
 /**
@@ -17,11 +20,12 @@ abstract class CustomIncrementalTask : NewIncrementalTask() {
     init {
         outputs.upToDateWhen { false }
     }
-//
-//    override val analyticsService: Property<AnalyticsService>
-//        get() =
-//
-//            project.objects.newInstance(AnalyticsService::class.javaObjectType)
+
+    @get:Internal
+    abstract val getAnalyticsService: Property<AnalyticsService>
+
+    override val analyticsService: Property<AnalyticsService>
+        get() = getAnalyticsService
 
 
     override fun doTaskAction(inputChanges: InputChanges) {
