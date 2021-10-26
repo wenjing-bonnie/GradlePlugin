@@ -48,7 +48,7 @@ open class TestAddTaskDependsPreBuilderManager(
     private fun doFirstForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
         incremental.doFirst {
             SystemPrint.outPrintln("do first change the output")
-            incremental.testInputFile.get().asFile.appendText("12", Charset.defaultCharset())
+            incremental.testInputFile.get().asFile.writeText("12", Charset.defaultCharset())
         }
     }
 
