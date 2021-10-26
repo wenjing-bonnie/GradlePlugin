@@ -1,7 +1,7 @@
 package com.wj.gradle.manifest.taskmanager
 
 import com.android.build.gradle.tasks.ProcessApplicationManifest
-import com.wj.gradle.manifest.tasks.AddExportForPackageManifestTask
+import com.wj.gradle.manifest.tasks.manifest.AddExportForPackageManifestTask
 import org.gradle.api.Project
 
 /**

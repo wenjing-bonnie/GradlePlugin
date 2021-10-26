@@ -4,8 +4,9 @@ import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.taskmanager.AddExportedTaskManager
 import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
+import com.wj.gradle.manifest.taskmanager.TestAddLazyTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.taskmanager.TestAddTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
+import com.wj.gradle.manifest.tasks.manifest.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -55,6 +56,7 @@ class ManifestKotlinProject : Plugin<Project> {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
             testNewIncrementalTask(it)
+            testLazyConfigurationTask(it)
         }
     }
 
@@ -107,5 +109,10 @@ class ManifestKotlinProject : Plugin<Project> {
     private fun testNewIncrementalTask(project: Project) {
         var testNewTask = TestAddTaskDependsPreBuilderManager(project, variantName)
         testNewTask.testIncrementalOnDefaultTask()
+    }
+
+    private fun testLazyConfigurationTask(project: Project) {
+        var testLazyTask = TestAddLazyTaskDependsPreBuilderManager(project, variantName)
+        testLazyTask.testAddLazyTaskDependsPreBuilder()
     }
 }

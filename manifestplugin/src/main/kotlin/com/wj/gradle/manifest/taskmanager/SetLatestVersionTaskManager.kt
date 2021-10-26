@@ -2,7 +2,7 @@ package com.wj.gradle.manifest.taskmanager
 
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
-import com.wj.gradle.manifest.tasks.SetLatestVersionForMergedManifestTask
+import com.wj.gradle.manifest.tasks.manifest.SetLatestVersionForMergedManifestTask
 import org.gradle.api.Project
 import java.io.File
 

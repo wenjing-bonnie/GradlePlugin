@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks
+package com.wj.gradle.manifest.tasks.manifest
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import groovy.util.Node

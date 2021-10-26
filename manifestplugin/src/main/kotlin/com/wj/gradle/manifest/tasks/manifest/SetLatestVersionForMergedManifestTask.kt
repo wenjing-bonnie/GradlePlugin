@@ -1,20 +1,13 @@
-package com.wj.gradle.manifest.tasks
+package com.wj.gradle.manifest.tasks.manifest
 
 import com.android.utils.FileUtils
-import com.android.utils.XmlUtils
 import com.wj.gradle.manifest.utils.SystemPrint
 import groovy.util.Node
 import groovy.util.XmlParser
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
-import org.gradle.api.specs.Spec
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.execution.history.changes.IncrementalInputChanges
-import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 import java.io.File
 
