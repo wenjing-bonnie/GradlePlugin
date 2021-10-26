@@ -2,10 +2,11 @@ package com.wj.gradle.manifest.taskmanager
 
 import com.wj.gradle.manifest.extensions.IncrementalExtension
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.tasks.android.CustomIncrementalTask
 import com.wj.gradle.manifest.tasks.IncrementalOnDefaultTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
-import java.io.File
+import org.gradle.api.Task
 import java.nio.charset.Charset
 
 /**
@@ -33,6 +34,17 @@ open class TestAddTaskDependsPreBuilderManager(
         checkAndSetInputsOutputs(incremental)
         // doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
+
+        //testCustomIncrementalTask(preBuild)
+    }
+
+    private fun testCustomIncrementalTask(preBuild: Task) {
+        var customIncremental = project.tasks.create(
+            CustomIncrementalTask.TAG,
+            CustomIncrementalTask::class.javaObjectType
+        )
+        customIncremental.variantName = variantName
+        preBuild.dependsOn(customIncremental)
     }
 
     /**

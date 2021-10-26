@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks
+package com.wj.gradle.manifest.tasks.android
 
 import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NonIncrementalTask
