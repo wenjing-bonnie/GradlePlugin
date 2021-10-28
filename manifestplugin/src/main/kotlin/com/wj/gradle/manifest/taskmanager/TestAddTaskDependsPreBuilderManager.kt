@@ -28,6 +28,13 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
+        var lazyTaskProvider = TestAddLazyTaskDependsPreBuilderManager(
+            project,
+            variantName
+        ).testAddLazyTaskDependsPreBuilder()
+
+        incremental.testInputDir.set(lazyTaskProvider.flatMap { it.testDirectoryProperty })
+
         //doFirstForIncrementalOnDefaultTask(incremental)
         checkAndSetInputsOutputs(incremental)
         // doLastForIncrementalOnDefaultTask(incremental)

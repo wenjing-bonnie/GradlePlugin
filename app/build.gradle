@@ -6,6 +6,9 @@ plugins {
     id 'com.mob.sdk'
 }
 
+manifestLazy {
+    lazyProperty = "1"
+}
 /**com.wj.manifest中配置的扩展属性*/
 manifestKotlin {
     versionManager file("version.xml")
@@ -32,6 +35,7 @@ manifestKotlin {
 //        outputFile file("inputs/1.txt")
 //    }
 }
+
 
 //第三种：监听Project配置阶段
 this.beforeEvaluate {

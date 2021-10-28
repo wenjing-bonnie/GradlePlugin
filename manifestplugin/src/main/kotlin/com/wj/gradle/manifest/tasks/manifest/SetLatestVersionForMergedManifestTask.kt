@@ -7,6 +7,8 @@ import groovy.util.XmlParser
 import groovy.xml.XmlUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.InputChanges
 import java.io.File
@@ -16,7 +18,7 @@ import java.io.File
  *  针对最后的Manifest文件修改versionCode和versionName
  * @author wenjing.liu
  */
-open class SetLatestVersionForMergedManifestTask : DefaultTask() {
+abstract class SetLatestVersionForMergedManifestTask : DefaultTask() {
     companion object {
         const val TAG = "SetLatestVersionForMergedManifest"
     }
@@ -52,7 +54,9 @@ open class SetLatestVersionForMergedManifestTask : DefaultTask() {
      * version code
      */
     private var versionCode: String = ""
-
+//
+//    @get:InputDirectory
+//    abstract val mergedManifestDirectory: DirectoryProperty
 
     private fun initInfo() {
         SystemPrint.errorPrintln(

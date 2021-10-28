@@ -10,6 +10,14 @@ import org.gradle.work.InputChanges
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.
  *
+ * 后面通过尝试继承com.android.build.gradle.internal.plugins.BasePlugin
+ * 看是不是可以获取到getAnalyticsService！！
+ *
+ *
+ * // Cannot query the value of task ':app:LazyConfigurationTask' property 'analyticsService' because it has no value available.
+ * @get:Internal
+ * abstract val analyticsService: Property<AnalyticsService>
+ *
  * @author wenjing.liu
  */
 abstract class CustomIncrementalTask : NewIncrementalTask() {

@@ -14,6 +14,7 @@ import org.gradle.work.InputChanges
  *
  * 测试增量编译
  * https://docs.gradle.org/current/userguide/custom_tasks.html#sec:implementing_an_incremental_task
+ * 作为customer
  * @author wenjing.liu
  */
 abstract class IncrementalOnDefaultTask : DefaultTask() {

@@ -1,7 +1,9 @@
 package com.wj.gradle.manifest
 
+import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.extensions.ManifestLazyExtension
 import com.wj.gradle.manifest.taskmanager.AddExportedTaskManager
 import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
 import com.wj.gradle.manifest.taskmanager.TestAddLazyTaskDependsPreBuilderManager
@@ -26,6 +28,7 @@ class ManifestKotlinProject : Plugin<Project> {
     override fun apply(p0: Project) {
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
+        AnalyticsService.RegistrationAction(p0).execute()
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
@@ -43,6 +46,10 @@ class ManifestKotlinProject : Plugin<Project> {
             ManifestKotlinExtension::class.javaObjectType,
             project.container(BuildType::class.javaObjectType)
         )
+        project.extensions.create(
+            ManifestLazyExtension.TAG,
+            ManifestLazyExtension::class.javaObjectType
+        )
     }
 
     /**
@@ -56,7 +63,8 @@ class ManifestKotlinProject : Plugin<Project> {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
             testNewIncrementalTask(it)
-            testLazyConfigurationTask(it)
+            //testLazyConfigurationTask(it)
+            testLazyExtension(it)
         }
     }
 
@@ -114,5 +122,11 @@ class ManifestKotlinProject : Plugin<Project> {
     private fun testLazyConfigurationTask(project: Project) {
         var testLazyTask = TestAddLazyTaskDependsPreBuilderManager(project, variantName)
         testLazyTask.testAddLazyTaskDependsPreBuilder()
+    }
+
+    private fun testLazyExtension(project: Project) {
+        var lazyExtension =
+            project.extensions.findByType(ManifestLazyExtension::class.javaObjectType)
+        SystemPrint.outPrintln(lazyExtension?.lazyProperty?.get().toString())
     }
 }
