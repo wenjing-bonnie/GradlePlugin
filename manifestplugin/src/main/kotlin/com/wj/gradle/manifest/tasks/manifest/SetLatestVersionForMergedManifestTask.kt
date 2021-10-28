@@ -54,7 +54,8 @@ abstract class SetLatestVersionForMergedManifestTask : DefaultTask() {
      * version code
      */
     private var versionCode: String = ""
-//
+
+    //
 //    @get:InputDirectory
 //    abstract val mergedManifestDirectory: DirectoryProperty
 
