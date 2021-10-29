@@ -28,15 +28,9 @@ open class TestAddTaskDependsPreBuilderManager(
             IncrementalOnDefaultTask.TAG,
             IncrementalOnDefaultTask::class.javaObjectType
         )
-        var lazyTaskProvider = TestAddLazyTaskDependsPreBuilderManager(
-            project,
-            variantName
-        ).testAddLazyTaskDependsPreBuilder()
-
-        incremental.testInputDir.set(lazyTaskProvider.flatMap { it.testDirectoryProperty })
 
         //doFirstForIncrementalOnDefaultTask(incremental)
-        checkAndSetInputsOutputs(incremental)
+        setInputsOutputs(incremental)
         // doLastForIncrementalOnDefaultTask(incremental)
         preBuild.dependsOn(incremental)
     }
@@ -44,11 +38,20 @@ open class TestAddTaskDependsPreBuilderManager(
     /**
      * 不做检查了，直接如果设置错误，Task就抛出异常更合理
      */
-    private fun checkAndSetInputsOutputs(incremental: IncrementalOnDefaultTask) {
+    private fun setInputsOutputs(incremental: IncrementalOnDefaultTask) {
         incremental.testInputFile.set(getIncrementalExtension().inputFile())
         incremental.testInputFiles.from(getIncrementalExtension().inputFiles())
-        incremental.testInputDir.set(getIncrementalExtension().inputDir())
+        //incremental.testInputDir.set(getIncrementalExtension().inputDir())
         incremental.testOutFile.set(getIncrementalExtension().outputFile())
+        //代替从Extension中赋值
+        var lazyTaskProvider = TestAddLazyTaskDependsPreBuilderManager(
+            project,
+            variantName
+        ).testAddLazyTaskDependsPreBuilder()
+
+        incremental.testInputDir.set(lazyTaskProvider.flatMap {
+            it.testDirectoryProperty
+        })
     }
 
     private fun doFirstForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {

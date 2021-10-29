@@ -64,7 +64,7 @@ class ManifestKotlinProject : Plugin<Project> {
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
             testNewIncrementalTask(it)
             //testLazyConfigurationTask(it)
-            testLazyExtension(it)
+            //testLazyExtension(it)
         }
     }
 

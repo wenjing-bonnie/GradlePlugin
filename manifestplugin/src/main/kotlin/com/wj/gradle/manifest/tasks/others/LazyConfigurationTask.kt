@@ -2,18 +2,21 @@ package com.wj.gradle.manifest.tasks.others
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
-import javax.inject.Inject
 
 /**
  * Created by wenjing.liu on 2021/10/26 in J1.
  * 测试懒加载
  * 作为producer
+ * TODO 对扩展属性的优化！！！
  * https://docs.gradle.org/current/userguide/lazy_configuration.html#working_with_files_in_lazy_properties
  * @author wenjing.liu
  */
@@ -50,40 +53,64 @@ abstract class LazyConfigurationTask : DefaultTask() {
      */
     var testObjectFactory: Property<String> = project.objects.property(String::class.javaObjectType)
 
-    //特殊的Property
+    //特殊的Property.
     //第一种：通过@get:xxx
-    @get:OutputDirectory
+    @get:OutputDirectory //这个不能改掉,此时该属性为producer
     abstract val testDirectoryProperty: DirectoryProperty
 
     //第二种:通过ObjectFactory
-    var testRegularFilePropertyFromFactory: RegularFileProperty = project.objects.fileProperty()
+    var testRegularFileProperty: RegularFileProperty = project.objects.fileProperty()
 
+    //跟File相关的
+    @get:InputFiles
+    abstract val testFileCollection: ConfigurableFileCollection
 
-    /**
-     * 对扩展属性的优化！！！
-     */
+//    @get:OutputFiles
+//    var testFileTreeProperty: ConfigurableFileTree = project.objects.fileTree()
+
+    //集合相关
+    @get:Input
+    abstract val testListProperty: ListProperty<String>
+
+    var testSetProperty: SetProperty<String> =
+        project.objects.setProperty(String::class.javaObjectType)
+    //maps相关
 
 
     @TaskAction
     open fun runTaskAction() {
-//        testRegularFilePropertyFromFactory.map {
-//
-//        }
-
         SystemPrint.outPrintln(TAG, "running !!!!")
         // SystemPrint.outPrintln(TAG, "test analytics \n" + analyticsService.get())
+        printGenericProperty()
+        printFileProperty()
+        printCollectionProperty()
+
+    }
+
+    private fun printGenericProperty() {
         SystemPrint.outPrintln(TAG, "test Property is " + testProperty.get())
         SystemPrint.outPrintln(TAG, "test Provider is " + testProvider.get())
         SystemPrint.outPrintln(TAG, "test ObjectFactory is " + testObjectFactory.get())
+    }
+
+    private fun printFileProperty() {
         SystemPrint.outPrintln(
             TAG,
             "test DirectoryProperty is = " + testDirectoryProperty.get().asFile.absolutePath
         )
         SystemPrint.outPrintln(
             TAG,
-            "test RegularFilePropertyFromFactory is = " + testRegularFilePropertyFromFactory.get().asFile.absolutePath
+            "test RegularFilePropertyFromFactory is = " + testRegularFileProperty.get().asFile.absolutePath
         )
+    }
 
-        testDirectoryProperty.asFileTree
+    private fun printCollectionProperty() {
+        testListProperty.get().forEach {
+            SystemPrint.outPrintln(TAG, "${it} in list property")
+        }
+        testSetProperty.get().forEach {
+            SystemPrint.outPrintln(TAG, "${it} in set property")
+
+        }
     }
 }
