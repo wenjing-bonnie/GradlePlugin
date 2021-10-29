@@ -6,6 +6,7 @@ import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.work.InputChanges
+import javax.naming.spi.ObjectFactory
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.
@@ -18,6 +19,8 @@ import org.gradle.work.InputChanges
  * @get:Internal
  * abstract val analyticsService: Property<AnalyticsService>
  *
+ * 可通过这种方式对这个属性值进行赋值
+ * customIncremental.analyticsService.set(AnalyticsService.RegistrationAction(project).execute())
  * @author wenjing.liu
  */
 abstract class CustomIncrementalTask : NewIncrementalTask() {
@@ -31,9 +34,6 @@ abstract class CustomIncrementalTask : NewIncrementalTask() {
 
     @get:Internal
     abstract val getAnalyticsService: Property<AnalyticsService>
-
-    override val analyticsService: Property<AnalyticsService>
-        get() = getAnalyticsService
 
 
     override fun doTaskAction(inputChanges: InputChanges) {

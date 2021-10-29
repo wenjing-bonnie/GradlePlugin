@@ -10,8 +10,8 @@ import com.wj.gradle.manifest.taskmanager.TestAddLazyTaskDependsPreBuilderManage
 import com.wj.gradle.manifest.taskmanager.TestAddTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.tasks.manifest.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
-import org.gradle.api.Plugin
 import org.gradle.api.Project
+import com.android.build.gradle.BasePlugin
 import java.util.regex.Pattern
 
 /**
@@ -19,7 +19,7 @@ import java.util.regex.Pattern
  * 插件入口类
  * @author wenjing.liu
  */
-class ManifestKotlinProject : Plugin<Project> {
+class ManifestKotlinProject : BasePlugin() {
     /**
      * variant name
      */

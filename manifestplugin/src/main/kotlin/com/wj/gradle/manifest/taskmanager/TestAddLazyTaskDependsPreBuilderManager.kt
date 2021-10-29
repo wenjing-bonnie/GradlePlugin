@@ -1,5 +1,6 @@
 package com.wj.gradle.manifest.taskmanager
 
+import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.extensions.IncrementalExtension
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
 import com.wj.gradle.manifest.tasks.others.LazyConfigurationTask
@@ -78,16 +79,6 @@ open class TestAddLazyTaskDependsPreBuilderManager(var project: Project, var var
     private fun setMapsProperty(lazyTask: LazyConfigurationTask) {
         lazyTask.testMapsProperty.put("key1", 1)
         lazyTask.testMapsProperty.put("key2", project.providers.provider { 2 })
-    }
-
-
-    private fun testCustomIncrementalTask(preBuild: Task) {
-        var customIncremental = project.tasks.create(
-            CustomIncrementalTask.TAG,
-            CustomIncrementalTask::class.javaObjectType
-        )
-        customIncremental.variantName = variantName
-        preBuild.dependsOn(customIncremental)
     }
 
     private fun getIncrementalExtension(): IncrementalExtension {
