@@ -64,11 +64,11 @@ open class TestAddLazyTaskDependsPreBuilderManager(var project: Project, var var
      */
     private fun setCollectionProperty(lazyTask: LazyConfigurationTask) {
 
-        lazyTask.testListProperty.add("list property 1")
-        lazyTask.testListProperty.add("list property 2")
+        lazyTask.testListProperty.add("property 1")
+        lazyTask.testListProperty.add("property 2")
 
-        lazyTask.testSetProperty.add("set property 1")
-        lazyTask.testSetProperty.add("set property 2")
+        lazyTask.testSetProperty.add("property 1")
+        lazyTask.testSetProperty.add("property 2")
 
     }
 
@@ -76,7 +76,8 @@ open class TestAddLazyTaskDependsPreBuilderManager(var project: Project, var var
      * maps类型
      */
     private fun setMapsProperty(lazyTask: LazyConfigurationTask) {
-
+        lazyTask.testMapsProperty.put("key1", 1)
+        lazyTask.testMapsProperty.put("key2", project.providers.provider { 2 })
     }
 
 

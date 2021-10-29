@@ -6,10 +6,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
+import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 
 /**
@@ -69,12 +66,15 @@ abstract class LazyConfigurationTask : DefaultTask() {
 //    var testFileTreeProperty: ConfigurableFileTree = project.objects.fileTree()
 
     //集合相关
-    @get:Input
+    @get:Internal
     abstract val testListProperty: ListProperty<String>
 
     var testSetProperty: SetProperty<String> =
         project.objects.setProperty(String::class.javaObjectType)
+
     //maps相关
+    var testMapsProperty: MapProperty<String, Int> =
+        project.objects.mapProperty(String::class.javaObjectType, Int::class.javaObjectType)
 
 
     @TaskAction
@@ -84,7 +84,7 @@ abstract class LazyConfigurationTask : DefaultTask() {
         printGenericProperty()
         printFileProperty()
         printCollectionProperty()
-
+        printMapsProperty()
     }
 
     private fun printGenericProperty() {
@@ -111,6 +111,15 @@ abstract class LazyConfigurationTask : DefaultTask() {
         testSetProperty.get().forEach {
             SystemPrint.outPrintln(TAG, "${it} in set property")
 
+        }
+    }
+
+    private fun printMapsProperty() {
+        testMapsProperty.get().forEach { key, value ->
+            SystemPrint.outPrintln(
+                TAG,
+                "key is ${key} , value is ${value}"
+            )
         }
     }
 }
