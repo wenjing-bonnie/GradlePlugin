@@ -6,9 +6,6 @@ plugins {
     id 'com.mob.sdk'
 }
 
-manifestLazy {
-    lazyProperty = "1"
-}
 /**com.wj.manifest中配置的扩展属性*/
 manifestKotlin {
     versionManager file("version.xml")
@@ -28,12 +25,12 @@ manifestKotlin {
             proguardFiles file("proguard-rules.pro")
         }
     }
-    incremental {
-        inputFile file("inputs/1.txt")
-        inputFiles files("inputs")
-        inputDir file("inputs")
-        outputFile file("inputs/1.txt")
-    }
+//    incremental {
+//        inputFile file("inputs/1.txt")
+//        inputFiles files("inputs")
+//        inputDir file("inputs")
+//        outputFile file("inputs/1.txt")
+//    }
 }
 
 

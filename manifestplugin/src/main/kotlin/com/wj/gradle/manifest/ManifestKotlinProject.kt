@@ -3,15 +3,12 @@ package com.wj.gradle.manifest
 import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
-import com.wj.gradle.manifest.extensions.ManifestLazyExtension
 import com.wj.gradle.manifest.taskmanager.AddExportedTaskManager
 import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
-import com.wj.gradle.manifest.taskmanager.TestAddLazyTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.taskmanager.TestAddTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.tasks.manifest.SetLatestVersionForMergedManifestTask
 import com.wj.gradle.manifest.utils.SystemPrint
+import org.gradle.api.Plugin
 import org.gradle.api.Project
-import com.android.build.gradle.BasePlugin
 import java.util.regex.Pattern
 
 /**
@@ -19,7 +16,7 @@ import java.util.regex.Pattern
  * 插件入口类
  * @author wenjing.liu
  */
-class ManifestKotlinProject : BasePlugin() {
+class ManifestKotlinProject :Plugin<Project> {
     /**
      * variant name
      */
@@ -28,7 +25,6 @@ class ManifestKotlinProject : BasePlugin() {
     override fun apply(p0: Project) {
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
-        AnalyticsService.RegistrationAction(p0).execute()
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
@@ -46,10 +42,6 @@ class ManifestKotlinProject : BasePlugin() {
             ManifestKotlinExtension::class.javaObjectType,
             project.container(BuildType::class.javaObjectType)
         )
-        project.extensions.create(
-            ManifestLazyExtension.TAG,
-            ManifestLazyExtension::class.javaObjectType
-        )
     }
 
     /**
@@ -62,9 +54,6 @@ class ManifestKotlinProject : BasePlugin() {
         project.afterEvaluate {
             addExportForPackageManifestAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
-            testNewIncrementalTask(it)
-            //testLazyConfigurationTask(it)
-            //testLazyExtension(it)
         }
     }
 
@@ -109,24 +98,5 @@ class ManifestKotlinProject : BasePlugin() {
             return false
         }
         return true
-    }
-
-    /**
-     * 用来测试
-     */
-    private fun testNewIncrementalTask(project: Project) {
-        var testNewTask = TestAddTaskDependsPreBuilderManager(project, variantName)
-        testNewTask.testIncrementalOnDefaultTask()
-    }
-
-    private fun testLazyConfigurationTask(project: Project) {
-        var testLazyTask = TestAddLazyTaskDependsPreBuilderManager(project, variantName)
-        testLazyTask.testAddLazyTaskDependsPreBuilder()
-    }
-
-    private fun testLazyExtension(project: Project) {
-        var lazyExtension =
-            project.extensions.findByType(ManifestLazyExtension::class.javaObjectType)
-        SystemPrint.outPrintln(lazyExtension?.lazyProperty?.get().toString())
     }
 }

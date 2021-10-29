@@ -86,3 +86,5 @@ void systemPrintln(String info) {
         println("<= settings.build => " + info)
     }
 }
+
+include ':seniorapplicationplugin'
