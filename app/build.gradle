@@ -1,9 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'com.wj.manifest'
-    //测试Android 12 的适配
+    //验证Android 12 的适配
     id 'com.mob.sdk'
+    //对manifest进行exported适配及version管理
+    id 'com.wj.manifest'
+    //gradle plugin高级进阶
+    id 'com.wj.seniorapplication'
 }
 
 /**com.wj.manifest中配置的扩展属性*/

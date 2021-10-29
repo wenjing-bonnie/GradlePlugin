@@ -22,6 +22,7 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath "com.wj.gradle.plugins:manifestplugin:1.0.0"
+        classpath "com.wj.gradle.plugins:seniorapplicationplugin:1.0.0"
         // 注册MobSDK
         classpath 'com.mob.sdk:MobSDK:+'
     }
