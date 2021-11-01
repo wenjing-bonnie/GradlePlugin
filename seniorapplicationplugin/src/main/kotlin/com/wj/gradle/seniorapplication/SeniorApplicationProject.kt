@@ -4,6 +4,7 @@ import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.taskmanager.AddLazyTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.taskmanager.AddTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.taskmanager.AddTaskByLazyConfigurationManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
@@ -70,6 +71,11 @@ open class SeniorApplicationProject : Plugin<Project> {
     private fun addLazyConfigurationTaskAfterEvaluate(project: Project) {
         val lazyManager = AddLazyTaskDependsPreBuilderManager(project, variantName)
         lazyManager.testAddLazyTaskDependsPreBuilder()
+    }
+
+    private fun addTaskByLazyConfigurationAfterEvaluate(project: Project){
+        val lazyConfigurationManager = AddTaskByLazyConfigurationManager(project,variantName)
+        lazyConfigurationManager.testAddTaskByLazyConfiguration()
     }
 
 
