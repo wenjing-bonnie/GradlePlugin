@@ -1,7 +1,7 @@
 package com.wj.gradle.manifest.taskmanager
 
 import com.wj.gradle.manifest.extensions.IncrementalExtension
-import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
@@ -14,7 +14,7 @@ import java.nio.charset.Charset
  *
  * @author wenjing.liu
  */
-open class TestAddTaskDependsPreBuilderManager(
+open class AddTaskDependsPreBuilderManager(
     var project: Project,
     var variantName: String
 ) {
@@ -44,7 +44,7 @@ open class TestAddTaskDependsPreBuilderManager(
         //incremental.testInputDir.set(getIncrementalExtension().inputDir())
         incremental.testOutFile.set(getIncrementalExtension().outputFile())
         //代替从Extension中赋值
-        var lazyTaskProvider = TestAddLazyTaskDependsPreBuilderManager(
+        var lazyTaskProvider = AddLazyTaskDependsPreBuilderManager(
             project,
             variantName
         ).testAddLazyTaskDependsPreBuilder()
@@ -70,7 +70,7 @@ open class TestAddTaskDependsPreBuilderManager(
 
 
     private fun getIncrementalExtension(): IncrementalExtension {
-        var extension = project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
+        var extension = project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
         if (extension == null) {
             return IncrementalExtension()
         }

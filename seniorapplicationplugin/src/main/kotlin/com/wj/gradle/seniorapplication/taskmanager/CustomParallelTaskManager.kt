@@ -11,7 +11,7 @@ import org.gradle.api.Task
  * 验证并行Task
  * @author wenjing.liu
  */
-open class TestCustomParallelTaskManager(var project: Project, var variantName: String) {
+open class CustomParallelTaskManager(var project: Project, var variantName: String) {
 
     private fun testCustomIncrementalTask(preBuild: Task) {
         var customIncremental = project.tasks.create(

@@ -1,13 +1,9 @@
 package com.wj.gradle.manifest.taskmanager
 
-import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.extensions.IncrementalExtension
-import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.tasks.others.LazyConfigurationTask
-import com.wj.gradle.manifest.tasks.parallel.CustomIncrementalTask
-import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 
@@ -16,7 +12,7 @@ import java.io.File
  *
  * @author wenjing.liu
  */
-open class TestAddLazyTaskDependsPreBuilderManager(var project: Project, var variantName: String) {
+open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variantName: String) {
 
     open fun testAddLazyTaskDependsPreBuilder(): TaskProvider<LazyConfigurationTask> {
         val lazyTaskProvider = project.tasks.register(
@@ -82,7 +78,7 @@ open class TestAddLazyTaskDependsPreBuilderManager(var project: Project, var var
     }
 
     private fun getIncrementalExtension(): IncrementalExtension {
-        var extension = project.extensions.findByType(ManifestKotlinExtension::class.javaObjectType)
+        var extension = project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
         if (extension == null) {
             return IncrementalExtension()
         }

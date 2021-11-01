@@ -47,4 +47,11 @@ open class IncrementalExtension {
     open fun outputFile(): File? {
         return this.outputFile
     }
+
+    override fun toString(): String {
+        return "inputFile path is \n ${inputFile()?.absoluteFile}\n" +
+                "inputFiles size is \n ${inputFiles()?.files?.size}\n" +
+                "inputDir path is \n ${inputDir()?.absoluteFile}\n" +
+                "outputFile path is \n ${outputFile()?.absoluteFile}\n"
+    }
 }

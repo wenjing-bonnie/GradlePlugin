@@ -88,3 +88,4 @@ void systemPrintln(String info) {
 }
 
 include ':seniorapplicationplugin'
+include ':wjbaseplugin'

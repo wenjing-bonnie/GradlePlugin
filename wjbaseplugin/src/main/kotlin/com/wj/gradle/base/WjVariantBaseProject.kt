@@ -1,19 +1,16 @@
-package com.wj.gradle.seniorapplication
+package com.wj.gradle.base
 
-import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
-import com.wj.gradle.manifest.taskmanager.AddLazyTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.taskmanager.AddTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
+import com.wj.gradle.base.utils.SystemPrint
 
 /**
  * Created by wenjing.liu on 2021/10/29 in J1.
- * 专门自定义Gradle 高级进阶
+ * 自定义Gradle Plugin的基工程
  * @author wenjing.liu
  */
-open class SeniorApplicationProject : Plugin<Project> {
+abstract class WjVariantBaseProject : Plugin<Project> {
 
     /**
      * variant name
@@ -26,7 +23,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
-        SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
+        SystemPrint.outPrintln("Welcome ${javaClass.simpleName}}")
         addTasksForVariantAfterEvaluate(p0)
     }
 
@@ -34,12 +31,13 @@ open class SeniorApplicationProject : Plugin<Project> {
      * 创建属性扩展
      * @param project
      */
-    private fun createExtension(project: Project) {
-        project.extensions.create(
-            SeniorLazyKotlinExtension.TAG,
-            SeniorLazyKotlinExtension::class.javaObjectType
-        )
-    }
+    abstract fun createExtension(project: Project)
+
+    /**
+     * 在项目配置完之后添加自定义的Task
+     * @param project
+     */
+    abstract fun addTasksForVariantAfterEvaluate(project: Project, variantName: String)
 
     /**
      * 在项目配置完之后添加自定义的Task
@@ -49,29 +47,9 @@ open class SeniorApplicationProject : Plugin<Project> {
 
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            addIncrementalOnDefaultTaskAfterEvaluate(it)
-            addLazyConfigurationTaskAfterEvaluate(it)
+            addTasksForVariantAfterEvaluate(project, variantName)
         }
     }
-
-    /**
-     *增量编译的Task
-     * @param project
-     */
-    private fun addIncrementalOnDefaultTaskAfterEvaluate(project: Project) {
-        val incrementalManager = AddTaskDependsPreBuilderManager(project, variantName)
-        incrementalManager.testIncrementalOnDefaultTask()
-    }
-
-    /**
-     * lazy configuration task
-     * @param project
-     */
-    private fun addLazyConfigurationTaskAfterEvaluate(project: Project) {
-        val lazyManager = AddLazyTaskDependsPreBuilderManager(project, variantName)
-        lazyManager.testAddLazyTaskDependsPreBuilder()
-    }
-
 
     /**
      * 在build过程中获取variant name,需要注意这种方法不适用于sync.
