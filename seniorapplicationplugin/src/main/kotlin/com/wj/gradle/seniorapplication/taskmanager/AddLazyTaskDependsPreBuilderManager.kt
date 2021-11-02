@@ -12,6 +12,9 @@ import java.io.File
  */
 open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variantName: String) {
 
+    /**
+     * 测试添加[LazyConfigurationTask]
+     */
     open fun testAddLazyTaskDependsPreBuilder(): TaskProvider<LazyConfigurationTask> {
         val lazyTaskProvider = project.tasks.register(
             LazyConfigurationTask.TAG,

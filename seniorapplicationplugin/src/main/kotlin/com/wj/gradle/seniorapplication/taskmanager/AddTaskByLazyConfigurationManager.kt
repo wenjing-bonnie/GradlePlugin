@@ -14,6 +14,9 @@ import org.gradle.api.tasks.TaskProvider
  */
 open class AddTaskByLazyConfigurationManager(var project: Project, var variantName: String) {
 
+    /**
+     * 测试添加[LazyProducerTask]和[LazyConsumerTask]
+     */
     open fun testAddTaskByLazyConfiguration() {
         val preBuildProvider = project.tasks.named("preBuild")
 
