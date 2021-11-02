@@ -21,9 +21,13 @@ abstract class LazyConfigurationTask : DefaultTask() {
         const val TAG = "LazyConfigurationTask"
     }
 
+    init {
+    }
+
 
     //这种方式无法获取到analyticsService，报错信息如下：
     // Cannot query the value of task ':app:LazyConfigurationTask' property 'analyticsService' because it has no value available.
+    // 解决方案：必须在实例化该实例的时候，对该属性赋值
 //    @get:Internal
 //    abstract val analyticsService: Property<AnalyticsService>
     //这种方式无法获取到analyticsService，报错信息如下：
@@ -51,7 +55,7 @@ abstract class LazyConfigurationTask : DefaultTask() {
 
     //特殊的Property.
     //第一种：通过@get:xxx
-    @get:OutputDirectory //这个不能改掉,此时该属性为producer
+    @get:InputDirectory
     abstract val testDirectoryProperty: DirectoryProperty
 
     //第二种:通过ObjectFactory

@@ -10,6 +10,8 @@ import org.gradle.work.InputChanges
 /**
  * Created by wenjing.liu on 2021/11/1 in J1.
  * 消费Task
+ * TODO  当有超过2个的inputs或者outputs时@get:SkipWhenEmpty失效,超过2个加载属性会抛出异常
+ * TODO  并且仅在全都配置值的时候才起作用, 如果Customer为NO-SOURCE不执行,producer也不执行
  *
  * @author wenjing.liu
  */

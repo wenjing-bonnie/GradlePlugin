@@ -2,7 +2,7 @@ package com.wj.gradle.seniorapplication
 
 import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.taskmanager.AddLazyTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.taskmanager.AddTaskDependsPreBuilderManager
+import com.wj.gradle.manifest.taskmanager.AddIncrementalTaskDependsPreBuildManager
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.taskmanager.AddTaskByLazyConfigurationManager
 import org.gradle.api.Plugin
@@ -52,6 +52,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         project.afterEvaluate {
             addIncrementalOnDefaultTaskAfterEvaluate(it)
             addLazyConfigurationTaskAfterEvaluate(it)
+            addTaskByLazyConfigurationAfterEvaluate(it)
         }
     }
 
@@ -60,7 +61,7 @@ open class SeniorApplicationProject : Plugin<Project> {
      * @param project
      */
     private fun addIncrementalOnDefaultTaskAfterEvaluate(project: Project) {
-        val incrementalManager = AddTaskDependsPreBuilderManager(project, variantName)
+        val incrementalManager = AddIncrementalTaskDependsPreBuildManager(project, variantName)
         incrementalManager.testIncrementalOnDefaultTask()
     }
 

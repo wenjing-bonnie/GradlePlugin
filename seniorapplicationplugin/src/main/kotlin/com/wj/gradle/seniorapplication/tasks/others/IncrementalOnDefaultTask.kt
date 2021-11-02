@@ -45,8 +45,7 @@ abstract class IncrementalOnDefaultTask : DefaultTask() {
     @get:Incremental
     abstract val testInputDir: DirectoryProperty
 
-    //TODO  当有超过2个的inputs或者outputs时@get:SkipWhenEmpty失效,超过2个加载属性会抛出异常
-    //TODO  并且仅在全都配置值的时候才起作用, 如果Customer为NO-SOURCE不执行,producer也不执行
+
 
     @TaskAction
     open fun runTaskAction(inputChanges: InputChanges) {

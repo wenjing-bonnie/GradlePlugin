@@ -2,6 +2,7 @@ package com.wj.gradle.manifest.taskmanager
 
 import com.wj.gradle.manifest.extensions.IncrementalExtension
 import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
+import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
@@ -28,8 +29,8 @@ open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variant
         setMapsProperty(lazyTask)
 
         //通过inputs和outputs代替这种方式，直接使用Provider.flatMap{}方式添加Task依赖
-        //var preBuild = project.tasks.getByName("preBuild")
-        //preBuild.dependsOn(lazyTask)
+        var preBuild = project.tasks.getByName("preBuild")
+        preBuild.dependsOn(lazyTask)
         return lazyTaskProvider
 
     }
@@ -48,7 +49,7 @@ open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variant
      */
     private fun setFileProperty(lazyTask: LazyConfigurationTask) {
         var inputsDirectory = File("${project.projectDir.absoluteFile}/inputs")
-        lazyTask.testDirectoryProperty.set(getIncrementalExtension().inputDir())
+        lazyTask.testDirectoryProperty.set(inputsDirectory)
 
         var provider = project.layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
         lazyTask.testRegularFileProperty.set(provider)
@@ -77,11 +78,4 @@ open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variant
         lazyTask.testMapsProperty.put("key2", project.providers.provider { 2 })
     }
 
-    private fun getIncrementalExtension(): IncrementalExtension {
-        var extension = project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
-        if (extension == null) {
-            return IncrementalExtension()
-        }
-        return extension.incremental()
-    }
 }

@@ -14,7 +14,7 @@ import java.nio.charset.Charset
  *
  * @author wenjing.liu
  */
-open class AddTaskDependsPreBuilderManager(
+open class AddIncrementalTaskDependsPreBuildManager(
     var project: Project,
     var variantName: String
 ) {
@@ -41,17 +41,8 @@ open class AddTaskDependsPreBuilderManager(
     private fun setInputsOutputs(incremental: IncrementalOnDefaultTask) {
         incremental.testInputFile.set(getIncrementalExtension().inputFile())
         incremental.testInputFiles.from(getIncrementalExtension().inputFiles())
-        //incremental.testInputDir.set(getIncrementalExtension().inputDir())
+        incremental.testInputDir.set(getIncrementalExtension().inputDir())
         incremental.testOutFile.set(getIncrementalExtension().outputFile())
-        //代替从Extension中赋值
-        var lazyTaskProvider = AddLazyTaskDependsPreBuilderManager(
-            project,
-            variantName
-        ).testAddLazyTaskDependsPreBuilder()
-
-        incremental.testInputDir.set(lazyTaskProvider.flatMap {
-            it.testDirectoryProperty
-        })
     }
 
     private fun doFirstForIncrementalOnDefaultTask(incremental: IncrementalOnDefaultTask) {
