@@ -1,11 +1,11 @@
 package com.wj.gradle.seniorapplication.tasks.lazy
 
+import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
 
 /**
@@ -20,13 +20,19 @@ abstract class LazyProducerTask : BaseTask() {
     }
 
     @get:SkipWhenEmpty
-    @get:OutputDirectory
-    abstract val testLazyOutputDirectory: DirectoryProperty
+    @get:OutputFile
+    abstract val testLazyOutputDirectory: RegularFileProperty
 
     @get:InputFile
     @get:SkipWhenEmpty
-    abstract val testInput: RegularFileProperty
+    abstract val testInputFile: RegularFileProperty
 
-    override fun funIncrementalTaskAction(inputChanges: InputChanges) {
+    @get:SkipWhenEmpty
+    @get:InputFiles
+    abstract val testInputFileCollection: ConfigurableFileCollection
+
+    override fun incrementalTaskAction(inputChanges: InputChanges) {
+
+        SystemPrint.outPrintln(TAG, "output \n" + testLazyOutputDirectory.get().asFile.absolutePath)
     }
 }

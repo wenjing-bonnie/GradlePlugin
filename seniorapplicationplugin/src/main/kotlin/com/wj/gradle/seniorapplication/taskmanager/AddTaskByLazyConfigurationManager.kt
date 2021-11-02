@@ -1,8 +1,12 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
+import com.wj.gradle.manifest.extensions.IncrementalExtension
+import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
+import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConsumerTask
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 
 /**
  * Created by wenjing.liu on 2021/11/1 in J1.
@@ -19,8 +23,31 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
         val producerProvider =
             project.tasks.register(LazyProducerTask.TAG, LazyProducerTask::class.javaObjectType)
 
+        setProducerInputProperty(producerProvider.get())
+        setConsumerInputProperty(consumerTaskProvider.get(), producerProvider)
         preBuildProvider.get().dependsOn(producerProvider.get())
+    }
 
-        consumerTaskProvider.get().testLazyInputDirectory.set(producerProvider.flatMap { it.testLazyOutputDirectory })
+    private fun setProducerInputProperty(producerTask: LazyProducerTask) {
+        producerTask.testInputFile.set(getIncrementalExtension().inputFile())
+        producerTask.testLazyOutputDirectory.set(getIncrementalExtension().inputFile())
+    }
+
+    private fun setConsumerInputProperty(
+        consumerTask: LazyConsumerTask,
+        producerTask: TaskProvider<LazyProducerTask>
+    ) {
+        consumerTask.testLazyInputDirectory.set(producerTask.flatMap { it.testLazyOutputDirectory })
+        SystemPrint.outPrintln("134", consumerTask.testLazyInputDirectory.get().asFile.absolutePath)
+
+    }
+
+    private fun getIncrementalExtension(): IncrementalExtension {
+        var extension =
+            project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
+        if (extension == null) {
+            return IncrementalExtension()
+        }
+        return extension.incremental()
     }
 }

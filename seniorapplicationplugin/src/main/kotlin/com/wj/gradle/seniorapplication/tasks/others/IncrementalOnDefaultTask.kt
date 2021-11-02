@@ -34,7 +34,6 @@ abstract class IncrementalOnDefaultTask : DefaultTask() {
     @get:InputFile
     abstract val testInputFile: RegularFileProperty
 
-    //
     @get:SkipWhenEmpty
     @get:OutputFile
     @get:Incremental
@@ -44,7 +43,6 @@ abstract class IncrementalOnDefaultTask : DefaultTask() {
     @get:InputDirectory
     @get:Incremental
     abstract val testInputDir: DirectoryProperty
-
 
 
     @TaskAction

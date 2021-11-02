@@ -1,7 +1,6 @@
 package com.wj.gradle.seniorapplication.tasks
 
 import com.wj.gradle.manifest.utils.SystemPrint
-import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.InputChanges
@@ -13,13 +12,13 @@ import org.gradle.work.InputChanges
  */
 abstract class BaseTask : DefaultTask() {
 
-    abstract fun funIncrementalTaskAction(inputChanges: InputChanges)
+    abstract fun incrementalTaskAction(inputChanges: InputChanges)
 
     @TaskAction
     open fun runTaskAction(inputChanges: InputChanges) {
 
         SystemPrint.outPrintln(javaClass.simpleName, "Lazy producer is running")
-        funIncrementalTaskAction(inputChanges)
+        incrementalTaskAction(inputChanges)
     }
 
 }
