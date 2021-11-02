@@ -1,6 +1,5 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.IncrementalExtension
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConsumerTask
@@ -10,7 +9,7 @@ import org.gradle.api.tasks.TaskProvider
 
 /**
  * Created by wenjing.liu on 2021/11/1 in J1.
- *
+ * 通过懒加载配置添加producerTask
  * @author wenjing.liu
  */
 open class AddTaskByLazyConfigurationManager(var project: Project, var variantName: String) {
@@ -43,8 +42,6 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
         //connect producer task output to consumer task input
         //do not need to add a task dependency to the consumer task
         consumerTask.testLazyInputDirectory.set(producerTask.flatMap { it.testLazyOutputDirectory })
-        SystemPrint.outPrintln("134", consumerTask.testLazyInputDirectory.get().asFile.absolutePath)
-
     }
 
     private fun getIncrementalExtension(): IncrementalExtension {

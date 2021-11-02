@@ -38,6 +38,7 @@ seniorApplicationKotlin {
         inputDir file("inputs")
         outputFile file("inputs/1.txt")
     }
+    lazyExtensionProperty = file("inputs/1.txt")
 }
 
 

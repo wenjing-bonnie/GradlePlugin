@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.taskmanager
+package com.wj.gradle.seniorapplication.taskmanager
 
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 import org.gradle.api.Project
@@ -7,7 +7,7 @@ import java.io.File
 
 /**
  * Created by wenjing.liu on 2021/10/26 in J1.
- *
+ * 懒加载配置属性
  * @author wenjing.liu
  */
 open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variantName: String) {

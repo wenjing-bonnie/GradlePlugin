@@ -1,9 +1,9 @@
 package com.wj.gradle.seniorapplication
 
-import com.wj.gradle.manifest.taskmanager.AddLazyTaskDependsPreBuilderManager
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskDependsPreBuildManager
+import com.wj.gradle.seniorapplication.taskmanager.AddLazyTaskDependsPreBuilderManager
 import com.wj.gradle.seniorapplication.taskmanager.AddTaskByLazyConfigurationManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
