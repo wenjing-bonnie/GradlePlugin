@@ -1,8 +1,8 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
-import com.wj.gradle.manifest.extensions.IncrementalExtension
-import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.extensions.IncrementalExtension
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConsumerTask
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import org.gradle.api.Project
@@ -38,6 +38,8 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
         consumerTask: LazyConsumerTask,
         producerTask: TaskProvider<LazyProducerTask>
     ) {
+        //消费Task已经在依赖关系队列中，可以隐式自动添加prouducer,
+        // 当Producer的outputs发生改变的时候，可自动更新到消费Task
         //connect producer task output to consumer task input
         //do not need to add a task dependency to the consumer task
         consumerTask.testLazyInputDirectory.set(producerTask.flatMap { it.testLazyOutputDirectory })
@@ -47,7 +49,7 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
 
     private fun getIncrementalExtension(): IncrementalExtension {
         var extension =
-            project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
         if (extension == null) {
             return IncrementalExtension()
         }

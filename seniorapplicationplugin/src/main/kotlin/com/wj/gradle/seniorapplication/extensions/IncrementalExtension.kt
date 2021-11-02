@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.extensions
+package com.wj.gradle.seniorapplication.extensions
 
 import org.gradle.api.file.FileCollection
 import java.io.File

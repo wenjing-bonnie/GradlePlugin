@@ -1,8 +1,5 @@
 package com.wj.gradle.manifest.taskmanager
 
-import com.wj.gradle.manifest.extensions.IncrementalExtension
-import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider

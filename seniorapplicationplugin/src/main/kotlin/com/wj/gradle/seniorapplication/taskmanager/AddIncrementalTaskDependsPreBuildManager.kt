@@ -1,9 +1,9 @@
-package com.wj.gradle.manifest.taskmanager
+package com.wj.gradle.seniorapplication.taskmanager
 
-import com.wj.gradle.manifest.extensions.IncrementalExtension
-import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.extensions.IncrementalExtension
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import org.gradle.api.Project
 import java.nio.charset.Charset
 
@@ -61,7 +61,7 @@ open class AddIncrementalTaskDependsPreBuildManager(
 
 
     private fun getIncrementalExtension(): IncrementalExtension {
-        var extension = project.extensions.findByType(SeniorLazyKotlinExtension::class.javaObjectType)
+        var extension = project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
         if (extension == null) {
             return IncrementalExtension()
         }

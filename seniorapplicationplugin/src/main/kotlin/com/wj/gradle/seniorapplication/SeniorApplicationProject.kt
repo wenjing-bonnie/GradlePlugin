@@ -1,9 +1,9 @@
 package com.wj.gradle.seniorapplication
 
-import com.wj.gradle.manifest.extensions.SeniorLazyKotlinExtension
 import com.wj.gradle.manifest.taskmanager.AddLazyTaskDependsPreBuilderManager
-import com.wj.gradle.manifest.taskmanager.AddIncrementalTaskDependsPreBuildManager
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
+import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskDependsPreBuildManager
 import com.wj.gradle.seniorapplication.taskmanager.AddTaskByLazyConfigurationManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,8 +37,8 @@ open class SeniorApplicationProject : Plugin<Project> {
      */
     private fun createExtension(project: Project) {
         project.extensions.create(
-            SeniorLazyKotlinExtension.TAG,
-            SeniorLazyKotlinExtension::class.javaObjectType
+            SeniorApplicationKotlinExtension.TAG,
+            SeniorApplicationKotlinExtension::class.javaObjectType
         )
     }
 
