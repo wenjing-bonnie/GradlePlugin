@@ -2,9 +2,9 @@ package com.wj.gradle.seniorapplication
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
-import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskDependsPreBuildManager
-import com.wj.gradle.seniorapplication.taskmanager.AddLazyTaskDependsPreBuilderManager
-import com.wj.gradle.seniorapplication.taskmanager.AddTaskByLazyConfigurationManager
+import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskManager
+import com.wj.gradle.seniorapplication.taskmanager.AddLazyConfigurationTaskManager
+import com.wj.gradle.seniorapplication.taskmanager.AddProducerTaskManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
@@ -61,7 +61,7 @@ open class SeniorApplicationProject : Plugin<Project> {
      * @param project
      */
     private fun addIncrementalOnDefaultTaskAfterEvaluate(project: Project) {
-        val incrementalManager = AddIncrementalTaskDependsPreBuildManager(project, variantName)
+        val incrementalManager = AddIncrementalTaskManager(project, variantName)
         incrementalManager.testIncrementalOnDefaultTask()
     }
 
@@ -70,12 +70,12 @@ open class SeniorApplicationProject : Plugin<Project> {
      * @param project
      */
     private fun addLazyConfigurationTaskAfterEvaluate(project: Project) {
-        val lazyManager = AddLazyTaskDependsPreBuilderManager(project, variantName)
+        val lazyManager = AddLazyConfigurationTaskManager(project, variantName)
         lazyManager.testAddLazyTaskDependsPreBuilder()
     }
 
     private fun addTaskByLazyConfigurationAfterEvaluate(project: Project){
-        val lazyConfigurationManager = AddTaskByLazyConfigurationManager(project,variantName)
+        val lazyConfigurationManager = AddProducerTaskManager(project,variantName)
         lazyConfigurationManager.testAddTaskByLazyConfiguration()
     }
 

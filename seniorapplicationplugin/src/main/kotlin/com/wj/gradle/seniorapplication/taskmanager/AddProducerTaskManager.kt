@@ -12,7 +12,7 @@ import org.gradle.api.tasks.TaskProvider
  * 通过懒加载配置添加producerTask
  * @author wenjing.liu
  */
-open class AddTaskByLazyConfigurationManager(var project: Project, var variantName: String) {
+open class AddProducerTaskManager(var project: Project, var variantName: String) {
 
     /**
      * 测试添加[LazyProducerTask]和[LazyConsumerTask]

@@ -10,7 +10,7 @@ import java.io.File
  * 懒加载配置属性
  * @author wenjing.liu
  */
-open class AddLazyTaskDependsPreBuilderManager(var project: Project, var variantName: String) {
+open class AddLazyConfigurationTaskManager(var project: Project, var variantName: String) {
 
     /**
      * 测试添加[LazyConfigurationTask]

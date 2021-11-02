@@ -14,7 +14,7 @@ import java.nio.charset.Charset
  *
  * @author wenjing.liu
  */
-open class AddIncrementalTaskDependsPreBuildManager(
+open class AddIncrementalTaskManager(
     var project: Project,
     var variantName: String
 ) {
