@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 
 /**
@@ -24,8 +25,13 @@ abstract class LazyConsumerTask : BaseTask() {
         const val TAG = "LazyConsumerTask"
     }
 
+    init {
+        outputs.upToDateWhen { true }
+    }
+
     @get:SkipWhenEmpty
     @get:InputFile
+   // @get:Incremental
     abstract val testLazyInputDirectory: RegularFileProperty
 
     var conventionProperty: Property<String> =

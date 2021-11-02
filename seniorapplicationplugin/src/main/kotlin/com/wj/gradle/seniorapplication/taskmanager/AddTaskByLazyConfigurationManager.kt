@@ -25,7 +25,8 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
 
         setProducerInputProperty(producerProvider.get())
         setConsumerInputProperty(consumerTaskProvider.get(), producerProvider)
-        preBuildProvider.get().dependsOn(producerProvider.get())
+        //消费Task已添加到任务依赖中
+        preBuildProvider.get().dependsOn(consumerTaskProvider.get())
     }
 
     private fun setProducerInputProperty(producerTask: LazyProducerTask) {
@@ -37,6 +38,8 @@ open class AddTaskByLazyConfigurationManager(var project: Project, var variantNa
         consumerTask: LazyConsumerTask,
         producerTask: TaskProvider<LazyProducerTask>
     ) {
+        //connect producer task output to consumer task input
+        //do not need to add a task dependency to the consumer task
         consumerTask.testLazyInputDirectory.set(producerTask.flatMap { it.testLazyOutputDirectory })
         SystemPrint.outPrintln("134", consumerTask.testLazyInputDirectory.get().asFile.absolutePath)
 
