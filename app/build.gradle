@@ -30,7 +30,7 @@ manifestKotlin {
     }
 
 }
-
+/**com.wj.seniorapplication配置的扩展属性*/
 seniorApplicationKotlin {
     incremental {
         inputFile file("inputs/1.txt")

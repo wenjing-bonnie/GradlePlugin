@@ -13,6 +13,8 @@ import java.io.File
 /**
  * Created by wenjing.liu on 2021/11/1 in J1.
  * 生产Task
+ * RegularFileProperty类型的必须通过.set()进行赋值，否则会抛出"> No value has been specified for property "
+ * ConfigurableFileCollection可以不赋值
  * @author wenjing.liu
  */
 abstract class LazyProducerTask : BaseTask() {
@@ -26,25 +28,19 @@ abstract class LazyProducerTask : BaseTask() {
     @get:Incremental
     abstract val testLazyOutputFile: RegularFileProperty
 
-    @get:InputFile
+    @get:InputFiles
     @get:SkipWhenEmpty
     @get:Incremental
     abstract val testInputFiles: ConfigurableFileCollection
 
-    //RegularFileProperty类型的必须通过.set()进行赋值，否则会抛出"> No value has been specified for property "
-    //ConfigurableFileCollection可以不赋值
-    @get:SkipWhenEmpty
-    @get:Internal
-    @get:Incremental
-    abstract val testMustSetProperty: RegularFileProperty
 
     override fun incrementalTaskAction(inputChanges: InputChanges) {
 
         // SystemPrint.outPrintln(TAG, "output \n" + testLazyOutputFile.get().asFile.absolutePath)
         val buffer = StringBuffer()
 
-        testInputFiles.forEach {
-            SystemPrint.outPrintln(TAG, "The input file is ${it.name}")
+        testInputFiles.asFileTree.files.forEach {
+            SystemPrint.outPrintln(TAG, "The input file is ${it.absolutePath}")
             buffer.append(readContentFromInputs(it))
         }
         SystemPrint.outPrintln(TAG, "The final content :\n ${buffer}")
