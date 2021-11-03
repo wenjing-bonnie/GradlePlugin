@@ -2,6 +2,7 @@ package com.wj.gradle.seniorapplication
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
+import com.wj.gradle.seniorapplication.taskmanager.AddCustomParallelTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddLazyConfigurationTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddProducerTaskManager
@@ -52,7 +53,8 @@ open class SeniorApplicationProject : Plugin<Project> {
         project.afterEvaluate {
             addIncrementalOnDefaultTaskAfterEvaluate(it)
             addLazyConfigurationTaskAfterEvaluate(it)
-            addTaskByLazyConfigurationAfterEvaluate(it)
+            addProducerTaskAfterEvaluate(it)
+            addCustomParallelTaskAfterEvaluate(it)
         }
     }
 
@@ -74,9 +76,20 @@ open class SeniorApplicationProject : Plugin<Project> {
         lazyManager.testAddLazyTaskDependsPreBuilder()
     }
 
-    private fun addTaskByLazyConfigurationAfterEvaluate(project: Project){
-        val lazyConfigurationManager = AddProducerTaskManager(project,variantName)
+    /**
+     * 添加生产Task
+     */
+    private fun addProducerTaskAfterEvaluate(project: Project) {
+        val lazyConfigurationManager = AddProducerTaskManager(project, variantName)
         lazyConfigurationManager.testAddTaskByLazyConfiguration()
+    }
+
+    /**
+     * 添加并行Task
+     */
+    private fun addCustomParallelTaskAfterEvaluate(project: Project) {
+        val customParallelTaskManager = AddCustomParallelTaskManager(project, variantName)
+        customParallelTaskManager.testCustomIncrementalTask()
     }
 
 

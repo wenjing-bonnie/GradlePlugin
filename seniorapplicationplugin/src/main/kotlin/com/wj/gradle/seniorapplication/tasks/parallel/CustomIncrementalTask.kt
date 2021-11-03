@@ -25,19 +25,15 @@ import javax.naming.spi.ObjectFactory
  */
 abstract class CustomIncrementalTask : NewIncrementalTask() {
     companion object {
-        const val TAG: String = "CustomIncremental"
+        const val TAG: String = "CustomIncrementalTask"
     }
 
     init {
         outputs.upToDateWhen { false }
     }
 
-    @get:Internal
-    abstract val getAnalyticsService: Property<AnalyticsService>
-
-
     override fun doTaskAction(inputChanges: InputChanges) {
-        SystemPrint.outPrintln(TAG, "is running " + inputChanges)
+        SystemPrint.outPrintln(TAG, "is running ")
     }
 
 }
