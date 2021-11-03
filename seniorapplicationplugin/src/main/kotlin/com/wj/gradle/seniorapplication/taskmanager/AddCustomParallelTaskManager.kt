@@ -22,7 +22,6 @@ open class AddCustomParallelTaskManager(var project: Project, var variantName: S
         customIncremental.analyticsService.set(
             AnalyticsService.RegistrationAction(project).execute()
         )
-        SystemPrint.outPrintln("" + customIncremental.analyticsService.isPresent)
         val preBuild = project.tasks.getByName("preBuild")
         preBuild.dependsOn(customIncremental)
     }
