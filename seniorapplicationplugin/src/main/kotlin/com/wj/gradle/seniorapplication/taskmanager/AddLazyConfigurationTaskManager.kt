@@ -1,5 +1,6 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
@@ -23,6 +24,7 @@ open class AddLazyConfigurationTaskManager(var project: Project, var variantName
         val lazyTask = lazyTaskProvider.get()
 
         setGenericProperty(lazyTask)
+        setLazyExtensionProperty(lazyTask)
         //特殊的Property
         setFileProperty(lazyTask)
         setCollectionProperty(lazyTask)
@@ -42,6 +44,12 @@ open class AddLazyConfigurationTaskManager(var project: Project, var variantName
     private fun setGenericProperty(lazyTask: LazyConfigurationTask) {
         lazyTask.testProperty.set("Hi")
         lazyTask.testObjectFactory.set("Object Factory new instances")
+    }
+
+    private fun setLazyExtensionProperty(lazyTask: LazyConfigurationTask) {
+        var extension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+        lazyTask.lazyExtensionProperty.set(extension?.lazyExtensionProperty)
     }
 
     /**

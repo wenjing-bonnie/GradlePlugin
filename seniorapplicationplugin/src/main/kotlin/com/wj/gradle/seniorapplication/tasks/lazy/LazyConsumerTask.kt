@@ -2,10 +2,8 @@ package com.wj.gradle.seniorapplication.tasks.lazy
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.work.Incremental
@@ -31,8 +29,8 @@ abstract class LazyConsumerTask : BaseTask() {
 
     @get:SkipWhenEmpty
     @get:InputFile
-   // @get:Incremental
-    abstract val testLazyInputDirectory: RegularFileProperty
+    @get:Incremental
+    abstract val testLazyInputFile: RegularFileProperty
 
     var conventionProperty: Property<String> =
         project.objects.property(String::class.javaObjectType)
@@ -40,7 +38,7 @@ abstract class LazyConsumerTask : BaseTask() {
     override fun incrementalTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(
             TAG,
-            "input directory is \n" + testLazyInputDirectory.get().asFile.absolutePath
+            "input file is \n" + testLazyInputFile.get().asFile.absolutePath
         )
         conventionProperty()
     }

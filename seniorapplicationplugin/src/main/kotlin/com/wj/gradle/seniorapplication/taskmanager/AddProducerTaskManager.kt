@@ -18,22 +18,20 @@ open class AddProducerTaskManager(var project: Project, var variantName: String)
      * 测试添加[LazyProducerTask]和[LazyConsumerTask]
      */
     open fun testAddTaskByLazyConfiguration() {
-        val preBuildProvider = project.tasks.named("preBuild")
 
         val consumerTaskProvider =
             project.tasks.register(LazyConsumerTask.TAG, LazyConsumerTask::class.javaObjectType)
         val producerProvider =
             project.tasks.register(LazyProducerTask.TAG, LazyProducerTask::class.javaObjectType)
 
-        setProducerInputProperty(producerProvider.get())
+        setProducerProperty(producerProvider.get())
         setConsumerInputProperty(consumerTaskProvider.get(), producerProvider)
-        //消费Task已添加到任务依赖中
-        preBuildProvider.get().dependsOn(consumerTaskProvider.get())
+
     }
 
-    private fun setProducerInputProperty(producerTask: LazyProducerTask) {
+    private fun setProducerProperty(producerTask: LazyProducerTask) {
         producerTask.testInputFile.set(getIncrementalExtension().inputFile())
-        producerTask.testLazyOutputDirectory.set(getIncrementalExtension().inputFile())
+        producerTask.testLazyOutputFile.set(getIncrementalExtension().inputFile())
     }
 
     private fun setConsumerInputProperty(
@@ -44,7 +42,10 @@ open class AddProducerTaskManager(var project: Project, var variantName: String)
         // 当Producer的outputs发生改变的时候，可自动更新到消费Task
         //connect producer task output to consumer task input
         //do not need to add a task dependency to the consumer task
-        consumerTask.testLazyInputDirectory.set(producerTask.flatMap { it.testLazyOutputDirectory })
+        consumerTask.testLazyInputFile.set(producerTask.flatMap { it.testLazyOutputFile })
+        //消费Task已添加到任务依赖中
+        val preBuildProvider = project.tasks.named("preBuild")
+        preBuildProvider.get().dependsOn(consumerTask)
     }
 
     private fun getIncrementalExtension(): IncrementalExtension {

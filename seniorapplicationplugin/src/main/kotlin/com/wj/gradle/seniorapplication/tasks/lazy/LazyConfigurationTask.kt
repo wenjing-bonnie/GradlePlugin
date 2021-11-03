@@ -21,9 +21,6 @@ abstract class LazyConfigurationTask : DefaultTask() {
         const val TAG = "LazyConfigurationTask"
     }
 
-    init {
-    }
-
 
     //这种方式无法获取到analyticsService，报错信息如下：
     // Cannot query the value of task ':app:LazyConfigurationTask' property 'analyticsService' because it has no value available.
@@ -52,6 +49,10 @@ abstract class LazyConfigurationTask : DefaultTask() {
      *  第二种：通过ObjectFactory.property(Class)直接创建一个实例,其中Project.getObjects获取ObjectFactory
      */
     var testObjectFactory: Property<String> = project.objects.property(String::class.javaObjectType)
+
+    /**从extension中获取的扩展属性*/
+    @get:Input
+    abstract val lazyExtensionProperty: RegularFileProperty
 
     //特殊的Property.
     //第一种：通过@get:xxx
@@ -85,6 +86,7 @@ abstract class LazyConfigurationTask : DefaultTask() {
         SystemPrint.outPrintln(TAG, "running !!!!")
         // SystemPrint.outPrintln(TAG, "test analytics \n" + analyticsService.get())
         printGenericProperty()
+        printLazyExtensionProperty()
         printFileProperty()
         printCollectionProperty()
         printMapsProperty()
@@ -94,6 +96,14 @@ abstract class LazyConfigurationTask : DefaultTask() {
         SystemPrint.outPrintln(TAG, "test Property is " + testProperty.get())
         SystemPrint.outPrintln(TAG, "test Provider is " + testProvider.get())
         SystemPrint.outPrintln(TAG, "test ObjectFactory is " + testObjectFactory.get())
+    }
+
+    private fun printLazyExtensionProperty() {
+        SystemPrint.outPrintln(
+            TAG,
+            "test lazy ExtensionProperty is \n" + lazyExtensionProperty.get().asFile.absolutePath
+        )
+
     }
 
     private fun printFileProperty() {

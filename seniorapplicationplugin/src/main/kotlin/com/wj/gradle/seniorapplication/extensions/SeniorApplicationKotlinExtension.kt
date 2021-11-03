@@ -15,6 +15,9 @@ abstract class SeniorApplicationKotlinExtension {
         const val TAG: String = "seniorApplicationKotlin"
     }
 
+    /**
+     * 懒加载配置属性
+     */
     @get:Input
     abstract val lazyExtensionProperty: RegularFileProperty
 
