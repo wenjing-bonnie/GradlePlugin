@@ -30,8 +30,8 @@ open class AddProducerTaskManager(var project: Project, var variantName: String)
     }
 
     private fun setProducerProperty(producerTask: LazyProducerTask) {
-        producerTask.testInputFile.set(getIncrementalExtension().inputFile())
-        producerTask.testLazyOutputFile.set(getIncrementalExtension().inputFile())
+        producerTask.testInputFiles.from(getIncrementalExtension().inputFiles())
+        producerTask.testLazyOutputFile.set(getIncrementalExtension().outputFile())
     }
 
     private fun setConsumerInputProperty(
