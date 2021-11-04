@@ -42,7 +42,7 @@ abstract class SetLatestVersionForMergedManifestTask : DefaultTask() {
 //                return true
 //            }
 //        })
-        // TODO 暂时隐藏版本输出格式 2021/11/4
+        //TODO 暂时隐藏版本输出格式 2021/11/4
         // initInfo()
     }
 
