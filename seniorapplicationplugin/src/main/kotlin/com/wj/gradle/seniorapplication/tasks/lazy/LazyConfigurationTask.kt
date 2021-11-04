@@ -21,17 +21,6 @@ abstract class LazyConfigurationTask : DefaultTask() {
         const val TAG = "LazyConfigurationTask"
     }
 
-
-    //这种方式无法获取到analyticsService，报错信息如下：
-    // Cannot query the value of task ':app:LazyConfigurationTask' property 'analyticsService' because it has no value available.
-    // 解决方案：必须在实例化该实例的时候，对该属性赋值
-//    @get:Internal
-//    abstract val analyticsService: Property<AnalyticsService>
-    //这种方式无法获取到analyticsService，报错信息如下：
-//    //Cannot query the value of this property because it has no value available.
-//    var analyticsService: Property<AnalyticsService> =
-//        project.objects.property(AnalyticsService::class.javaObjectType)
-
     /**
      *  第一种方式：通过@get:xxx注解的方式
      *
@@ -84,12 +73,12 @@ abstract class LazyConfigurationTask : DefaultTask() {
     @TaskAction
     open fun runTaskAction() {
         SystemPrint.outPrintln(TAG, "running !!!!")
-        // SystemPrint.outPrintln(TAG, "test analytics \n" + analyticsService.get())
-        printGenericProperty()
-        printLazyExtensionProperty()
-        printFileProperty()
-        printCollectionProperty()
-        printMapsProperty()
+//TODO 隐藏打印日志 去掉注解就可以看到对应的日志输出 2021/11/4
+//        printGenericProperty()
+//        printLazyExtensionProperty()
+//        printFileProperty()
+//        printCollectionProperty()
+//        printMapsProperty()
     }
 
     private fun printGenericProperty() {

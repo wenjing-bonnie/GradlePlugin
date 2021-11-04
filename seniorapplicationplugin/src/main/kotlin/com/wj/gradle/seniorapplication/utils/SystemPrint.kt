@@ -78,11 +78,7 @@ object SystemPrint {
     }
 
     private fun isDebugLog(tag: String): Boolean {
-        return DEBUG && !isConfigHideTag(tag)
+        return DEBUG
     }
 
-    private fun isConfigHideTag(tag: String): Boolean {
-        return tag == LazyConfigurationTask.TAG ||
-                tag == IncrementalOnDefaultTask.TAG
-    }
 }

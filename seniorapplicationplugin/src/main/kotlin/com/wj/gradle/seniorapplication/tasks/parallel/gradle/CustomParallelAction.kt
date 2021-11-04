@@ -18,6 +18,10 @@ import java.io.File
 abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
 
     override fun execute() {
+        SystemPrint.outPrintln(
+            CustomParallelTask.TAG,
+            "current thread name is ${Thread.currentThread().name}"
+        )
         val inputFiles = parameters.testInputFiles
         val outputFile: Provider<RegularFile> = parameters.testLazyOutputFile.map { it }
         incrementalTaskAction(inputFiles, outputFile)
@@ -27,18 +31,15 @@ abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
         testInputFiles: ConfigurableFileCollection,
         testLazyOutputFile: Provider<RegularFile>
     ) {
-        var beginTime = System.currentTimeMillis()
         val buffer = StringBuffer()
         testInputFiles.asFileTree.files.forEach {
             SystemPrint.outPrintln(CustomParallelTask.TAG, "The input file is ${it.name}")
             buffer.append(readContentFromInputs(it))
             buffer.append("\n")
-            Thread.sleep(2000)
+            Thread.sleep(5000)
         }
         SystemPrint.outPrintln(CustomParallelTask.TAG, "The final content :\n ${buffer}")
         FileUtils.writeToFile(testLazyOutputFile.get().asFile, buffer.toString())
-        var costTime = System.currentTimeMillis() - beginTime
-        SystemPrint.errorPrintln(CustomParallelTask.TAG, "The cost time is \"${costTime}\" ms")
     }
 
     private fun readContentFromInputs(inputFile: File?): String {
