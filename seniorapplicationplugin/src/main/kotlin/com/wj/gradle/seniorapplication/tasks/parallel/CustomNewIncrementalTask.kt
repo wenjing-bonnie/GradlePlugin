@@ -23,9 +23,9 @@ import javax.naming.spi.ObjectFactory
  * customIncremental.analyticsService.set(AnalyticsService.RegistrationAction(project).execute())
  * @author wenjing.liu
  */
-abstract class CustomIncrementalTask : NewIncrementalTask() {
+abstract class CustomNewIncrementalTask : NewIncrementalTask() {
     companion object {
-        const val TAG: String = "CustomIncrementalTask"
+        const val TAG: String = "CustomNewIncrementalTask"
     }
 
     init {

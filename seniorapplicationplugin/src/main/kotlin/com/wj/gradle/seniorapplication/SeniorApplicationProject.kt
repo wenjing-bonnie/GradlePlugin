@@ -89,7 +89,8 @@ open class SeniorApplicationProject : Plugin<Project> {
      */
     private fun addCustomParallelTaskAfterEvaluate(project: Project) {
         val customParallelTaskManager = AddCustomParallelTaskManager(project, variantName)
-        customParallelTaskManager.testCustomIncrementalTask()
+        customParallelTaskManager.testCustomParallelTask()
+        customParallelTaskManager.testCustomNewIncrementalTask()
     }
 
 

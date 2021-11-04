@@ -1,9 +1,11 @@
 package com.wj.gradle.seniorapplication.taskmanager;
 
 import com.android.build.gradle.internal.profile.AnalyticsService
-import com.wj.gradle.manifest.tasks.parallel.CustomIncrementalTask
-import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.manifest.tasks.parallel.CustomNewIncrementalTask
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
+import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelTask
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 /**
  * Created by wenjing.liu on 2021/10/29 in J1.
@@ -12,17 +14,40 @@ import org.gradle.api.Project
  * @author wenjing.liu
  */
 open class AddCustomParallelTaskManager(var project: Project, var variantName: String) {
+    /**
+     * Gradle中的并行Task
+     */
+    open fun testCustomParallelTask() {
+        val parallelTask =
+            project.tasks.create(CustomParallelTask.TAG, CustomParallelTask::class.javaObjectType)
+        var incrementalExtension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+                ?.incremental()
 
-    open fun testCustomIncrementalTask() {
-        var customIncremental = project.tasks.create(
-            CustomIncrementalTask.TAG,
-            CustomIncrementalTask::class.javaObjectType
+        parallelTask.testInputFiles.from(incrementalExtension?.inputFiles())
+        parallelTask.testLazyOutputFile.set(incrementalExtension?.outputFile())
+        preBuildDependsOn(parallelTask)
+    }
+
+    /**
+     * Android gradle中的并行Task
+     */
+    open fun testCustomNewIncrementalTask() {
+        val newIncremental = project.tasks.create(
+            CustomNewIncrementalTask.TAG,
+            CustomNewIncrementalTask::class.javaObjectType
         )
-        customIncremental.variantName = variantName
-        customIncremental.analyticsService.set(
+        newIncremental.variantName = variantName
+        newIncremental.analyticsService.set(
             AnalyticsService.RegistrationAction(project).execute()
         )
-        val preBuild = project.tasks.getByName("preBuild")
-        preBuild.dependsOn(customIncremental)
+        preBuildDependsOn(newIncremental)
     }
+
+    private fun preBuildDependsOn(task: Task) {
+        val preBuild = project.tasks.getByName("preBuild")
+        preBuild.dependsOn(task)
+    }
+
+
 }

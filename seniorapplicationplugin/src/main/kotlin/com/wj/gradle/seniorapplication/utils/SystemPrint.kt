@@ -2,6 +2,8 @@ package com.wj.gradle.manifest.utils
 
 import com.android.build.gradle.internal.cxx.logging.errorln
 import com.android.build.gradle.internal.cxx.logging.warnln
+import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
+import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.
@@ -17,7 +19,7 @@ object SystemPrint {
      * 日志输出
      */
     fun outPrintln(info: String) {
-        if (DEBUG) {
+        if (isDebugLog(TAG)) {
             println("<- $TAG -> : $info")
         }
     }
@@ -26,7 +28,7 @@ object SystemPrint {
      * 日志输出
      */
     fun outPrintln(tag: String, info: String) {
-        if (!DEBUG) {
+        if (!isDebugLog(tag)) {
             return
         }
         println(
@@ -38,7 +40,7 @@ object SystemPrint {
      * 输出红色log
      */
     fun errorPrintln(tag: String, info: String) {
-        if (!DEBUG) {
+        if (!isDebugLog(tag)) {
             return
         }
         errorln(
@@ -50,7 +52,7 @@ object SystemPrint {
      * 警告log
      */
     fun warnPrintln(tag: String, info: String) {
-        if (!DEBUG) {
+        if (!isDebugLog(tag)) {
             return
         }
         warnln(
@@ -73,5 +75,14 @@ object SystemPrint {
                 length
             )
         }"
+    }
+
+    private fun isDebugLog(tag: String): Boolean {
+        return DEBUG && !isConfigHideTag(tag)
+    }
+
+    private fun isConfigHideTag(tag: String): Boolean {
+        return tag == LazyConfigurationTask.TAG ||
+                tag == IncrementalOnDefaultTask.TAG
     }
 }

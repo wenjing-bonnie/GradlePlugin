@@ -3,6 +3,7 @@ package com.wj.gradle.seniorapplication.tasks.lazy
 import com.android.utils.FileUtils
 import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
+import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
@@ -38,11 +39,11 @@ abstract class LazyProducerTask : BaseTask() {
         var beginTime = System.currentTimeMillis()
         val buffer = StringBuffer()
         testInputFiles.asFileTree.files.forEach {
-            SystemPrint.outPrintln(TAG, "The input file is ${it.absolutePath}")
+            SystemPrint.outPrintln(TAG, "The input file is ${it.name}")
             buffer.append(readContentFromInputs(it))
             buffer.append("\n")
+            Thread.sleep(2000)
         }
-        Thread.sleep(3000)
         SystemPrint.outPrintln(TAG, "The final content :\n ${buffer}")
         FileUtils.writeToFile(testLazyOutputFile.get().asFile, buffer.toString())
         var costTime = System.currentTimeMillis() - beginTime
