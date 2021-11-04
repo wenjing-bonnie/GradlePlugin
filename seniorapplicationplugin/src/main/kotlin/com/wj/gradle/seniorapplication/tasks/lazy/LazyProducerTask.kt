@@ -36,6 +36,7 @@ abstract class LazyProducerTask : BaseTask() {
 
 
     override fun incrementalTaskAction(inputChanges: InputChanges) {
+        val beginTime = System.currentTimeMillis()
         val buffer = StringBuffer()
         testInputFiles.asFileTree.files.forEach {
             SystemPrint.outPrintln(TAG, "The input file is ${it.name}")
@@ -49,6 +50,8 @@ abstract class LazyProducerTask : BaseTask() {
         )
         SystemPrint.outPrintln(TAG, "The final content :\n ${buffer}")
         FileUtils.writeToFile(testLazyOutputFile.get().asFile, buffer.toString())
+        val costTime  = System.currentTimeMillis() - beginTime
+        SystemPrint.outPrintln(TAG,"The cost time is ${costTime} ms")
     }
 
     private fun readContentFromInputs(inputFile: File?): String {

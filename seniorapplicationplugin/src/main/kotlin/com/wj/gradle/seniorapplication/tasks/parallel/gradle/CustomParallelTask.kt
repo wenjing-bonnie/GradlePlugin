@@ -1,6 +1,8 @@
 package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
+import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
+import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFiles

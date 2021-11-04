@@ -2,6 +2,7 @@ package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
 import com.android.utils.FileUtils
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
@@ -31,15 +32,19 @@ abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
         testInputFiles: ConfigurableFileCollection,
         testLazyOutputFile: Provider<RegularFile>
     ) {
+        val beginTime = System.currentTimeMillis()
         val buffer = StringBuffer()
         testInputFiles.asFileTree.files.forEach {
             SystemPrint.outPrintln(CustomParallelTask.TAG, "The input file is ${it.name}")
             buffer.append(readContentFromInputs(it))
             buffer.append("\n")
+            //Artificially make this task slower.
             Thread.sleep(5000)
         }
         SystemPrint.outPrintln(CustomParallelTask.TAG, "The final content :\n ${buffer}")
         FileUtils.writeToFile(testLazyOutputFile.get().asFile, buffer.toString())
+        val costTime  = System.currentTimeMillis() - beginTime
+        SystemPrint.outPrintln(LazyProducerTask.TAG,"The cost time is ${costTime} ms")
     }
 
     private fun readContentFromInputs(inputFile: File?): String {
