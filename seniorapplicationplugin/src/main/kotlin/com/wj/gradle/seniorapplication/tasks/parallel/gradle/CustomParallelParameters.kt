@@ -1,6 +1,5 @@
 package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.workers.WorkParameters
 
@@ -13,5 +12,5 @@ import org.gradle.workers.WorkParameters
 interface CustomParallelParameters : WorkParameters {
 
     val testLazyOutputFile: RegularFileProperty
-    val testInputFiles: ConfigurableFileCollection
+    val testInputFile: RegularFileProperty
 }

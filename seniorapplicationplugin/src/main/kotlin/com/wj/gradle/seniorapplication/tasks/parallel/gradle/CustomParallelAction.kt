@@ -4,6 +4,7 @@ import com.android.utils.FileUtils
 import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import java.io.File
@@ -23,7 +24,7 @@ abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
             "current thread name is ${Thread.currentThread().name}"
         )
         val beginTime = System.currentTimeMillis()
-        val inputFiles = parameters.testInputFiles
+        val inputFiles = parameters.testInputFile
         val outputFile: Provider<RegularFile> = parameters.testLazyOutputFile.map { it }
         incrementalTaskAction(inputFiles, outputFile)
         val costTime = System.currentTimeMillis() - beginTime
@@ -31,22 +32,22 @@ abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
     }
 
     private fun incrementalTaskAction(
-        testInputFiles: ConfigurableFileCollection,
+        testInputFile: RegularFileProperty,
         testLazyOutputFile: Provider<RegularFile>
     ) {
         val buffer = StringBuffer()
-        testInputFiles.asFileTree.files.forEach {
-            //SystemPrint.outPrintln(CustomParallelTask.TAG, "The input file is ${it.name}")
-            buffer.append(readContentFromInputs(it))
-            buffer.append("\n")
-            //Artificially make this task slower.
-            Thread.sleep(5000)
-        }
+        //testInputFiles.asFileTree.files.forEach {
+        //SystemPrint.outPrintln(CustomParallelTask.TAG, "The input file is ${it.name}")
+        buffer.append(readContentFromInputs(testInputFile.get().asFile))
+        buffer.append("\n")
+        //Artificially make this task slower.
+        Thread.sleep(5000)
+        //}
         // SystemPrint.outPrintln(CustomParallelTask.TAG, "The final content :\n ${buffer}")
         FileUtils.writeToFile(testLazyOutputFile.get().asFile, buffer.toString())
     }
 
-    private fun readContentFromInputs(inputFile: File?): String {
-        return inputFile?.readText(Charsets.UTF_8).toString()
+    private fun readContentFromInputs(inputFile: File): String {
+        return inputFile.readText(Charsets.UTF_8).toString()
     }
 }

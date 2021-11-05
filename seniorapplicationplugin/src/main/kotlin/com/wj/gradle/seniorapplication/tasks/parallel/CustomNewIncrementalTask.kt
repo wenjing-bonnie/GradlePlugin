@@ -1,25 +1,16 @@
 package com.wj.gradle.manifest.tasks.parallel
 
-import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.android.utils.FileUtils
 import com.wj.gradle.manifest.utils.SystemPrint
-import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelAction
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelParameters
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
-import java.io.File
-import javax.naming.spi.ObjectFactory
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.
@@ -51,12 +42,30 @@ abstract class CustomNewIncrementalTask : NewIncrementalTask() {
     @get:Incremental
     abstract val testInputFiles: ConfigurableFileCollection
 
+    @get:InputFiles
+    abstract val codecClasspath: ConfigurableFileCollection
+
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "is running ")
+        noIsolation()
+    }
+
+    private fun noIsolation() {
         val workQueue = workerExecutor.noIsolation()
-        workQueue.submit(CustomParallelAction::class.javaObjectType) { params: CustomParallelParameters ->
-            params.testInputFiles.from(testInputFiles)
-            params.testLazyOutputFile.set(testLazyOutputFile.map { it })
+        testInputFiles.asFileTree.files.forEach {
+            workQueue.submit(CustomParallelAction::class.javaObjectType) { params: CustomParallelParameters ->
+                params.testInputFile.set(it)
+                params.testLazyOutputFile.set(testLazyOutputFile.map { it })
+            }
         }
+    }
+
+    private fun classLoaderIsolation() {
+        val workQueue = workerExecutor.classLoaderIsolation() { workerSpec ->
+            {
+                workerSpec.classpath.from(codecClasspath)
+            }
+        }
+
     }
 }

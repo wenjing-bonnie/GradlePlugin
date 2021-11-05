@@ -2,6 +2,7 @@ package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
 import com.wj.gradle.seniorapplication.tasks.BaseTask
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
@@ -10,6 +11,7 @@ import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Created by wenjing.liu on 2021/11/3 in J1.
@@ -40,11 +42,15 @@ abstract class CustomParallelTask : BaseTask() {
     override fun incrementalTaskAction(inputChanges: InputChanges) {
         val workQueue = workerExecutor.noIsolation()
 
-        workQueue.submit(
-            CustomParallelAction::class.javaObjectType
-        ) { param: CustomParallelParameters ->
-            param.testInputFiles.from(testInputFiles.files)
-            param.testLazyOutputFile.set(testLazyOutputFile.get())
+        testInputFiles.asFileTree.files.forEach {
+            workQueue.submit(
+                CustomParallelAction::class.javaObjectType
+            ) { param: CustomParallelParameters ->
+                param.testInputFile.set(it)
+                param.testLazyOutputFile.set(testLazyOutputFile.get())
+            }
         }
+
+
     }
 }
