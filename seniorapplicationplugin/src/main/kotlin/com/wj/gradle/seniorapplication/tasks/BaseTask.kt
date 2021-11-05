@@ -17,7 +17,7 @@ abstract class BaseTask : DefaultTask() {
     @TaskAction
     open fun runTaskAction(inputChanges: InputChanges) {
 
-        SystemPrint.outPrintln(javaClass.simpleName, "Lazy producer is running")
+        SystemPrint.outPrintln(javaClass.simpleName, " is running ...")
         incrementalTaskAction(inputChanges)
     }
 

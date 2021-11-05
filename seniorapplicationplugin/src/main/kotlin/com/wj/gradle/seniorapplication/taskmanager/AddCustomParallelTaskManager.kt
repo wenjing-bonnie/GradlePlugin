@@ -38,6 +38,12 @@ open class AddCustomParallelTaskManager(var project: Project, var variantName: S
             CustomNewIncrementalTask::class.javaObjectType
         )
         newIncremental.variantName = variantName
+        var incrementalExtension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+                ?.incremental()
+
+        newIncremental.testInputFiles.from(incrementalExtension?.inputFiles())
+        newIncremental.testLazyOutputFile.set(incrementalExtension?.outputFile())
         newIncremental.analyticsService.set(
             AnalyticsService.RegistrationAction(project).execute()
         )
@@ -48,6 +54,5 @@ open class AddCustomParallelTaskManager(var project: Project, var variantName: S
         val preBuild = project.tasks.getByName("preBuild")
         preBuild.dependsOn(task)
     }
-
 
 }

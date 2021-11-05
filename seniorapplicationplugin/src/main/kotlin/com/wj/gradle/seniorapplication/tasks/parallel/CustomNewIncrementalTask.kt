@@ -2,10 +2,23 @@ package com.wj.gradle.manifest.tasks.parallel
 
 import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
+import com.android.utils.FileUtils
 import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.tasks.lazy.LazyProducerTask
+import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelAction
+import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelParameters
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
+import java.io.File
 import javax.naming.spi.ObjectFactory
 
 /**
@@ -28,12 +41,22 @@ abstract class CustomNewIncrementalTask : NewIncrementalTask() {
         const val TAG: String = "CustomNewIncrementalTask"
     }
 
-    init {
-        outputs.upToDateWhen { false }
-    }
+    @get:SkipWhenEmpty
+    @get:OutputFile
+    @get:Incremental
+    abstract val testLazyOutputFile: RegularFileProperty
+
+    @get:InputFiles
+    @get:SkipWhenEmpty
+    @get:Incremental
+    abstract val testInputFiles: ConfigurableFileCollection
 
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "is running ")
+        val workQueue = workerExecutor.noIsolation()
+        workQueue.submit(CustomParallelAction::class.javaObjectType) { params: CustomParallelParameters ->
+            params.testInputFiles.from(testInputFiles)
+            params.testLazyOutputFile.set(testLazyOutputFile.map { it })
+        }
     }
-
 }

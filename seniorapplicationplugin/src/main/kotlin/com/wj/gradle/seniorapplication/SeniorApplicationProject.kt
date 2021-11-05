@@ -53,7 +53,8 @@ open class SeniorApplicationProject : Plugin<Project> {
         project.afterEvaluate {
             addIncrementalOnDefaultTaskAfterEvaluate(it)
             addLazyConfigurationTaskAfterEvaluate(it)
-            addProducerTaskAfterEvaluate(it)
+            //TODO 在验证并行Tasks的时候,需要对下面两个方法分别进行显示或隐藏
+            //addProducerTaskAfterEvaluate(it)
             addCustomParallelTaskAfterEvaluate(it)
         }
     }
@@ -89,7 +90,7 @@ open class SeniorApplicationProject : Plugin<Project> {
      */
     private fun addCustomParallelTaskAfterEvaluate(project: Project) {
         val customParallelTaskManager = AddCustomParallelTaskManager(project, variantName)
-        customParallelTaskManager.testCustomParallelTask()
+        //customParallelTaskManager.testCustomParallelTask()
         customParallelTaskManager.testCustomNewIncrementalTask()
     }
 
