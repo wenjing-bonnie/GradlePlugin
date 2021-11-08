@@ -16,6 +16,8 @@ dependencies {
     implementation gradleApi()
     implementation "com.android.tools.build:gradle:$gradle_version"
     //implementation "com.wj.gradle.plugins:variantbaseplugin:1.0.0"
+    implementation "commons-io:commons-io:2.5"
+    implementation "commons-codec:commons-codec:1.9"
 }
 
 uploadArchives {

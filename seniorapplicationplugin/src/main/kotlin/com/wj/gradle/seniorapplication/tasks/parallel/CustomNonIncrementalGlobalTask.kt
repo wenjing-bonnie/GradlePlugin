@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks.parallel
+package com.wj.gradle.sensorapplication.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NonIncrementalGlobalTask
 import com.wj.gradle.manifest.utils.SystemPrint
@@ -24,6 +24,6 @@ abstract class CustomNonIncrementalGlobalTask : NonIncrementalGlobalTask() {
 
 
     override fun doTaskAction() {
-        SystemPrint.outPrintln(CustomNonIncrementalTask.TAG, "is running")
+        SystemPrint.outPrintln(ClassLoaderIsolationTask.TAG, "is running")
     }
 }

@@ -90,8 +90,10 @@ open class SeniorApplicationProject : Plugin<Project> {
      */
     private fun addCustomParallelTaskAfterEvaluate(project: Project) {
         val customParallelTaskManager = AddCustomParallelTaskManager(project, variantName)
+        //TODO 需要根据合适的例子来打开对应的方法进行打包发布
         //customParallelTaskManager.testCustomParallelTask()
-        customParallelTaskManager.testCustomNewIncrementalTask()
+        //customParallelTaskManager.testCustomNewIncrementalTask()
+        customParallelTaskManager.testClassLoaderIsolationTask()
     }
 
 
