@@ -6,7 +6,8 @@
 
 ## 个人公众号 "静姐有话说Android"
 
-  目前公众号下面的文章有
+  目前公众号下有入门系列的文章：
+
 
 * Android Gradle系列之自定义Gradle Plugin
 * Android Gradle系列之Gradle构建生命周期
@@ -14,6 +15,15 @@
 * Android Gradle系列之自定义Task和扩展属性
 * Android Gradle系列之显式声明exported
 * Android Gradle系列之动态修改Manifest
+
+
+    高级进阶系列文章：
+    
+
+* Android Gradle系列之UP-TO-DATE
+* Android Gradle系列之懒加载配置-基本概念
+* Android Gradle系列之懒加载配置-应用场景
+
 
   持续更新中...欢迎扫描关注
 
