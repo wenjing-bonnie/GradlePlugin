@@ -17,8 +17,8 @@
 * Android Gradle系列之动态修改Manifest
 
 
-    高级进阶系列文章：
-    
+  高级进阶系列文章：
+
 
 * Android Gradle系列之UP-TO-DATE
 * Android Gradle系列之懒加载配置-基本概念
