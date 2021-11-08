@@ -50,7 +50,5 @@ abstract class CustomParallelTask : BaseTask() {
                 param.testLazyOutputFile.set(testLazyOutputFile.get())
             }
         }
-
-
     }
 }

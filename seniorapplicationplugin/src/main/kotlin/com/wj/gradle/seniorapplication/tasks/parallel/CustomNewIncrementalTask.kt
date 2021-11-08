@@ -42,9 +42,6 @@ abstract class CustomNewIncrementalTask : NewIncrementalTask() {
     @get:Incremental
     abstract val testInputFiles: ConfigurableFileCollection
 
-    @get:InputFiles
-    abstract val codecClasspath: ConfigurableFileCollection
-
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "is running ")
         noIsolation()
@@ -58,14 +55,5 @@ abstract class CustomNewIncrementalTask : NewIncrementalTask() {
                 params.testLazyOutputFile.set(testLazyOutputFile.map { it })
             }
         }
-    }
-
-    private fun classLoaderIsolation() {
-        val workQueue = workerExecutor.classLoaderIsolation() { workerSpec ->
-            {
-                workerSpec.classpath.from(codecClasspath)
-            }
-        }
-
     }
 }
