@@ -23,6 +23,7 @@
 * Android Gradle系列之UP-TO-DATE
 * Android Gradle系列之懒加载配置-基本概念
 * Android Gradle系列之懒加载配置-应用场景
+* Android Gradle系列之并发Tasks
 
 
   持续更新中...欢迎扫描关注
