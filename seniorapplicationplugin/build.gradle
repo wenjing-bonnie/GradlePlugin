@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.kotlin.jvm'
 
 //repositories {
 //    mavenCentral()
-    //配置自定义插件的maven依赖。闭包的调用
+//配置自定义插件的maven依赖。闭包的调用
 //    maven {
 //        url uri('../plugins')
 //    }
@@ -17,16 +17,17 @@ dependencies {
     implementation "com.android.tools.build:gradle:$gradle_version"
     //implementation "com.wj.gradle.plugins:variantbaseplugin:1.0.0"
     implementation "commons-io:commons-io:2.5"
-    implementation "commons-codec:commons-codec:1.9"
+    compileOnly "commons-codec:commons-codec:1.9"
 }
+
 
 uploadArchives {
     repositories {
-        mavenDeployer{
+        mavenDeployer {
             pom.groupId = "com.wj.gradle.plugins"
-            pom.artifactId="seniorapplicationplugin"
-            pom.version="1.0.0"
-            repository(url:uri("../plugins"))
+            pom.artifactId = "seniorapplicationplugin"
+            pom.version = "1.0.0"
+            repository(url: uri("../plugins"))
         }
     }
 }

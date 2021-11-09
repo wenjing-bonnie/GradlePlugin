@@ -23,11 +23,5 @@
       <version>2.5</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.9</version>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 </project>

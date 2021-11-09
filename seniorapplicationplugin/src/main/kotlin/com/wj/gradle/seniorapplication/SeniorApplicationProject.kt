@@ -25,6 +25,7 @@ open class SeniorApplicationProject : Plugin<Project> {
     override fun apply(p0: Project) {
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
+        //createConfiguration(p0)
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
@@ -92,7 +93,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         val customParallelTaskManager = AddCustomParallelTaskManager(project, variantName)
         //TODO 需要根据合适的例子来打开对应的方法进行打包发布
         //customParallelTaskManager.testCustomParallelTask()
-        //customParallelTaskManager.testCustomNewIncrementalTask()
+        customParallelTaskManager.testCustomNewIncrementalTask()
         customParallelTaskManager.testClassLoaderIsolationTask()
     }
 

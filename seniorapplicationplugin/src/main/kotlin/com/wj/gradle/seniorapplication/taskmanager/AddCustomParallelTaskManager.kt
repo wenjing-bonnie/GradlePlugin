@@ -4,7 +4,7 @@ import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.tasks.parallel.CustomNewIncrementalTask
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelTask
-import com.wj.gradle.sensorapplication.tasks.parallel.ClassLoaderIsolationTask
+import com.wj.gradle.seniorapplication.tasks.parallel.ClassLoaderIsolationTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -15,6 +15,30 @@ import org.gradle.api.Task
  * @author wenjing.liu
  */
 open class AddCustomParallelTaskManager(var project: Project, var variantName: String) {
+
+    /**
+     * 验证WorkerExecutor.classLoaderIsolation()
+     */
+    open fun testClassLoaderIsolationTask() {
+        val classLoaderTask = project.tasks.create(
+            ClassLoaderIsolationTask.TAG,
+            ClassLoaderIsolationTask::class.javaObjectType
+        )
+
+        classLoaderTask.variantName = variantName
+        val extension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+        val incrementalExtension = extension?.incremental()
+
+        classLoaderTask.configCodecClasspath.from(extension?.md5CodecClasspath)
+        classLoaderTask.testInputFiles.from(incrementalExtension?.inputFiles())
+        classLoaderTask.testLazyOutputFile.set(incrementalExtension?.outputFile())
+        classLoaderTask.analyticsService.set(
+            AnalyticsService.RegistrationAction(project).execute()
+        )
+        preBuildDependsOn(classLoaderTask)
+    }
+
     /**
      * Gradle中的并行Task
      */
@@ -51,26 +75,6 @@ open class AddCustomParallelTaskManager(var project: Project, var variantName: S
         preBuildDependsOn(newIncremental)
     }
 
-    /**
-     * WorkerExecutor.classLoaderIsolation()
-     */
-    open fun testClassLoaderIsolationTask() {
-        val classLoaderTask = project.tasks.create(
-            ClassLoaderIsolationTask.TAG,
-            ClassLoaderIsolationTask::class.javaObjectType
-        )
-        classLoaderTask.variantName = variantName
-        var incrementalExtension =
-            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
-                ?.incremental()
-
-        classLoaderTask.testInputFiles.from(incrementalExtension?.inputFiles())
-        classLoaderTask.testLazyOutputFile.set(incrementalExtension?.outputFile())
-        classLoaderTask.analyticsService.set(
-            AnalyticsService.RegistrationAction(project).execute()
-        )
-        preBuildDependsOn(classLoaderTask)
-    }
 
     private fun preBuildDependsOn(task: Task) {
         val preBuild = project.tasks.getByName("preBuild")

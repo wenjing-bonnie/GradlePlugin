@@ -1,6 +1,8 @@
 package com.wj.gradle.seniorapplication.extensions
 
 import org.gradle.api.Action
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Input
 
@@ -20,6 +22,12 @@ abstract class SeniorApplicationKotlinExtension {
      */
     @get:Input
     abstract val lazyExtensionProperty: RegularFileProperty
+
+    /**
+     * codec library for Apache Common Codec
+     */
+    @get:Input
+    abstract val md5CodecClasspath: ConfigurableFileCollection
 
     private var incremental: IncrementalExtension = IncrementalExtension()
 

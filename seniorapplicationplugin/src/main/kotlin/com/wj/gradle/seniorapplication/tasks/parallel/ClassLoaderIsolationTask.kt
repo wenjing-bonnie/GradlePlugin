@@ -1,4 +1,4 @@
-package com.wj.gradle.sensorapplication.tasks.parallel
+package com.wj.gradle.seniorapplication.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NonIncrementalTask
 import com.wj.gradle.manifest.utils.SystemPrint
@@ -10,6 +10,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.work.Incremental
+import org.gradle.workers.WorkQueue
 
 /**
  * Created by wenjing.liu on 2021/11/8 in J1.
@@ -33,18 +34,37 @@ abstract class ClassLoaderIsolationTask : NonIncrementalTask() {
     abstract val testInputFiles: ConfigurableFileCollection
 
     @get:InputFiles
+    /**
+     * 配置的Apache Common Codec库
+     */
     abstract val configCodecClasspath: ConfigurableFileCollection
 
     override fun doTaskAction() {
         SystemPrint.outPrintln(TAG, "is running")
-        val workQueue = workerExecutor.classLoaderIsolation() {
-            it.classpath.from(configCodecClasspath)
-        }
+        // TODO 根据条件选择打开合适的方法
+        //val workQueue = classLoaderIsolation()
+        val workQueue = processIsolation()
         testInputFiles.asFileTree.files.forEach {
             workQueue.submit(GenerateMd5Action::class.javaObjectType) { param: CustomParallelParameters ->
                 param.testInputFile.set(it)
                 param.testLazyOutputFile.set(testLazyOutputFile.get())
 
+            }
+        }
+    }
+
+    private fun classLoaderIsolation(): WorkQueue {
+        return workerExecutor.classLoaderIsolation() {
+            it.classpath.from(configCodecClasspath)
+        }
+    }
+
+    private fun processIsolation(): WorkQueue {
+        return workerExecutor.processIsolation() {
+            it.classpath.from(configCodecClasspath)
+            it.forkOptions { fork ->
+                fork.maxHeapSize = "64m"
+                //fork.systemProperty("org.gradle.sample.showFileSize", true)
             }
         }
     }

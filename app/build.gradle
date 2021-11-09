@@ -28,8 +28,40 @@ manifestKotlin {
             proguardFiles file("proguard-rules.pro")
         }
     }
+}
+
+//TODO 暂时不知道为什么下面这个情况
+// 若进行配置自定义的configurations，必须configurations后面紧挨着dependencies
+// 否则会抛出编译异常，暂时不知道原因
+// 同时还要配置android{}中的productFlavors{},否则会抛出"Cannot change attributes of dependency configuration ':app:debugCompile' after it has been resolved"
+configurations {
+    codec {
+        visible false
+        canBeConsumed false
+        canBeResolved true
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage,Usage.JAVA_RUNTIME))
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    codec "commons-codec:commons-codec:1.10"
 
 }
+
+
 /**com.wj.seniorapplication配置的扩展属性*/
 seniorApplicationKotlin {
     incremental {
@@ -39,6 +71,7 @@ seniorApplicationKotlin {
         outputFile file("outputs/output.txt")
     }
     lazyExtensionProperty = file("inputs/1.txt")
+    md5CodecClasspath.from(configurations.codec.files)
 }
 
 
@@ -81,19 +114,11 @@ android {
     buildFeatures {
         viewBinding true
     }
-
+    flavorDimensions "channal"
+    productFlavors {
+        huawei {
+            dimension = "channal"
+        }
+    }
 }
 
-dependencies {
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.1'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-}
