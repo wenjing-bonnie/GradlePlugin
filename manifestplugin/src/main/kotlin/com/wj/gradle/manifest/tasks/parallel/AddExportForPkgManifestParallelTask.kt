@@ -1,7 +1,6 @@
 package com.wj.gradle.manifest.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.manifest.utils.SystemPrint
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
