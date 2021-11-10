@@ -1,7 +1,7 @@
 package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
 import com.android.utils.FileUtils
-import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
@@ -16,7 +16,7 @@ import java.io.File
  * @author wenjing.liu
  */
 abstract class CustomParallelAction : WorkAction<CustomParallelParameters> {
-    val TAG: String = "CustomParallelAction"
+    private val TAG: String = "CustomParallelAction"
     override fun execute() {
         SystemPrint.outPrintln(
             TAG,

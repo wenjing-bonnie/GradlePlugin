@@ -1,9 +1,7 @@
-package com.wj.gradle.manifest.utils
+package com.wj.gradle.seniorapplication.utils
 
 import com.android.build.gradle.internal.cxx.logging.errorln
 import com.android.build.gradle.internal.cxx.logging.warnln
-import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
-import com.wj.gradle.seniorapplication.tasks.lazy.LazyConfigurationTask
 
 /**
  * Created by wenjing.liu on 2021/10/8 in J1.

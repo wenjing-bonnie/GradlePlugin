@@ -1,9 +1,9 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
-import com.wj.gradle.manifest.tasks.others.IncrementalOnDefaultTask
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.IncrementalExtension
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
+import com.wj.gradle.seniorapplication.tasks.others.IncrementalOnDefaultTask
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.Project
 import java.nio.charset.Charset
 

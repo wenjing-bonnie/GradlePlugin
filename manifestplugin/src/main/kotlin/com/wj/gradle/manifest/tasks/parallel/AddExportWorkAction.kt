@@ -1,91 +1,29 @@
-package com.wj.gradle.manifest.tasks.manifest
+package com.wj.gradle.manifest.tasks.parallel
 
 import com.wj.gradle.manifest.utils.SystemPrint
 import groovy.util.Node
 import groovy.util.XmlParser
 import groovy.xml.XmlUtil
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.TaskAction
+import org.gradle.workers.WorkAction
 import java.io.File
 
 /**
- * Created by wenjing.liu on 2021/9/30 in J1.
+ * Created by wenjing.liu on 2021/11/10 in J1.
  *
- * 用来适配Android12,自动为没有适配Android12的组件添加android:exported的属性
- * 输入所有的被打包到APP的manifest文件以及app这个module下对应的manifest文件
- * 执行该任务之后,所有符合条件的组件都会添加android:exported
- *
+ * 为所有的未适配Android 12 exported:true属性的组件添加
+ * WorkAction:完成单个manifest文件的添加功能
  * @author wenjing.liu
  */
-@Deprecated("use AddExportForPkgManifestParallelTask replace it")
-open class AddExportForPackageManifestTask : DefaultTask() {
-    companion object {
-        const val TAG: String = "AddExportForPackageManifest"
-    }
-
+abstract class AddExportWorkAction : WorkAction<AddExportWorkParameters> {
+    private val TAG = "AddExportWorkAction"
     private val ATTRUBUTE_EXPORTED: String = "{http://schemas.android.com/apk/res/android}exported"
     private val ATTRUBUTE_NAME: String = "{http://schemas.android.com/apk/res/android}name"
+    private var isPrintThreadName = false
 
-    /**
-     * 所有的被打包到APP的manifest文件,但不包括app下的manifest文件
-     */
-    private lateinit var inputManifests: FileCollection
-
-    /**
-     * app下对应的manifest文件
-     */
-    private lateinit var inputMainManifest: File
-
-    /**
-     * 是否在处理app下的manifest文件,如果是app下的manifest文件只报错提示,不处理
-     */
-    private var isHandlerMainManifest: Boolean = false
-
-
-    open fun setInputManifests(input: FileCollection) {
-        this.inputManifests = input
-    }
-
-    open fun setInputMainManifest(input: File) {
-        this.inputMainManifest = input
-    }
-
-    @TaskAction
-    fun doTaskAction() {
-        handlerNonMainManifest()
-        println()
-        handlerMainManifest()
-    }
-
-    /**
-     * 非app下的manifest文件
-     */
-    private fun handlerNonMainManifest() {
-        isHandlerMainManifest = false
-        SystemPrint.errorPrintln(
-            TAG,
-            "<<!!!  警告信息非error \n" +
-                    "开始为 \"所有被打包到APP的manifest文件\" 检查和增加 \"android:exported\"\n" +
-                    "因为操作的第三方的manifest,所以该属性为true   >>"
-        )
-        for (input in inputManifests) {
-            readAndWriteManifestForExported(input)
-        }
-    }
-
-    /**
-     * 处理主app下的manifest文件
-     */
-    private fun handlerMainManifest() {
-        isHandlerMainManifest = true
-        SystemPrint.errorPrintln(
-            TAG,
-            "<<!!!  警告信息非error \n" +
-                    "开始为 \"app的manifest文件\" 检查和报错提示 \"android:exported\"\n" +
-                    "开发者需要根据报错的组件,按照实际开发需要设置属性值   >>"
-        )
-        readAndWriteManifestForExported(inputMainManifest)
+    override fun execute() {
+        isPrintThreadName = false
+        val manifestFile: File = parameters.inputManifestFile.get().asFile
+        readAndWriteManifestForExported(manifestFile)
     }
 
     /**
@@ -95,7 +33,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
         if (!manifest.exists()) {
             return
         }
-        var node = readAndResetComponentFromManifest(manifest)
+        val node = readAndResetComponentFromManifest(manifest)
         writeComponentToManifest(manifest, node)
     }
 
@@ -157,7 +95,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      * 为符合条件的node添加android:exported
      */
     private fun handlerNodeAddExported(node: Node, name: String) {
-        if (isHandlerMainManifest) {
+        if (parameters.isOnlyBuildError) {
             handlerNodeAddExportedForMainManifest(name)
             return
         }
@@ -168,9 +106,10 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      * 处理app的manifest文件,仅做报错信息提示
      */
     private fun handlerNodeAddExportedForMainManifest(name: String) {
+        printExecutedThread()
         SystemPrint.errorPrintln(
             TAG, "<<!!! error \n " +
-                    "必须为 < $name > 添加android:exported属性,错误原因见Build Output的编译错误或https://developer.android.com/guide/topics/manifest/activity-element#exported  >>"
+                    "必须为 < $name > 添加android:exported属性,错误原因见Build Output的编译错误或https://developer.android.com/guide/topics/manifest/activity-element#exported  >>\n"
         )
     }
 
@@ -178,7 +117,11 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      * 处理被打包到APP的其他manifest文件中添加android:exported
      */
     private fun handlerNodeAddExportedForPackagedManifest(node: Node, name: String) {
-        SystemPrint.outPrintln(TAG, "为 < $name > 添加android:exported=true")
+        printExecutedThread()
+        SystemPrint.outPrintln(
+            TAG,
+            "为 < $name > 添加android:exported=true"
+        )
         node.attributes()["android:exported"] = true
     }
 
@@ -187,7 +130,7 @@ open class AddExportForPackageManifestTask : DefaultTask() {
      * 将更新之后的node重新写入原文件
      */
     private fun writeComponentToManifest(manifest: File, node: Node) {
-        if (isHandlerMainManifest) {
+        if (parameters.isOnlyBuildError) {
             //如果是主app的manifest文件,只报错,不改写,需要开发者自行配置
             return
         }
@@ -233,4 +176,11 @@ open class AddExportForPackageManifestTask : DefaultTask() {
         return ""
     }
 
+    private fun printExecutedThread() {
+        if (isPrintThreadName) {
+            return
+        }
+        SystemPrint.outPrintln(TAG, "${Thread.currentThread().name} is executed !")
+        isPrintThreadName = true
+    }
 }

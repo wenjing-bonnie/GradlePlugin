@@ -1,10 +1,10 @@
 package com.wj.gradle.seniorapplication.taskmanager;
 
 import com.android.build.gradle.internal.profile.AnalyticsService
-import com.wj.gradle.manifest.tasks.parallel.CustomNewIncrementalTask
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelTask
 import com.wj.gradle.seniorapplication.tasks.parallel.ClassLoaderIsolationTask
+import com.wj.gradle.seniorapplication.tasks.parallel.CustomNewIncrementalTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 

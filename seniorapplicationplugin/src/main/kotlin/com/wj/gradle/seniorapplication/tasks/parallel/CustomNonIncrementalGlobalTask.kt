@@ -1,8 +1,7 @@
-package com.wj.gradle.sensorapplication.tasks.parallel
+package com.wj.gradle.seniorapplication.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NonIncrementalGlobalTask
-import com.wj.gradle.manifest.utils.SystemPrint
-import com.wj.gradle.seniorapplication.tasks.parallel.ClassLoaderIsolationTask
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.

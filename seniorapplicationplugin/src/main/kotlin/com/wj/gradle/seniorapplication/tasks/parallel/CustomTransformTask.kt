@@ -1,4 +1,4 @@
-package com.wj.gradle.manifest.tasks.parallel
+package com.wj.gradle.seniorapplication.tasks.parallel
 
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform

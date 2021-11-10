@@ -1,6 +1,6 @@
 package com.wj.gradle.seniorapplication.tasks
 
-import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.InputChanges

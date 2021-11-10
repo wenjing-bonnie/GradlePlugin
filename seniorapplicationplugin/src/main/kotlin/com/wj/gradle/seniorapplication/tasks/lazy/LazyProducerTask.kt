@@ -1,9 +1,8 @@
 package com.wj.gradle.seniorapplication.tasks.lazy
 
 import com.android.utils.FileUtils
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
-import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelTask
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*

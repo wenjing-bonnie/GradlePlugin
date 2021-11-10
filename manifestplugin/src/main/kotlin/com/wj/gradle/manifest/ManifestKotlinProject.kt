@@ -1,8 +1,8 @@
 package com.wj.gradle.manifest
 
-import com.android.build.gradle.internal.profile.AnalyticsService
 import com.wj.gradle.manifest.extensions.BuildType
 import com.wj.gradle.manifest.extensions.ManifestKotlinExtension
+import com.wj.gradle.manifest.taskmanager.AddExportForPkgManifestParallelTaskManager
 import com.wj.gradle.manifest.taskmanager.AddExportedTaskManager
 import com.wj.gradle.manifest.taskmanager.SetLatestVersionTaskManager
 import com.wj.gradle.manifest.tasks.manifest.SetLatestVersionForMergedManifestTask
@@ -16,7 +16,7 @@ import java.util.regex.Pattern
  * 插件入口类
  * @author wenjing.liu
  */
-class ManifestKotlinProject :Plugin<Project> {
+class ManifestKotlinProject : Plugin<Project> {
     /**
      * variant name
      */
@@ -52,7 +52,8 @@ class ManifestKotlinProject :Plugin<Project> {
 
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            addExportForPackageManifestAfterEvaluate(it)
+            //addExportForPackageManifestAfterEvaluate(it)
+            addExportForPkgManifestParallelAfterEvaluate(it)
             addSetLatestVersionForMergedManifestAfterEvaluate(it)
         }
     }
@@ -64,6 +65,14 @@ class ManifestKotlinProject :Plugin<Project> {
     private fun addExportForPackageManifestAfterEvaluate(project: Project) {
         var addExportedTaskManager = AddExportedTaskManager(project, variantName)
         addExportedTaskManager.addExportForPackageManifestAfterEvaluate()
+    }
+
+    /**
+     * 并发增量task
+     */
+    private fun addExportForPkgManifestParallelAfterEvaluate(project: Project) {
+        val addExportedMananger = AddExportForPkgManifestParallelTaskManager(project, variantName)
+        addExportedMananger.addExportForPkgManifestParallelTask()
     }
 
     /**

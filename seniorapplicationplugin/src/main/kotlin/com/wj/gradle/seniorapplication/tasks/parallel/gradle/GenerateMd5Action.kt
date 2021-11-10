@@ -1,6 +1,6 @@
 package com.wj.gradle.seniorapplication.tasks.parallel.gradle
 
-import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.gradle.workers.WorkAction

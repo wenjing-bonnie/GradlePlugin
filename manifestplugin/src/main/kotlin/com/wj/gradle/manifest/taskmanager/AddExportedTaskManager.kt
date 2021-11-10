@@ -9,6 +9,7 @@ import org.gradle.api.Project
  *
  * @author wenjing.liu
  */
+@Deprecated("use AddExportForPkgManifestParallelTaskManager replace it")
 open class AddExportedTaskManager(var project: Project, var variantName: String) {
 
     open fun addExportForPackageManifestAfterEvaluate() {

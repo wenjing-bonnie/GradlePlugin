@@ -1,11 +1,11 @@
 package com.wj.gradle.seniorapplication
 
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.taskmanager.AddCustomParallelTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddLazyConfigurationTaskManager
 import com.wj.gradle.seniorapplication.taskmanager.AddProducerTaskManager
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern

@@ -1,6 +1,6 @@
-package com.wj.gradle.manifest.tasks.others
+package com.wj.gradle.seniorapplication.tasks.others
 
-import com.wj.gradle.manifest.utils.SystemPrint
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty

@@ -1,9 +1,9 @@
-package com.wj.gradle.manifest.tasks.parallel
+package com.wj.gradle.seniorapplication.tasks.parallel
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelAction
 import com.wj.gradle.seniorapplication.tasks.parallel.gradle.CustomParallelParameters
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFiles

@@ -18,7 +18,7 @@ object SystemPrint {
      */
     fun outPrintln(info: String) {
         if (DEBUG) {
-            println("<- $TAG -> : $info")
+            println("|-- $TAG --| : $info")
         }
     }
 
@@ -30,7 +30,7 @@ object SystemPrint {
             return
         }
         println(
-            "<- ${getTag(tag)} -> : $info"
+            "|-- ${getTag(tag)} --| : $info"
         )
     }
 
@@ -42,7 +42,7 @@ object SystemPrint {
             return
         }
         errorln(
-            "<- ${getTag(tag)} -> : $info"
+            "|-- ${getTag(tag)} --| : $info"
         )
     }
 
@@ -54,7 +54,7 @@ object SystemPrint {
             return
         }
         warnln(
-            "<- ${getTag(tag)} -> : $info"
+            "|-- ${getTag(tag)} --| : $info"
         )
     }
 

@@ -1,7 +1,7 @@
 package com.wj.gradle.seniorapplication.tasks.lazy
 
-import com.wj.gradle.manifest.utils.SystemPrint
 import com.wj.gradle.seniorapplication.tasks.BaseTask
+import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
@@ -32,7 +32,7 @@ abstract class LazyConsumerTask : BaseTask() {
     @get:Incremental
     abstract val testLazyInputFile: RegularFileProperty
 
-    var conventionProperty: Property<String> =
+    private  var conventionProperty: Property<String> =
         project.objects.property(String::class.javaObjectType)
 
     override fun incrementalTaskAction(inputChanges: InputChanges) {
