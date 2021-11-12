@@ -1,10 +1,7 @@
 package com.wj.gradle.seniorapplication
 
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
-import com.wj.gradle.seniorapplication.taskmanager.AddCustomParallelTaskManager
-import com.wj.gradle.seniorapplication.taskmanager.AddIncrementalTaskManager
-import com.wj.gradle.seniorapplication.taskmanager.AddLazyConfigurationTaskManager
-import com.wj.gradle.seniorapplication.taskmanager.AddProducerTaskManager
+import com.wj.gradle.seniorapplication.taskmanager.*
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -57,6 +54,7 @@ open class SeniorApplicationProject : Plugin<Project> {
             //TODO 在验证并行Tasks的时候,需要对下面两个方法分别进行显示或隐藏
             //addProducerTaskAfterEvaluate(it)
             addCustomParallelTaskAfterEvaluate(it)
+            addAddCustomTransformTaskAfterEvaluate(it)
         }
     }
 
@@ -95,6 +93,14 @@ open class SeniorApplicationProject : Plugin<Project> {
         //customParallelTaskManager.testCustomParallelTask()
         customParallelTaskManager.testCustomNewIncrementalTask()
         customParallelTaskManager.testClassLoaderIsolationTask()
+    }
+
+    /**
+     * 添加自定义Transform
+     */
+    private fun addAddCustomTransformTaskAfterEvaluate(project: Project) {
+        val customTransform = AddCustomTransformTaskManager(project, variantName)
+        customTransform.testAddCustomTransformTask()
     }
 
 

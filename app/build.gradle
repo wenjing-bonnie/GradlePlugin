@@ -2,7 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     //验证Android 12 的适配
-    id 'com.mob.sdk'
+    //TODO 暂时隐藏该插件 2021/11/12
+    //id 'com.mob.sdk'
     //对manifest进行exported适配及version管理
     id 'com.wj.manifest'
     //gradle plugin高级进阶
