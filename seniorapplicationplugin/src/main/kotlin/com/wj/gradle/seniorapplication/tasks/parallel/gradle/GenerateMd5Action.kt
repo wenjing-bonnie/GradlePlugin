@@ -16,10 +16,10 @@ abstract class GenerateMd5Action : WorkAction<CustomParallelParameters> {
 
     override fun execute() {
         //SystemPrint.outPrintln(TAG, System.getProperty("org.gradle.sample.showFileSize"))
-        SystemPrint.outPrintln(
-            TAG,
-            "current thread name is ${Thread.currentThread().name}"
-        )
+//        SystemPrint.outPrintln(
+//            TAG,
+//            "current thread name is ${Thread.currentThread().name}"
+//        )
         val inputFile = parameters.testInputFile.get().asFile
         val inputStream = FileInputStream(inputFile)
         val outputFile = parameters.testLazyOutputFile.get().asFile

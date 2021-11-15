@@ -1,5 +1,6 @@
 package com.wj.gradle.seniorapplication
 
+import com.android.build.gradle.AppExtension
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.taskmanager.*
 import com.wj.gradle.seniorapplication.utils.SystemPrint
@@ -26,6 +27,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
+        addAddCustomTransformTaskByExtension(p0)
         SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
         addTasksForVariantAfterEvaluate(p0)
     }
@@ -54,7 +56,6 @@ open class SeniorApplicationProject : Plugin<Project> {
             //TODO 在验证并行Tasks的时候,需要对下面两个方法分别进行显示或隐藏
             //addProducerTaskAfterEvaluate(it)
             addCustomParallelTaskAfterEvaluate(it)
-            addAddCustomTransformTaskAfterEvaluate(it)
         }
     }
 
@@ -98,7 +99,7 @@ open class SeniorApplicationProject : Plugin<Project> {
     /**
      * 添加自定义Transform
      */
-    private fun addAddCustomTransformTaskAfterEvaluate(project: Project) {
+    private fun addAddCustomTransformTaskByExtension(project: Project) {
         val customTransform = AddCustomTransformTaskManager(project, variantName)
         customTransform.testAddCustomTransformTask()
     }
@@ -127,4 +128,16 @@ open class SeniorApplicationProject : Plugin<Project> {
         }
         return true
     }
+
+    private fun getValidVariantNameInExtension(project: Project) {
+
+        val androidExtension = project.extensions.findByType(AppExtension::class.javaObjectType)
+        if (androidExtension == null) {
+            return
+        }
+        androidExtension.productFlavors.forEach {
+            SystemPrint.outPrintln(it.name)
+        }
+    }
+
 }

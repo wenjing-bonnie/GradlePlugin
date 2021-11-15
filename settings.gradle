@@ -1,6 +1,8 @@
 rootProject.name = "GradlePlugin"
 include ':app'
 include ':manifestplugin'
+include ':seniorapplicationplugin'
+//include ':wjbaseplugin'
 //生命周期的监听
 this.gradle.addBuildListener(new BuildListener() {
     @Override
@@ -87,5 +89,3 @@ void systemPrintln(String info) {
     }
 }
 
-include ':seniorapplicationplugin'
-include ':wjbaseplugin'
