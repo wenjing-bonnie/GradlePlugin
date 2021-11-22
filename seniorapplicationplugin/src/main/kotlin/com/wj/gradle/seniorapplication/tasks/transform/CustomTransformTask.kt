@@ -1,13 +1,10 @@
-package com.wj.gradle.seniorapplication.tasks
+package com.wj.gradle.seniorapplication.tasks.transform
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.wj.gradle.seniorapplication.utils.SystemPrint
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileInputStream
-import java.io.InputStreamReader
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.

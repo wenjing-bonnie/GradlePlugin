@@ -18,6 +18,7 @@ dependencies {
     //implementation "com.wj.gradle.plugins:variantbaseplugin:1.0.0"
     implementation "commons-io:commons-io:2.5"
     compileOnly "commons-codec:commons-codec:1.9"
+    implementation "org.ow2.asm:asm:9.2"
 }
 
 

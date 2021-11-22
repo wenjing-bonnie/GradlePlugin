@@ -1,7 +1,7 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
 import com.android.build.gradle.AppExtension
-import com.wj.gradle.seniorapplication.tasks.CustomTransformTask
+import com.wj.gradle.seniorapplication.tasks.transform.CustomTransformTask
 import org.gradle.api.Project
 
 /**
