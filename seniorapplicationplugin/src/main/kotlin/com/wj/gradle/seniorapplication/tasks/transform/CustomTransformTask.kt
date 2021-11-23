@@ -5,6 +5,11 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import java.io.File
+import java.io.FileInputStream
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
+import java.io.FileOutputStream
 
 /**
  * Created by wenjing.liu on 2021/10/9 in J1.
@@ -84,15 +89,15 @@ open class CustomTransformTask : Transform() {
     ) {
         inputs.forEach {
             it.jarInputs.forEach { jar ->
-                //处理文件
-                handlerInputFiles(jar.file)
+                //处理文件 TODO 暂时不处理jar文件
+                // handlerInputFiles(jar.file)
                 //写入文件
                 writeOutputFile(jar, Format.JAR, outputsProvider)
             }
 
             it.directoryInputs.forEach { directory ->
                 //处理文件
-                handlerInputFiles(directory.file)
+                handlerDirectoryInputFiles(directory.file)
                 //写入文件
                 writeOutputFile(directory, Format.DIRECTORY, outputsProvider)
 
@@ -100,9 +105,44 @@ open class CustomTransformTask : Transform() {
         }
     }
 
-    private fun handlerInputFiles(inputFile: File) {
-        SystemPrint.outPrintln(TAG, "handler file is \n${inputFile.absolutePath}\n")
+    /**
+     * 处理所有文件夹里的.class文件
+     */
+    private fun handlerDirectoryInputFiles(inputFile: File) {
+        if (inputFile.isDirectory) {
+            var filesInDirectory = inputFile.listFiles()
+            filesInDirectory.forEach {
+                handlerDirectoryInputFiles(it)
+            }
+        } else {
+            handlerDirectoryInputClassFileByAsm(inputFile)
+        }
     }
+
+    /**
+     * 处理单个的.class文件
+     */
+    private fun handlerDirectoryInputClassFileByAsm(inputClassFile: File) {
+        SystemPrint.outPrintln(TAG, "handler .class is \n${inputClassFile.absolutePath}\n")
+        if (!inputClassFile.name.endsWith(".class")){
+            return
+        }
+        //1.创建ClassReader
+        val fis = FileInputStream(inputClassFile)
+        val classReader = ClassReader(fis)
+        //2.创建ClassWriter
+        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+        //3.实例化自定义的AutoLogClassVisitor
+        val autoLogClassVisitor = AutoLogClassVisitor()
+        //4.注册AutoLogClassVisitor
+        classReader.accept(autoLogClassVisitor, ClassReader.EXPAND_FRAMES)
+        //5.将修改之后的.class文件重新写入到该文件中
+        val fos = FileOutputStream(inputClassFile)
+        fos.write(classWriter.toByteArray())
+        fos.close()
+        fis.close()
+    }
+
 
     /**
      * 复制文件内容
