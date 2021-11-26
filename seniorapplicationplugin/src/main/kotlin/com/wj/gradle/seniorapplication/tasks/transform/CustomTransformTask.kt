@@ -7,6 +7,7 @@ import com.wj.gradle.seniorapplication.utils.SystemPrint
 import java.io.File
 import java.io.FileInputStream
 import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import java.io.FileOutputStream
@@ -130,12 +131,12 @@ open class CustomTransformTask : Transform() {
         //1.创建ClassReader
         val fis = FileInputStream(inputClassFile)
         val classReader = ClassReader(fis)
-        //2.创建ClassWriter
-        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-        //3.实例化自定义的AutoLogClassVisitor
+        //2.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor()
-        //4.注册AutoLogClassVisitor
-        classReader.accept(autoLogClassVisitor, ClassReader.EXPAND_FRAMES)
+        //3.注册AutoLogClassVisitor
+        classReader.accept(autoLogClassVisitor, ClassReader.SKIP_FRAMES)
+        //4.创建ClassWriter
+        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
         //5.将修改之后的.class文件重新写入到该文件中
         val fos = FileOutputStream(inputClassFile)
         fos.write(classWriter.toByteArray())
