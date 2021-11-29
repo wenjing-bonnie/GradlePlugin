@@ -2,6 +2,7 @@ package com.wj.gradle.seniorapplication.tasks.transform
 
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
@@ -16,26 +17,6 @@ open class AutoLogClassVisitor : ClassVisitor(Opcodes.ASM9) {
 
     val TAG = "AutoLogClassVisitor"
 
-    /**
-     * 扫描.class开始时回调的第一个方法
-     */
-    override fun visit(
-        version: Int,
-        access: Int,
-        name: String?,
-        signature: String?,
-        superName: String?,
-        interfaces: Array<out String>?
-    ) {
-        super.visit(version, access, name, signature, superName, interfaces)
-        SystemPrint.outPrintln(TAG, " -- visit -- ")
-    }
-
-    override fun visitSource(source: String?, debug: String?) {
-        super.visitSource(source, debug)
-        SystemPrint.outPrintln(TAG, " -- visitSource -- ")
-    }
-
     override fun visitMethod(
         access: Int,
         name: String?,
@@ -43,19 +24,9 @@ open class AutoLogClassVisitor : ClassVisitor(Opcodes.ASM9) {
         signature: String?,
         exceptions: Array<out String>?
     ): MethodVisitor {
-        SystemPrint.outPrintln(TAG, " -- visitMethod -- ${name}")
-        val methodVisitor =
-            AutoLogMethodVisitor(api)//super.visitMethod(access, name, descriptor, signature, exceptions)
-
-        return AutoLogAdviceAdapter(api, methodVisitor, access, name, descriptor)
+        SystemPrint.errorPrintln(TAG, " -- visitMethod -- ${name}")
+        return AutoLogAdviceAdapter(api, AutoLogMethodVisitor(api), access, name, descriptor)
         //return AutoLogMethodVisitor(api)
     }
-
-
-    override fun visitEnd() {
-        super.visitEnd()
-        SystemPrint.outPrintln(TAG, " -- visitEnd -- ")
-    }
-
 
 }

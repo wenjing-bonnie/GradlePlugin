@@ -128,6 +128,10 @@ open class CustomTransformTask : Transform() {
         if (!inputClassFile.name.endsWith(".class")){
             return
         }
+        //TODO  test
+        if(!inputClassFile.name.endsWith("ByteCode.class")){
+            return
+        }
         //1.创建ClassReader
         val fis = FileInputStream(inputClassFile)
         val classReader = ClassReader(fis)

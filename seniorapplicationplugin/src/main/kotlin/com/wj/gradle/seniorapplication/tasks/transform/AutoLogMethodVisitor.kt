@@ -1,6 +1,7 @@
 package com.wj.gradle.seniorapplication.tasks.transform
 
 import com.wj.gradle.seniorapplication.utils.SystemPrint
+import org.objectweb.asm.Attribute
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 
@@ -54,9 +55,16 @@ open class AutoLogMethodVisitor(api: Int) : MethodVisitor(api) {
 
     }
 
+
     override fun visitFieldInsn(opcode: Int, owner: String?, name: String?, descriptor: String?) {
         super.visitFieldInsn(opcode, owner, name, descriptor)
         SystemPrint.outPrintln(TAG, " -- visitFieldInsn name -- ${name}")
+
+    }
+
+    override fun visitAttribute(attribute: Attribute?) {
+        super.visitAttribute(attribute)
+        SystemPrint.outPrintln(TAG, " -- visitAttribute name -- ${attribute}")
 
     }
 
@@ -89,10 +97,14 @@ open class AutoLogMethodVisitor(api: Int) : MethodVisitor(api) {
         stack: Array<out Any>?
     ) {
         super.visitFrame(type, numLocal, local, numStack, stack)
+        SystemPrint.outPrintln(TAG, " -- visitFrame type -- ${type}")
+
     }
 
     override fun visitMaxs(maxStack: Int, maxLocals: Int) {
         super.visitMaxs(maxStack, maxLocals)
+        SystemPrint.outPrintln(TAG, " -- visitMaxs maxStack -- ${maxStack} maxLocals ${maxLocals}")
+
     }
 
 }

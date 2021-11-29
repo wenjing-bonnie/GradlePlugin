@@ -21,10 +21,11 @@ open class AutoLogAdviceAdapter(
 
     val TAG = "AutoLogAdviceAdapter"
 
-    override fun visitCode() {
-        super.visitCode()
-        SystemPrint.outPrintln(TAG, " --  visitCode -- ")
+    override fun onMethodEnter() {
+        super.onMethodEnter()
+        SystemPrint.outPrintln(TAG, " --  onMethodEnter -- ${name}")
     }
+
 
 
 }
