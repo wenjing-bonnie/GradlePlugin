@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     //验证Android 12 的适配
     //TODO 暂时隐藏该插件 2021/11/12
     //id 'com.mob.sdk'
@@ -41,7 +42,7 @@ configurations {
         canBeConsumed false
         canBeResolved true
         attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage,Usage.JAVA_RUNTIME))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
         }
     }
 }
@@ -121,5 +122,11 @@ android {
             dimension = "channal"
         }
     }
+
+//    sourceSets {
+//        main {
+//            java.srcDirs = ['src']
+//        }
+//    }
 }
 

@@ -44,13 +44,6 @@ open class CustomTransformTask : Transform() {
     }
 
     /**
-     * 返回的是Transform要处理的input文件的作用域
-     */
-    override fun getReferencedScopes(): MutableSet<in QualifiedContent.Scope> {
-        return super.getReferencedScopes()
-    }
-
-    /**
      * 是否为增量编译
      */
     override fun isIncremental(): Boolean {
@@ -98,7 +91,7 @@ open class CustomTransformTask : Transform() {
 
             it.directoryInputs.forEach { directory ->
                 //处理文件
-                handlerDirectoryInputFiles(directory.file)
+                 handlerDirectoryInputFiles(directory.file)
                 //写入文件
                 writeOutputFile(directory, Format.DIRECTORY, outputsProvider)
 
@@ -125,22 +118,23 @@ open class CustomTransformTask : Transform() {
      */
     private fun handlerDirectoryInputClassFileByAsm(inputClassFile: File) {
         SystemPrint.outPrintln(TAG, "handler .class is \n${inputClassFile.absolutePath}\n")
-        if (!inputClassFile.name.endsWith(".class")){
+        if (!inputClassFile.name.endsWith(".class")) {
             return
         }
         //TODO  test
-        if(!inputClassFile.name.endsWith("ByteCode.class")){
+        if (!inputClassFile.name.endsWith("ByteCode.class")) {
             return
         }
         //1.创建ClassReader
         val fis = FileInputStream(inputClassFile)
         val classReader = ClassReader(fis)
-        //2.实例化自定义的AutoLogClassVisitor
-        val autoLogClassVisitor = AutoLogClassVisitor()
-        //3.注册AutoLogClassVisitor
+        //2.创建ClassWriter
+        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+        //3.实例化自定义的AutoLogClassVisitor
+        val autoLogClassVisitor = AutoLogClassVisitor(classWriter)
+        //4.注册AutoLogClassVisitor
         classReader.accept(autoLogClassVisitor, ClassReader.SKIP_FRAMES)
-        //4.创建ClassWriter
-        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
+
         //5.将修改之后的.class文件重新写入到该文件中
         val fos = FileOutputStream(inputClassFile)
         fos.write(classWriter.toByteArray())
@@ -166,7 +160,11 @@ open class CustomTransformTask : Transform() {
             input.scopes,
             format
         )
-        FileUtils.copyFile(input.file, outputFile)
+        if (format == Format.JAR) {
+            FileUtils.copyFile(input.file, outputFile)
+        } else {
+            FileUtils.copyDirectory(input.file, outputFile)
+        }
     }
 
 
