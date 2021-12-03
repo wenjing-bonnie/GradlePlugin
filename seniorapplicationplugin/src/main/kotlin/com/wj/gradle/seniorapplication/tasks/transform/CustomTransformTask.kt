@@ -91,7 +91,7 @@ open class CustomTransformTask : Transform() {
 
             it.directoryInputs.forEach { directory ->
                 //处理文件
-                 handlerDirectoryInputFiles(directory.file)
+                handlerDirectoryInputFiles(directory.file)
                 //写入文件
                 writeOutputFile(directory, Format.DIRECTORY, outputsProvider)
 
@@ -128,8 +128,10 @@ open class CustomTransformTask : Transform() {
         //1.创建ClassReader
         val fis = FileInputStream(inputClassFile)
         val classReader = ClassReader(fis)
+
         //2.创建ClassWriter
-        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+        val classWriter =
+            ClassWriter(classReader,ClassWriter.COMPUTE_FRAMES)
         //3.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor(classWriter)
         //4.注册AutoLogClassVisitor

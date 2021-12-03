@@ -25,7 +25,9 @@ public class ByteCode {
 //            Log.v(getClass().getSimpleName(), String.format("cost time is %ld", (end - start)));
 //            return bb;
 //        }
-        Log.v(getClass().getSimpleName(), String.format("cost time is %d", (System.currentTimeMillis() - start)));
+
+        long end = System.currentTimeMillis() - start;
+        Log.v("ExecutionTime", String.format("cost time is %d", end));
         return aa + bb + staticInt + sumInt + getSumInt();
     }
 
@@ -34,7 +36,12 @@ public class ByteCode {
     }
 
     public void setSumInt(int sum) {
+        long start = System.currentTimeMillis();
+
         this.sumInt = sum;
+
+        long end = System.currentTimeMillis() - start;
+        Log.v("ExecutionTime", String.format("cost time is %d", end));
     }
 
     public int getSumInt() {
@@ -42,7 +49,7 @@ public class ByteCode {
     }
 
     public static void main(String[] args) {
-        ByteCode code  =  new ByteCode();
-        code.sumMethod(2,4);
+        ByteCode code = new ByteCode();
+        code.sumMethod(2, 4);
     }
 }
