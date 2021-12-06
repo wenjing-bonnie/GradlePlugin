@@ -39,6 +39,7 @@ public class ByteCode {
         long start = System.currentTimeMillis();
 
         this.sumInt = sum;
+        String tag = "13";
 
         long end = System.currentTimeMillis() - start;
         Log.v("ExecutionTime", String.format("cost time is %d", end));

@@ -17,8 +17,8 @@ import java.io.FileOutputStream
  *
  * @author wenjing.liu
  */
-open class CustomTransformTask : Transform() {
-    private val TAG: String = "CustomTask"
+open class AutoLogTransformTask : Transform() {
+    private val TAG: String = "AutoLogTask"
 
     /**
      * 返回的是该Task的名字
@@ -122,9 +122,9 @@ open class CustomTransformTask : Transform() {
             return
         }
         //TODO  test
-        if (!inputClassFile.name.endsWith("ByteCode.class")) {
-            return
-        }
+//        if (!inputClassFile.name.endsWith("ByteCode.class")) {
+//            return
+//        }
         //1.创建ClassReader
         val fis = FileInputStream(inputClassFile)
         val classReader = ClassReader(fis)

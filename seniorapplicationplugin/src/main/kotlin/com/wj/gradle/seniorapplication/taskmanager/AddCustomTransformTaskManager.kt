@@ -1,7 +1,7 @@
 package com.wj.gradle.seniorapplication.taskmanager
 
 import com.android.build.gradle.AppExtension
-import com.wj.gradle.seniorapplication.tasks.transform.CustomTransformTask
+import com.wj.gradle.seniorapplication.tasks.transform.AutoLogTransformTask
 import org.gradle.api.Project
 
 /**
@@ -14,6 +14,6 @@ open class AddCustomTransformTaskManager(val project: Project, val variantName: 
 
     open fun testAddCustomTransformTask() {
         val extension = project.extensions.findByType(AppExtension::class.javaObjectType)
-        extension?.registerTransform(CustomTransformTask())
+        extension?.registerTransform(AutoLogTransformTask())
     }
 }

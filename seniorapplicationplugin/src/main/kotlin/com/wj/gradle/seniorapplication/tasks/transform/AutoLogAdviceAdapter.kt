@@ -68,9 +68,7 @@ open class AutoLogAdviceAdapter(
             TAG,
             " --  onMethodExit -- startVar ${startVar}  nextLocal  ${nextLocal}"
         )
-        //SystemPrint.outPrintln(TAG, "endVar = " + endVar + "  nextLocal  ${nextLocal}")
-
-//        // 做减法
+        // 做减法
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
             "java/lang/System",
@@ -129,10 +127,11 @@ open class AutoLogAdviceAdapter(
      *
      * 对于一个类（Class）来说，如果没有提供任何构造方法，Java编译器会自动生成一个默认构造方法。在所有的.class文件中，构造方法的名字是<init>()。
      * 另外，如果在.class文件中包含静态代码块，那么就会有一个<clinit>()方法。
+     * 构造函数及static{}不需要增加日志
      */
     private fun isInitMethod(): Boolean {
         SystemPrint.outPrintln(TAG, " --  isInitMethod -- ${name}")
-        return "<init>" == name
+        return "<init>" == name || "<clinit>" == name
     }
 
 
