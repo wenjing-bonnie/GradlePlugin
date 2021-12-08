@@ -31,6 +31,7 @@ open class AutoLogAdviceAdapter(
         SystemPrint.errorPrintln(TAG, " --  onMethodEnter -- ${name}" + " , nextLocal ${nextLocal}")
         SystemPrint.outPrintln(TAG, "argumentTypes size  = " + argumentTypes.size)
         val label = Label()
+        //关键点1的实现
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
             "java/lang/System",
@@ -38,6 +39,7 @@ open class AutoLogAdviceAdapter(
             "()J",
             false
         )
+        //索引值2的获取方式
         startVar = newLocal(Type.LONG_TYPE)
         //methodVisitor.visitInsn(Opcodes.DUP)
         SystemPrint.outPrintln(TAG, "new local is ${startVar}")
@@ -68,7 +70,7 @@ open class AutoLogAdviceAdapter(
             TAG,
             " --  onMethodExit -- startVar ${startVar}  nextLocal  ${nextLocal}"
         )
-        // 做减法
+        // 关键点2的实现
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
             "java/lang/System",
@@ -84,7 +86,7 @@ open class AutoLogAdviceAdapter(
         SystemPrint.outPrintln(TAG, "subVar = " + subVar + "  nextLocal  ${nextLocal}")
         methodVisitor.visitVarInsn(LSTORE, subVar)
 
-
+        //关键点4的实现
         //输出日志
         methodVisitor.visitLdcInsn("ExecutionTime")
         val log = "\' ${name} \' execution is %d ms"
@@ -116,8 +118,9 @@ open class AutoLogAdviceAdapter(
             "(Ljava/lang/String;Ljava/lang/String;)I",
             false
         )
-        //！！！！ 一定要有，否则该地方就会作为返回值返回
+        //关键点4的实现, 一定要有，否则该地方就会作为返回值返回
         methodVisitor.visitInsn(POP)
+        //关键点5的实现
         returnValue()
         super.onMethodExit(opcode)
     }
