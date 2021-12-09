@@ -29,6 +29,7 @@ abstract class SeniorApplicationKotlinExtension {
     abstract val md5CodecClasspath: ConfigurableFileCollection
 
     private var incremental: IncrementalExtension = IncrementalExtension()
+    private var autoLog: AutoLogExtension = AutoLogExtension()
 
 
     open fun incremental(action: Action<IncrementalExtension>) {
@@ -37,6 +38,14 @@ abstract class SeniorApplicationKotlinExtension {
 
     open fun incremental(): IncrementalExtension {
         return incremental
+    }
+
+    open fun autoLog(action: Action<AutoLogExtension>) {
+        action.execute(autoLog)
+    }
+
+    open fun autoLog(): AutoLogExtension {
+        return autoLog
     }
 
     override fun toString(): String {

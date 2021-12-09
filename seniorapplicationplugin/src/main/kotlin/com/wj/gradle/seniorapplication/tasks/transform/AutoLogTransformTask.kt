@@ -3,7 +3,9 @@ package com.wj.gradle.seniorapplication.tasks.transform
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
+import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.utils.SystemPrint
+import org.gradle.api.Project
 import java.io.File
 import java.io.FileInputStream
 import org.objectweb.asm.ClassReader
@@ -17,7 +19,7 @@ import java.io.FileOutputStream
  *
  * @author wenjing.liu
  */
-open class AutoLogTransformTask : Transform() {
+open class AutoLogTransformTask(val project: Project) : Transform() {
     private val TAG: String = "AutoLogTask"
 
     /**
@@ -131,9 +133,9 @@ open class AutoLogTransformTask : Transform() {
 
         //2.创建ClassWriter
         val classWriter =
-            ClassWriter(classReader,ClassWriter.COMPUTE_FRAMES)
+            ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
         //3.实例化自定义的AutoLogClassVisitor
-        val autoLogClassVisitor = AutoLogClassVisitor(classWriter)
+        val autoLogClassVisitor = AutoLogClassVisitor(classWriter, getAutoLogTimeout())
         //4.注册AutoLogClassVisitor
         classReader.accept(autoLogClassVisitor, ClassReader.SKIP_FRAMES)
 
@@ -167,6 +169,16 @@ open class AutoLogTransformTask : Transform() {
         } else {
             FileUtils.copyDirectory(input.file, outputFile)
         }
+    }
+
+
+    private fun getAutoLogTimeout(): Long {
+        val extension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+        if (extension == null) {
+            return 300L
+        }
+        return extension.autoLog().autoLogTimeout()
     }
 
 

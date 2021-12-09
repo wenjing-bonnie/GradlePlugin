@@ -13,7 +13,8 @@ import org.objectweb.asm.Opcodes
  * TODO api会影响到方法的code属性中是否存在stackmaptable，这个应该需要配合reader和writer的flag来设置
  * @author wenjing.liu
  */
-open class AutoLogClassVisitor(visitor: ClassVisitor) : ClassVisitor(Opcodes.ASM9, visitor) {
+open class AutoLogClassVisitor(visitor: ClassVisitor, val autoLogTimeout: Long) :
+    ClassVisitor(Opcodes.ASM9, visitor) {
 
     val TAG = "AutoLogClassVisitor"
 
@@ -24,13 +25,14 @@ open class AutoLogClassVisitor(visitor: ClassVisitor) : ClassVisitor(Opcodes.ASM
         signature: String?,
         exceptions: Array<out String>?
     ): MethodVisitor {
-        SystemPrint.errorPrintln(TAG, "method is ${name}")
+        //SystemPrint.errorPrintln(TAG, "method is ${name}")
         return AutoLogAdviceAdapter(
             api,
             super.visitMethod(access, name, descriptor, signature, exceptions),
             access,
             name,
-            descriptor
+            descriptor,
+            autoLogTimeout
         )
     }
 

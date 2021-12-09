@@ -18,7 +18,8 @@ open class AutoLogAdviceAdapter(
     api: Int, private val methodVisitor: MethodVisitor?,
     access: Int,
     name: String?,
-    descriptor: String?
+    descriptor: String?,
+    private val autoLogTimeout: Long
 ) : AdviceAdapter(api, methodVisitor, access, name, descriptor) {
     private val TAG = "AutoLogAdviceAdapter"
     private var startVar: Int = 0
@@ -30,7 +31,7 @@ open class AutoLogAdviceAdapter(
         }
         SystemPrint.errorPrintln(
             TAG,
-            " --  onMethodEnter -- ${name}" + " , nextLocal is ${nextLocal}"
+            "onMethodEnter is ${name}" + " , nextLocal is ${nextLocal}"
         )
         //关键点1的实现
         methodVisitor.visitMethodInsn(
@@ -42,7 +43,10 @@ open class AutoLogAdviceAdapter(
         )
         //索引值2的获取方式
         startVar = newLocal(Type.LONG_TYPE)
-        SystemPrint.outPrintln(TAG, "new local is ${startVar} nextlocal is ${nextLocal}")
+        SystemPrint.outPrintln(
+            TAG,
+            "When new start local is ${startVar} , nextLocal is ${nextLocal}"
+        )
         //为该变量起名字，感觉不起名字（或者加上自己特殊的前缀），灵活性更大，可以不用考虑名字重复
         /**
          * @param start the first instruction corresponding to the scope of this local variable
@@ -68,7 +72,7 @@ open class AutoLogAdviceAdapter(
         }
         SystemPrint.errorPrintln(
             TAG,
-            " --  onMethodExit -- startVar ${startVar}  nextLocal  ${nextLocal}"
+            "onMethodExit is ${name} , nextLocal is ${nextLocal}"
         )
         // 关键点2的实现
         methodVisitor.visitMethodInsn(
@@ -83,13 +87,13 @@ open class AutoLogAdviceAdapter(
 
         //存储sub
         val subVar = newLocal(Type.LONG_TYPE)
-        SystemPrint.outPrintln(TAG, "new local is ${subVar} nextlocal is ${nextLocal}")
+        SystemPrint.outPrintln(TAG, "When new sub local is ${subVar} ,  nextLocal is ${nextLocal}")
         methodVisitor.visitVarInsn(LSTORE, subVar)
 
         // ==== 增加if判断 ====
         val returnLabel = Label()
         methodVisitor.visitVarInsn(LLOAD, subVar)
-        methodVisitor.visitLdcInsn(300L)
+        methodVisitor.visitLdcInsn(autoLogTimeout)
         methodVisitor.visitInsn(LCMP)
         methodVisitor.visitJumpInsn(IFLT, returnLabel)
         // ==== 增加if判断 ====
@@ -132,7 +136,6 @@ open class AutoLogAdviceAdapter(
         // === 增加if之后的关键点
         methodVisitor.visitLabel(returnLabel)
         returnValue()
-        SystemPrint.errorPrintln(TAG, " ---- on methodExit  end --- ${name}")
         super.onMethodExit(opcode)
     }
 
@@ -150,82 +153,82 @@ open class AutoLogAdviceAdapter(
 
 
     //Code属性
-    override fun visitIntInsn(opcode: Int, operand: Int) {
-        super.visitIntInsn(opcode, operand)
-        SystemPrint.outPrintln(TAG, " -- visitIntInsn opcode -- ${opcode}")
-    }
-
-    override fun visitInsn(opcode: Int) {
-        super.visitInsn(opcode)
-        SystemPrint.outPrintln(TAG, " -- visitInsn opcode -- ${opcode}")
-    }
-
-    override fun visitVarInsn(opcode: Int, `var`: Int) {
-        super.visitVarInsn(opcode, `var`)
-        SystemPrint.outPrintln(TAG, " -- visitVarInsn opcode -- ${opcode}")
-    }
-
-    override fun visitMethodInsn(
-        opcode: Int,
-        owner: String?,
-        name: String?,
-        descriptor: String?,
-        isInterface: Boolean
-    ) {
-        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
-        SystemPrint.outPrintln(TAG, " -- visitMethodInsn opcode -- ${opcode} name ${name}")
-
-    }
-
-
-    override fun visitFieldInsn(opcode: Int, owner: String?, name: String?, descriptor: String?) {
-        super.visitFieldInsn(opcode, owner, name, descriptor)
-        SystemPrint.outPrintln(TAG, " -- visitFieldInsn name -- ${name}")
-
-    }
-
-    override fun visitEnd() {
-        super.visitEnd()
-        SystemPrint.outPrintln(TAG, " -- visitEnd name -- ${name}")
-
-    }
-
-    override fun visitAttribute(attribute: Attribute?) {
-        super.visitAttribute(attribute)
-        SystemPrint.outPrintln(TAG, " -- visitAttribute name -- ${attribute}")
-    }
-
-
-    override fun visitLocalVariable(
-        name: String?,
-        descriptor: String?,
-        signature: String?,
-        start: Label?,
-        end: Label?,
-        index: Int
-    ) {
-        super.visitLocalVariable(name, descriptor, signature, start, end, index)
-        SystemPrint.outPrintln(TAG, " -- visitLocalVariable name -- ${name}")
-
-    }
-
-    override fun visitFrame(
-        type: Int,
-        numLocal: Int,
-        local: Array<out Any>?,
-        numStack: Int,
-        stack: Array<out Any>?
-    ) {
-        super.visitFrame(type, numLocal, local, numStack, stack)
-        SystemPrint.outPrintln(TAG, " -- visitFrame type -- ${type}")
-
-    }
-
-    override fun visitMaxs(maxStack: Int, maxLocals: Int) {
-        super.visitMaxs(maxStack + 4, maxLocals)
-        SystemPrint.outPrintln(TAG, " -- visitMaxs maxStack -- ${maxStack} maxLocals ${maxLocals}")
-
-    }
+//    override fun visitIntInsn(opcode: Int, operand: Int) {
+//        super.visitIntInsn(opcode, operand)
+//        SystemPrint.outPrintln(TAG, " -- visitIntInsn opcode -- ${opcode}")
+//    }
+//
+//    override fun visitInsn(opcode: Int) {
+//        super.visitInsn(opcode)
+//        SystemPrint.outPrintln(TAG, " -- visitInsn opcode -- ${opcode}")
+//    }
+//
+//    override fun visitVarInsn(opcode: Int, `var`: Int) {
+//        super.visitVarInsn(opcode, `var`)
+//        SystemPrint.outPrintln(TAG, " -- visitVarInsn opcode -- ${opcode}")
+//    }
+//
+//    override fun visitMethodInsn(
+//        opcode: Int,
+//        owner: String?,
+//        name: String?,
+//        descriptor: String?,
+//        isInterface: Boolean
+//    ) {
+//        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
+//        SystemPrint.outPrintln(TAG, " -- visitMethodInsn opcode -- ${opcode} name ${name}")
+//
+//    }
+//
+//
+//    override fun visitFieldInsn(opcode: Int, owner: String?, name: String?, descriptor: String?) {
+//        super.visitFieldInsn(opcode, owner, name, descriptor)
+//        SystemPrint.outPrintln(TAG, " -- visitFieldInsn name -- ${name}")
+//
+//    }
+//
+//    override fun visitEnd() {
+//        super.visitEnd()
+//        SystemPrint.outPrintln(TAG, " -- visitEnd name -- ${name}")
+//
+//    }
+//
+//    override fun visitAttribute(attribute: Attribute?) {
+//        super.visitAttribute(attribute)
+//        SystemPrint.outPrintln(TAG, " -- visitAttribute name -- ${attribute}")
+//    }
+//
+//
+//    override fun visitLocalVariable(
+//        name: String?,
+//        descriptor: String?,
+//        signature: String?,
+//        start: Label?,
+//        end: Label?,
+//        index: Int
+//    ) {
+//        super.visitLocalVariable(name, descriptor, signature, start, end, index)
+//        SystemPrint.outPrintln(TAG, " -- visitLocalVariable name -- ${name}")
+//
+//    }
+//
+//    override fun visitFrame(
+//        type: Int,
+//        numLocal: Int,
+//        local: Array<out Any>?,
+//        numStack: Int,
+//        stack: Array<out Any>?
+//    ) {
+//        super.visitFrame(type, numLocal, local, numStack, stack)
+//        SystemPrint.outPrintln(TAG, " -- visitFrame type -- ${type}")
+//
+//    }
+//
+//    override fun visitMaxs(maxStack: Int, maxLocals: Int) {
+//        super.visitMaxs(maxStack + 4, maxLocals)
+//        SystemPrint.outPrintln(TAG, " -- visitMaxs maxStack -- ${maxStack} maxLocals ${maxLocals}")
+//
+//    }
 
 
 }

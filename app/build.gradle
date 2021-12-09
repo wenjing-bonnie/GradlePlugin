@@ -74,6 +74,9 @@ seniorApplicationKotlin {
     }
     lazyExtensionProperty = file("inputs/1.txt")
     md5CodecClasspath.from(configurations.codec.files)
+    autoLog {
+        autoLogTimeout 400L
+    }
 }
 
 
