@@ -4,14 +4,15 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
+import com.wj.gradle.seniorapplication.tasks.transform.parallel.AutoLogWorkAction
+import com.wj.gradle.seniorapplication.tasks.transform.parallel.AutoLogWorkParameters
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.Project
+import org.gradle.workers.WorkerExecutor
 import java.io.File
 import java.io.FileInputStream
 import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Opcodes
 import java.io.FileOutputStream
 
 /**
@@ -68,12 +69,13 @@ open class AutoLogTransformTask(val project: Project) : Transform() {
         )
         //可直接获取到workerExecutor,并发执行
         val workerExecutor = context.workerExecutor
+        SystemPrint.outPrintln(TAG, "" + workerExecutor)
 
         //TODO  根据需求选择对应的代码来打包发布插件
         val inputs = transformInvocation.inputs
         //val inputs = transformInvocation.referencedInputs
         val outputsProvider = transformInvocation.outputProvider
-        transformInput(inputs, outputsProvider)
+        transformInput(inputs, outputsProvider, workerExecutor)
     }
 
     /**
@@ -81,82 +83,65 @@ open class AutoLogTransformTask(val project: Project) : Transform() {
      */
     private fun transformInput(
         inputs: Collection<TransformInput>,
-        outputsProvider: TransformOutputProvider
+        outputsProvider: TransformOutputProvider,
+        workerExecutor: WorkerExecutor
     ) {
+        val workQueue = workerExecutor.noIsolation()
+        SystemPrint.outPrintln(TAG, "" + workQueue)
+        val classFileHandler =
+            AutoLogClassFileHandler(TAG, getAutoLogTimeoutFromExtension())
         inputs.forEach {
             it.jarInputs.forEach { jar ->
                 //处理文件 TODO 暂时不处理jar文件
                 // handlerInputFiles(jar.file)
                 //写入文件
-                writeOutputFile(jar, Format.JAR, outputsProvider)
+                classFileHandler.writeOutputFile(
+                    jar,
+                    Format.JAR,
+                    getOutputFileFromOutputsProvider(jar, Format.JAR, outputsProvider)
+                )
             }
 
             it.directoryInputs.forEach { directory ->
-                //处理文件
-                handlerDirectoryInputFiles(directory.file)
-                //写入文件
-                writeOutputFile(directory, Format.DIRECTORY, outputsProvider)
-
+                //方案一：非并行
+//                classFileHandler.handlerDirectoryInputFiles(
+//                    directory,
+//                    getOutputFileFromOutputsProvider(directory, Format.DIRECTORY, outputsProvider)
+//                )
+                //方案二：并行
+                workQueue.submit(AutoLogWorkAction::class.javaObjectType) { param: AutoLogWorkParameters ->
+                    param.autoLogTimeout.set(getAutoLogTimeoutFromExtension())
+                    param.directoryInput.set(directory)
+                    param.outputFile.set(
+                        getOutputFileFromOutputsProvider(
+                            directory,
+                            Format.DIRECTORY,
+                            outputsProvider
+                        )
+                    )
+                }
             }
         }
     }
 
     /**
-     * 处理所有文件夹里的.class文件
+     * 获取需要打印日志的时间
      */
-    private fun handlerDirectoryInputFiles(inputFile: File) {
-        if (inputFile.isDirectory) {
-            var filesInDirectory = inputFile.listFiles()
-            filesInDirectory.forEach {
-                handlerDirectoryInputFiles(it)
-            }
-        } else {
-            handlerDirectoryInputClassFileByAsm(inputFile)
-        }
+    private fun getAutoLogTimeoutFromExtension(): Long {
+        val extension =
+            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
+                ?: return 300L
+        return extension.autoLog().autoLogTimeout()
     }
 
-    /**
-     * 处理单个的.class文件
-     */
-    private fun handlerDirectoryInputClassFileByAsm(inputClassFile: File) {
-        SystemPrint.outPrintln(TAG, "handler .class is \n${inputClassFile.absolutePath}\n")
-        if (!inputClassFile.name.endsWith(".class")) {
-            return
-        }
-        //TODO  test
-//        if (!inputClassFile.name.endsWith("ByteCode.class")) {
-//            return
-//        }
-        //1.创建ClassReader
-        val fis = FileInputStream(inputClassFile)
-        val classReader = ClassReader(fis)
-
-        //2.创建ClassWriter
-        val classWriter =
-            ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
-        //3.实例化自定义的AutoLogClassVisitor
-        val autoLogClassVisitor = AutoLogClassVisitor(classWriter, getAutoLogTimeout())
-        //4.注册AutoLogClassVisitor
-        classReader.accept(autoLogClassVisitor, ClassReader.SKIP_FRAMES)
-
-        //5.将修改之后的.class文件重新写入到该文件中
-        val fos = FileOutputStream(inputClassFile)
-        fos.write(classWriter.toByteArray())
-        fos.close()
-        fis.close()
-    }
-
-
-    /**
-     * 复制文件内容
-     */
-    private fun writeOutputFile(
+    private fun getOutputFileFromOutputsProvider(
         input: QualifiedContent,
         format: Format,
         outputsProvider: TransformOutputProvider
-    ) {
+    ): File? {
+
         if (outputsProvider == null) {
-            return
+            return null
         }
         val outputFile = outputsProvider.getContentLocation(
             input.name,
@@ -164,22 +149,7 @@ open class AutoLogTransformTask(val project: Project) : Transform() {
             input.scopes,
             format
         )
-        if (format == Format.JAR) {
-            FileUtils.copyFile(input.file, outputFile)
-        } else {
-            FileUtils.copyDirectory(input.file, outputFile)
-        }
+        return outputFile
     }
-
-
-    private fun getAutoLogTimeout(): Long {
-        val extension =
-            project.extensions.findByType(SeniorApplicationKotlinExtension::class.javaObjectType)
-        if (extension == null) {
-            return 300L
-        }
-        return extension.autoLog().autoLogTimeout()
-    }
-
 
 }

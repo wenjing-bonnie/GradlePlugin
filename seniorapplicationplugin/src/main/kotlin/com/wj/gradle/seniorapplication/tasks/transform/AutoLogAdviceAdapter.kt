@@ -3,7 +3,6 @@ package com.wj.gradle.seniorapplication.tasks.transform
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.objectweb.asm.*
 import org.objectweb.asm.commons.AdviceAdapter
-import org.objectweb.asm.Type
 
 
 /**
@@ -29,10 +28,10 @@ open class AutoLogAdviceAdapter(
         if (isInitMethod() || methodVisitor == null) {
             return
         }
-        SystemPrint.errorPrintln(
-            TAG,
-            "onMethodEnter is ${name}" + " , nextLocal is ${nextLocal}"
-        )
+//        SystemPrint.errorPrintln(
+//            TAG,
+//            "onMethodEnter is ${name}" + " , nextLocal is ${nextLocal}"
+//        )
         //关键点1的实现
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
@@ -43,10 +42,10 @@ open class AutoLogAdviceAdapter(
         )
         //索引值2的获取方式
         startVar = newLocal(Type.LONG_TYPE)
-        SystemPrint.outPrintln(
-            TAG,
-            "When new start local is ${startVar} , nextLocal is ${nextLocal}"
-        )
+//        SystemPrint.outPrintln(
+//            TAG,
+//            "When new start local is ${startVar} , nextLocal is ${nextLocal}"
+//        )
         //为该变量起名字，感觉不起名字（或者加上自己特殊的前缀），灵活性更大，可以不用考虑名字重复
         /**
          * @param start the first instruction corresponding to the scope of this local variable
@@ -70,10 +69,10 @@ open class AutoLogAdviceAdapter(
         if (isInitMethod() || methodVisitor == null || startVar == 0) {
             return
         }
-        SystemPrint.errorPrintln(
-            TAG,
-            "onMethodExit is ${name} , nextLocal is ${nextLocal}"
-        )
+//        SystemPrint.errorPrintln(
+//            TAG,
+//            "onMethodExit is ${name} , nextLocal is ${nextLocal}"
+//        )
         // 关键点2的实现
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
@@ -87,7 +86,7 @@ open class AutoLogAdviceAdapter(
 
         //存储sub
         val subVar = newLocal(Type.LONG_TYPE)
-        SystemPrint.outPrintln(TAG, "When new sub local is ${subVar} ,  nextLocal is ${nextLocal}")
+        //SystemPrint.outPrintln(TAG, "When new sub local is ${subVar} ,  nextLocal is ${nextLocal}")
         methodVisitor.visitVarInsn(LSTORE, subVar)
 
         // ==== 增加if判断 ====
@@ -136,6 +135,7 @@ open class AutoLogAdviceAdapter(
         // === 增加if之后的关键点
         methodVisitor.visitLabel(returnLabel)
         returnValue()
+        SystemPrint.outPrintln(TAG, "-- -- ${name} is finished ! -- -- ")
         super.onMethodExit(opcode)
     }
 
