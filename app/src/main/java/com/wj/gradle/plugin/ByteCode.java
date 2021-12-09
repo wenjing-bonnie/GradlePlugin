@@ -41,8 +41,14 @@ public class ByteCode {
         this.sumInt = sum;
         String tag = "13";
 
+        for (int i = 0; i < 400000; i++) {
+        }
+
         long end = System.currentTimeMillis() - start;
-        Log.v("ExecutionTime", String.format("cost time is %d", end));
+        if (end >= 300) {
+            Log.v("ExecutionTime", String.format("cost time is %d", end));
+        }
+
     }
 
     public int getSumInt() {

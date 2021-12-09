@@ -28,9 +28,10 @@ open class AutoLogAdviceAdapter(
         if (isInitMethod() || methodVisitor == null) {
             return
         }
-        SystemPrint.errorPrintln(TAG, " --  onMethodEnter -- ${name}" + " , nextLocal ${nextLocal}")
-        SystemPrint.outPrintln(TAG, "argumentTypes size  = " + argumentTypes.size)
-        val label = Label()
+        SystemPrint.errorPrintln(
+            TAG,
+            " --  onMethodEnter -- ${name}" + " , nextLocal is ${nextLocal}"
+        )
         //关键点1的实现
         methodVisitor.visitMethodInsn(
             INVOKESTATIC,
@@ -41,8 +42,7 @@ open class AutoLogAdviceAdapter(
         )
         //索引值2的获取方式
         startVar = newLocal(Type.LONG_TYPE)
-        //methodVisitor.visitInsn(Opcodes.DUP)
-        SystemPrint.outPrintln(TAG, "new local is ${startVar}")
+        SystemPrint.outPrintln(TAG, "new local is ${startVar} nextlocal is ${nextLocal}")
         //为该变量起名字，感觉不起名字（或者加上自己特殊的前缀），灵活性更大，可以不用考虑名字重复
         /**
          * @param start the first instruction corresponding to the scope of this local variable
@@ -83,8 +83,16 @@ open class AutoLogAdviceAdapter(
 
         //存储sub
         val subVar = newLocal(Type.LONG_TYPE)
-        SystemPrint.outPrintln(TAG, "subVar = " + subVar + "  nextLocal  ${nextLocal}")
+        SystemPrint.outPrintln(TAG, "new local is ${subVar} nextlocal is ${nextLocal}")
         methodVisitor.visitVarInsn(LSTORE, subVar)
+
+        // ==== 增加if判断 ====
+        val returnLabel = Label()
+        methodVisitor.visitVarInsn(LLOAD, subVar)
+        methodVisitor.visitLdcInsn(300L)
+        methodVisitor.visitInsn(LCMP)
+        methodVisitor.visitJumpInsn(IFLT, returnLabel)
+        // ==== 增加if判断 ====
 
         //关键点4的实现
         //输出日志
@@ -121,7 +129,10 @@ open class AutoLogAdviceAdapter(
         //关键点4的实现, 一定要有，否则该地方就会作为返回值返回
         methodVisitor.visitInsn(POP)
         //关键点5的实现
+        // === 增加if之后的关键点
+        methodVisitor.visitLabel(returnLabel)
         returnValue()
+        SystemPrint.errorPrintln(TAG, " ---- on methodExit  end --- ${name}")
         super.onMethodExit(opcode)
     }
 
@@ -173,19 +184,17 @@ open class AutoLogAdviceAdapter(
 
     }
 
+    override fun visitEnd() {
+        super.visitEnd()
+        SystemPrint.outPrintln(TAG, " -- visitEnd name -- ${name}")
+
+    }
+
     override fun visitAttribute(attribute: Attribute?) {
         super.visitAttribute(attribute)
         SystemPrint.outPrintln(TAG, " -- visitAttribute name -- ${attribute}")
-
     }
 
-    //
-
-    override fun visitLabel(label: Label?) {
-        super.visitLabel(label)
-        SystemPrint.outPrintln(TAG, " -- visitLabel label -- ${label}")
-
-    }
 
     override fun visitLocalVariable(
         name: String?,
