@@ -69,7 +69,6 @@ open class AutoLogTransformTask(val project: Project) : Transform() {
         )
         //可直接获取到workerExecutor,并发执行
         val workerExecutor = context.workerExecutor
-        SystemPrint.outPrintln(TAG, "" + workerExecutor)
 
         //TODO  根据需求选择对应的代码来打包发布插件
         val inputs = transformInvocation.inputs
@@ -87,7 +86,6 @@ open class AutoLogTransformTask(val project: Project) : Transform() {
         workerExecutor: WorkerExecutor
     ) {
         val workQueue = workerExecutor.noIsolation()
-        SystemPrint.outPrintln(TAG, "" + workQueue)
         val classFileHandler =
             AutoLogClassFileHandler(TAG, getAutoLogTimeoutFromExtension())
         inputs.forEach {

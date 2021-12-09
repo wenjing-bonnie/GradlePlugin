@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.taskmanager.*
 import com.wj.gradle.seniorapplication.utils.SystemPrint
+import com.wj.gradle.seniorapplication.utils.TaskExecutionPrintListener
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
@@ -27,6 +28,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
+        addTaskExecutionListener(p0)
         addAddCustomTransformTaskByExtension(p0)
         SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
         addTasksForVariantAfterEvaluate(p0)
@@ -41,6 +43,13 @@ open class SeniorApplicationProject : Plugin<Project> {
             SeniorApplicationKotlinExtension.TAG,
             SeniorApplicationKotlinExtension::class.javaObjectType
         )
+    }
+
+    /**
+     * 增加task执行时间的统计
+     */
+    private fun addTaskExecutionListener(project: Project) {
+        project.gradle.addListener(TaskExecutionPrintListener())
     }
 
     /**

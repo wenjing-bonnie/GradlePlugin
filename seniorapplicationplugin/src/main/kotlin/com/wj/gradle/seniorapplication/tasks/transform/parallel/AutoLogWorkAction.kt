@@ -1,7 +1,6 @@
 package com.wj.gradle.seniorapplication.tasks.transform.parallel
 
 import com.wj.gradle.seniorapplication.tasks.transform.AutoLogClassFileHandler
-import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.workers.WorkAction
 
 /**

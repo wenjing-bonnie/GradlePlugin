@@ -80,7 +80,7 @@ open class AutoLogClassFileHandler(
     }
 
     /**
-     * 复制文件内容
+     * 复制文件内容到目标文件
      */
     open fun writeOutputFile(
         input: QualifiedContent, format: Format, outputFile: File?

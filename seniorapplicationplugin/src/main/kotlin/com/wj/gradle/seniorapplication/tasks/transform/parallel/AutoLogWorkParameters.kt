@@ -8,7 +8,8 @@ import org.gradle.workers.WorkParameters
 
 /**
  * Created by wenjing.liu on 2021/12/9 in J1.
- * 里面的成员变量必须用val进行修饰
+ *
+ * 里面的成员变量必须用val进行修饰,否则会抛出空指针异常
  * @author wenjing.liu
  */
 interface AutoLogWorkParameters : WorkParameters {
@@ -17,6 +18,9 @@ interface AutoLogWorkParameters : WorkParameters {
      */
     val directoryInput: Property<DirectoryInput>
 
+    /**
+     * 打印日志阀值
+     */
     val autoLogTimeout: Property<Long>
 
     /**
