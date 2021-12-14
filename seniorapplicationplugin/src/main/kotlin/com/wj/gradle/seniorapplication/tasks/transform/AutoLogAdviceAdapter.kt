@@ -28,6 +28,7 @@ open class AutoLogAdviceAdapter(
         if (isInitMethod() || methodVisitor == null) {
             return
         }
+        
 //        SystemPrint.errorPrintln(
 //            TAG,
 //            "onMethodEnter is ${name}" + " , nextLocal is ${nextLocal}"
@@ -46,15 +47,7 @@ open class AutoLogAdviceAdapter(
 //            TAG,
 //            "When new start local is ${startVar} , nextLocal is ${nextLocal}"
 //        )
-        //为该变量起名字，感觉不起名字（或者加上自己特殊的前缀），灵活性更大，可以不用考虑名字重复
-        /**
-         * @param start the first instruction corresponding to the scope of this local variable
-         *     (inclusive). 该局部变量作用范围对应的第一条指令
-         * @param end the last instruction corresponding to the scope of this local variable (exclusive).
-         * 该局部变量作用范围对应的最后一条指令
-         * @param index the local variable's index.
-         */
-        //methodVisitor.visitLocalVariable("start", "J", null, label, label, startVar)
+
         methodVisitor.visitVarInsn(LSTORE, startVar)
         super.onMethodEnter()
 
@@ -83,6 +76,18 @@ open class AutoLogAdviceAdapter(
         )
         methodVisitor.visitVarInsn(LLOAD, startVar)
         methodVisitor.visitInsn(LSUB)
+
+        //为该变量起名字，感觉不起名字（或者加上自己特殊的前缀），灵活性更大，可以不用考虑名字重复
+        var startLabel = Label()
+        var endLabel = Label()
+        /**
+         * @param start the first instruction corresponding to the scope of this local variable
+         *     (inclusive). 该局部变量作用范围对应的第一条指令
+         * @param end the last instruction corresponding to the scope of this local variable (exclusive).
+         * 该局部变量作用范围对应的最后一条指令
+         * @param index the local variable's index.
+         */
+        methodVisitor.visitLocalVariable("startTime", "J", null, startLabel, endLabel, startVar)
 
         //存储sub
         val subVar = newLocal(Type.LONG_TYPE)
@@ -149,4 +154,5 @@ open class AutoLogAdviceAdapter(
     private fun isInitMethod(): Boolean {
         return "<init>" == name || "<clinit>" == name
     }
+
 }
