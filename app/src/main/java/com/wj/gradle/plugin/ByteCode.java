@@ -16,16 +16,6 @@ public class ByteCode {
     public int sumMethod(int aa, int bb) {
         long start = System.currentTimeMillis();
 
-//        if (aa > 0 && aa < 100) {
-//            end = System.currentTimeMillis();
-//            Log.v(getClass().getSimpleName(), String.format("cost time is %ld", (end - start)));
-//            return aa;
-//        } else if (bb > 0 && bb < 100) {
-//            end = System.currentTimeMillis();
-//            Log.v(getClass().getSimpleName(), String.format("cost time is %ld", (end - start)));
-//            return bb;
-//        }
-
         long end = System.currentTimeMillis() - start;
         Log.v("ExecutionTime", String.format("cost time is %d", end));
         return aa + bb + staticInt + sumInt + getSumInt();
@@ -39,7 +29,6 @@ public class ByteCode {
         long start = System.currentTimeMillis();
 
         this.sumInt = sum;
-        String tag = "13";
 
         for (int i = 0; i < 400000; i++) {
         }
@@ -48,12 +37,17 @@ public class ByteCode {
         if (end >= 300) {
             Log.v("ExecutionTime", String.format("cost time is %d", end));
         }
-
     }
 
     public int getSumInt() {
         return sumInt;
     }
+
+//    private void forLabelByteCode() {
+//        for (int i = 3; i < 10; i+=2) {
+//            System.currentTimeMillis();
+//        }
+//    }
 
     public static void main(String[] args) {
         ByteCode code = new ByteCode();

@@ -1,8 +1,6 @@
 package com.wj.gradle.seniorapplication.tasks.transform
 
-import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
@@ -35,5 +33,4 @@ open class AutoLogClassVisitor(visitor: ClassVisitor, val autoLogTimeout: Long) 
             autoLogTimeout
         )
     }
-
 }

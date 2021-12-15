@@ -8,6 +8,7 @@ import com.android.utils.FileUtils
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -69,8 +70,10 @@ open class AutoLogClassFileHandler(
             ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
         //3.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor(classWriter, timeout)
+        //classWriter.visitMethod(Opcodes.ACC_PRIVATE, "forLabelByteCode", "()V", null, null)
+        val labelClassVisitor = LabelClassVisitor(autoLogClassVisitor)
         //4.注册AutoLogClassVisitor
-        classReader.accept(autoLogClassVisitor, ClassReader.SKIP_FRAMES)
+        classReader.accept(labelClassVisitor, ClassReader.SKIP_FRAMES)
 
         //5.将修改之后的.class文件重新写入到该文件中
         val fos = FileOutputStream(inputClassFile)

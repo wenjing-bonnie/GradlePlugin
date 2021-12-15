@@ -28,7 +28,7 @@ open class AutoLogAdviceAdapter(
         if (isInitMethod() || methodVisitor == null) {
             return
         }
-        
+
 //        SystemPrint.errorPrintln(
 //            TAG,
 //            "onMethodEnter is ${name}" + " , nextLocal is ${nextLocal}"
