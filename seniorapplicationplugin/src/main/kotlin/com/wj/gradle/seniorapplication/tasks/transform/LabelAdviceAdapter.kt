@@ -25,6 +25,7 @@ open class LabelAdviceAdapter(
 
     override fun onMethodEnter() {
         super.onMethodEnter()
+        SystemPrint.outPrintln(TAG, "name  = " + name)
         if (isForLabel()) {
             handlerForLabel()
             return
@@ -58,8 +59,8 @@ open class LabelAdviceAdapter(
         )
         methodVisitor.visitInsn(POP2)
         //自增
-        methodVisitor.visitIincInsn(1,2)
-        methodVisitor.visitJumpInsn(GOTO,inForLabel)
+        methodVisitor.visitIincInsn(1, 2)
+        methodVisitor.visitJumpInsn(GOTO, inForLabel)
         //for循环之后的逻辑
         returnValue()
 

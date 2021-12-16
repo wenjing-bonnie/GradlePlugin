@@ -12,6 +12,7 @@ import org.gradle.api.tasks.TaskState
  * @author wenjing.liu
  */
 open class TaskExecutionPrintListener : TaskExecutionListener {
+    private val TAG = "TaskExecutionPrintListener"
 
     private val taskInfo = TaskExecutionTimeInfo()
     override fun beforeExecute(task: Task) {
@@ -22,7 +23,7 @@ open class TaskExecutionPrintListener : TaskExecutionListener {
     override fun afterExecute(task: Task, state: TaskState) {
         taskInfo.endTime = System.currentTimeMillis()
         if (isTaskPrintln(taskInfo.path)) {
-            SystemPrint.outPrintln(taskInfo.toString())
+            SystemPrint.outPrintln(TAG, taskInfo.toString())
         }
     }
 
@@ -35,7 +36,7 @@ open class TaskExecutionPrintListener : TaskExecutionListener {
         var endTime = 0L
         var path = ""
         override fun toString(): String {
-            return " ~~~ ~~~ '${path}'  execution time is ${endTime - startTime} ms"
+            return "'${path}' execution time is ${endTime - startTime} ms"
         }
     }
 

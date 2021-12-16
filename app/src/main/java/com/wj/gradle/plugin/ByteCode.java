@@ -14,10 +14,6 @@ public class ByteCode {
     private static String byteCode = "字节码";
 
     public int sumMethod(int aa, int bb) {
-        long start = System.currentTimeMillis();
-
-        long end = System.currentTimeMillis() - start;
-        Log.v("ExecutionTime", String.format("cost time is %d", end));
         return aa + bb + staticInt + sumInt + getSumInt();
     }
 

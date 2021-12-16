@@ -28,7 +28,7 @@ open class SeniorApplicationProject : Plugin<Project> {
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
-        addTaskExecutionListener(p0)
+        //addTaskExecutionListener(p0)
         addAddCustomTransformTaskByExtension(p0)
         SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
         addTasksForVariantAfterEvaluate(p0)

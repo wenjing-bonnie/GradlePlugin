@@ -70,7 +70,6 @@ open class AutoLogClassFileHandler(
             ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
         //3.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor(classWriter, timeout)
-        //classWriter.visitMethod(Opcodes.ACC_PRIVATE, "forLabelByteCode", "()V", null, null)
         val labelClassVisitor = LabelClassVisitor(autoLogClassVisitor)
         //4.注册AutoLogClassVisitor
         classReader.accept(labelClassVisitor, ClassReader.SKIP_FRAMES)
