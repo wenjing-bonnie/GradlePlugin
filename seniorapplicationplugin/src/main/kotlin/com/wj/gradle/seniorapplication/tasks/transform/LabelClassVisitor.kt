@@ -52,18 +52,18 @@ open class LabelClassVisitor(private val visitor: ClassVisitor) :
     private fun addForLabelMethod() {
         val methodVisitor =
             visitor.visitMethod(Opcodes.ACC_PRIVATE, FOR_LABEL, "()V", null, null)
-        val firstVar = 1 //newLocal(Type.INT_TYPE)
-        methodVisitor.visitInsn(AdviceAdapter.ICONST_3)
-        methodVisitor.visitVarInsn(AdviceAdapter.ISTORE, firstVar)
+        methodVisitor.visitCode()
+        methodVisitor.visitInsn(Opcodes.ICONST_3)
+        methodVisitor.visitVarInsn(Opcodes.ISTORE, 1)
         //放入3
         val inForLabel = Label()
         methodVisitor.visitLabel(inForLabel)
-        methodVisitor.visitVarInsn(AdviceAdapter.ILOAD, firstVar)
+        methodVisitor.visitVarInsn(Opcodes.ILOAD, 1)
         //放入10
-        methodVisitor.visitIntInsn(AdviceAdapter.BIPUSH, 10)
+        methodVisitor.visitIntInsn(Opcodes.BIPUSH, 10)
 
         val outForLabel = Label()
-        methodVisitor.visitJumpInsn(AdviceAdapter.IF_ICMPGE, outForLabel)
+        methodVisitor.visitJumpInsn(Opcodes.IF_ICMPGE, outForLabel)
         //for循环里面的逻辑
         methodVisitor.visitMethodInsn(
             Opcodes.INVOKESTATIC,
@@ -72,10 +72,10 @@ open class LabelClassVisitor(private val visitor: ClassVisitor) :
             "()J",
             false
         )
-        methodVisitor.visitInsn(AdviceAdapter.POP2)
+        methodVisitor.visitInsn(Opcodes.POP2)
         //自增
         methodVisitor.visitIincInsn(1, 2)
-        methodVisitor.visitJumpInsn(AdviceAdapter.GOTO, inForLabel)
+        methodVisitor.visitJumpInsn(Opcodes.GOTO, inForLabel)
 
         methodVisitor.visitLabel(outForLabel)
         methodVisitor.visitInsn(Opcodes.RETURN)
@@ -104,6 +104,7 @@ open class LabelClassVisitor(private val visitor: ClassVisitor) :
     private fun addSwitchLabelMethod() {
         val methodVisitor =
             visitor.visitMethod(Opcodes.ACC_PRIVATE, "switchLabelByteCode", "(I)V", null, null)
+        methodVisitor.visitCode()
         methodVisitor.visitVarInsn(Opcodes.ILOAD, 1)
         //case三个条件
         val label10 = Label()
@@ -186,6 +187,7 @@ open class LabelClassVisitor(private val visitor: ClassVisitor) :
     private fun addTryCatchLabelMethod() {
         val methodVisitor =
             visitor.visitMethod(Opcodes.ACC_PRIVATE, "tryCatchLabelByteCode", "()V", null, null)
+        methodVisitor.visitCode()
         val labelStart = Label()
         val labelEnd = Label()
         val labelHandler = Label()
