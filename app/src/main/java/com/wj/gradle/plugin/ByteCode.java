@@ -38,10 +38,35 @@ public class ByteCode {
     public int getSumInt() {
         return sumInt;
     }
-
+//
 //    private void forLabelByteCode() {
 //        for (int i = 3; i < 10; i+=2) {
 //            System.currentTimeMillis();
+//        }
+//    }
+//
+//    private void switchLabelByteCode(int arg) {
+//        switch (arg) {
+//            case 10: {
+//                System.out.println("This is ten");
+//                break;
+//            }
+//            case 9: {
+//                System.out.println("This is nine");
+//                break;
+//            }
+//            default: {
+//                System.out.println("Not support");
+//            }
+//
+//        }
+//    }
+//
+//    private void tryCatchLabelByteCode() {
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
 //        }
 //    }
 
