@@ -2,6 +2,8 @@ package com.wj.gradle.plugin;
 
 import android.util.Log;
 
+import com.wj.gradle.plugin.annotation.Event;
+
 /**
  * Created by wenjing.liu on 2021/11/17 in J1.
  *
@@ -35,6 +37,7 @@ public class ByteCode {
         }
     }
 
+    @Event(eventId = "getSum", label = "sum")
     public int getSumInt() {
         return sumInt;
     }

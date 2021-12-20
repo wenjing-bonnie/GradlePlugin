@@ -71,8 +71,9 @@ open class AutoLogClassFileHandler(
         //3.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor(classWriter, timeout)
         val labelClassVisitor = LabelClassVisitor(autoLogClassVisitor)
+        val annotationClassVisitor = AnnotationClassVisitor(labelClassVisitor)
         //4.注册AutoLogClassVisitor
-        classReader.accept(labelClassVisitor, ClassReader.SKIP_FRAMES)
+        classReader.accept(annotationClassVisitor, ClassReader.SKIP_FRAMES)
 
         //5.将修改之后的.class文件重新写入到该文件中
         val fos = FileOutputStream(inputClassFile)
