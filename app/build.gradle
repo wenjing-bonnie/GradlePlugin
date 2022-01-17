@@ -61,6 +61,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     codec "commons-codec:commons-codec:1.10"
+    implementation "com.github.bumptech.glide:glide:4.11.0"
 
 }
 

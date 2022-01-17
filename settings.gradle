@@ -2,6 +2,7 @@ rootProject.name = "GradlePlugin"
 include ':app'
 include ':manifestplugin'
 include ':seniorapplicationplugin'
+include ':libs:StatiLibrary'
 //include ':wjbaseplugin'
 //生命周期的监听
 this.gradle.addBuildListener(new BuildListener() {
@@ -88,4 +89,5 @@ void systemPrintln(String info) {
         println("<= settings.build => " + info)
     }
 }
+
 

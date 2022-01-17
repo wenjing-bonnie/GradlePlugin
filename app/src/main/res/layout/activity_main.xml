@@ -10,4 +10,9 @@
         android:layout_height="wrap_content"
         android:text="hello world" />
 
+    <ImageView
+        android:id="@+id/iv_glide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
