@@ -14,11 +14,11 @@ plugins {
 /**com.wj.manifest中配置的扩展属性*/
 manifestKotlin {
     versionManager file("version.xml")
-    compileSdkVersion 31
-    buildToolVersion "30.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolVersion rootProject.ext.buildToolVersion
     defaultConfig {
         applicationId "com.wj.gradle.plugin"
-        minSdkVersion 23
+        minSdkVersion rootProject.ext.minSdkVersion
     }
     buildTypes {
         release {

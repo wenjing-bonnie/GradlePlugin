@@ -28,6 +28,14 @@ buildscript {
     }
 }
 
+ext {
+    compileSdkVersion = 31
+    buildToolVersion = "30.0.3"
+    minSdkVersion = 23
+    targetSdkVersion = 31
+}
+
+
 allprojects {
     repositories {
         google()

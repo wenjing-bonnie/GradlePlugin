@@ -52,9 +52,13 @@ class ManifestKotlinProject : Plugin<Project> {
 
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            //addExportForPackageManifestAfterEvaluate(it)
-            addExportForPkgManifestParallelAfterEvaluate(it)
-            addSetLatestVersionForMergedManifestAfterEvaluate(it)
+            try {
+                //addExportForPackageManifestAfterEvaluate(it)
+                addExportForPkgManifestParallelAfterEvaluate(it)
+                addSetLatestVersionForMergedManifestAfterEvaluate(it)
+            } catch (e: Exception) {
+
+            }
         }
     }
 
@@ -71,8 +75,8 @@ class ManifestKotlinProject : Plugin<Project> {
      * 并发增量task
      */
     private fun addExportForPkgManifestParallelAfterEvaluate(project: Project) {
-        val addExportedMananger = AddExportForPkgManifestParallelTaskManager(project, variantName)
-        addExportedMananger.addExportForPkgManifestParallelTask()
+        val addExportedManager = AddExportForPkgManifestParallelTaskManager(project, variantName)
+        addExportedManager.addExportForPkgManifestParallelTask()
     }
 
     /**
