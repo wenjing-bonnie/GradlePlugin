@@ -1,6 +1,8 @@
 package com.wj.gradle.plugin
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -12,6 +14,8 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val bitmap = BitmapFactory.decodeByteArray()
         val code = ByteCode()
         code.sumMethod(1, 5)
         // code.stringMethod()
@@ -69,4 +73,6 @@ class MainActivity : Activity() {
 
 
     }
+
+
 }

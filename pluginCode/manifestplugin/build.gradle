@@ -1,0 +1,35 @@
+//<方案一 使用groovy> 步骤一
+apply plugin: 'groovy'
+apply plugin: 'maven'
+//<方案二 使用kotlin> Gradle 2.1版本之后,仅需要引入即可
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+dependencies {
+    //gradle sdk
+    implementation gradleApi()
+    implementation "com.android.tools.build:gradle:$gradle_version"
+    //<方案一 使用groovy语言> 步骤二
+    // groovy sdk
+    implementation localGroovy()
+}
+
+repositories {
+    mavenCentral()
+}
+//打包上传到本地或者服务器
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //配置plugin的classpath
+            pom.groupId = "com.wj.gradle.plugins"
+            pom.artifactId = "manifestplugin"
+            pom.version = "1.0.0"
+            //提交到服务器
+//            repository(url: "服务器地址") {
+//                authentication(userName: 'admin', password: 'admin')
+//            }
+            //提交到本地
+            repository(url: uri('../../plugins'))
+        }
+    }
+}

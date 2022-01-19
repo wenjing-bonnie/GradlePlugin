@@ -1,0 +1,35 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+//apply plugin: "com.wj.variantbase"
+
+
+//repositories {
+//    mavenCentral()
+//配置自定义插件的maven依赖。闭包的调用
+//    maven {
+//        url uri('../plugins')
+//    }
+//}
+
+dependencies {
+    implementation gradleApi()
+    implementation "com.android.tools.build:gradle:$gradle_version"
+    //implementation "com.wj.gradle.plugins:variantbaseplugin:1.0.0"
+    implementation "commons-io:commons-io:2.5"
+    compileOnly "commons-codec:commons-codec:1.9"
+    implementation "org.ow2.asm:asm:9.2"
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.groupId = "com.wj.gradle.plugins"
+            pom.artifactId = "seniorapplicationplugin"
+            pom.version = "1.0.0"
+            repository(url: uri("../../plugins"))
+        }
+    }
+}
+
