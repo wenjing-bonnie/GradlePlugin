@@ -15,7 +15,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bitmap = BitmapFactory.decodeByteArray()
+       // val bitmap = BitmapFactory.decodeByteArray()
         val code = ByteCode()
         code.sumMethod(1, 5)
         // code.stringMethod()
