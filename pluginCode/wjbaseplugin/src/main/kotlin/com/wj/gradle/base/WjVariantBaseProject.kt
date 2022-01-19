@@ -47,35 +47,47 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * TODO 该方法暂时不可复写
      */
     final override fun apply(p0: Project) {
-        SystemPrint.outPrintln("===  in code apply")
+        resetGlobalTag(javaClass.simpleName)
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
         addTransformTaskByExtension(p0)
-        SystemPrint.outPrintln("Welcome ${javaClass.simpleName}}")
+        SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
         addTasksForBuildVariantAfterEvaluate(p0)
 
     }
 
     /**
      * 创建属性扩展
-     * 考虑到并不是所有的gradle都需要扩展属性，所以如果不需要扩展属性，该方法仅重载即可
+     * 考虑到并不是所有的gradle都需要扩展属性，所以该方法不做抽象
      * @param project
      */
-    abstract fun createExtension(project: Project)
+    open fun createExtension(project: Project) {}
+
+    /**
+     * 设置全局的Tag标识,默认为
+     */
+    open fun resetGlobalTag(tag: String) {
+        SystemPrint.TAG = tag
+    }
 
     /**
      * 在项目配置完之后添加自定义的Task。
+     *
      * 如果没有特殊要求，凡是继承自{@ DefaultTask} 、{@IncrementalTask}、{@link NonIncrementalTask}等都是在项目配置完成之后添加Task
+     *
+     * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getAfterEvaluateTaskDependsOn(): MutableList<TaskWrapper>
+    abstract fun getAfterEvaluateTasks(): MutableList<TaskWrapper>
 
     /**
      * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
      *
      * 所有继承自{@ Transform}的Task需要添加到该plugin都要通过该方法返回
+     *
+     * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
     abstract fun getRegisterTransformTasks(): MutableList<Transform>
 
@@ -107,7 +119,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     private fun addTasksForBuildVariantAfterEvaluate(project: Project) {
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            val tasks = getAfterEvaluateTaskDependsOn()
+            val tasks = getAfterEvaluateTasks()
             //循环取出Task添加到project中
             tasks.forEach {
                 registerTaskAfterEvaluate(project, it)
