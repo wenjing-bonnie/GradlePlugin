@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
     //验证Android 12 的适配
     //TODO 暂时隐藏该插件 2021/11/12
     //id 'com.mob.sdk'
