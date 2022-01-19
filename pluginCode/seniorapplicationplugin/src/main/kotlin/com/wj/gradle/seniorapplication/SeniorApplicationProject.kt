@@ -1,6 +1,7 @@
 package com.wj.gradle.seniorapplication
 
 import com.android.build.gradle.AppExtension
+import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.taskmanager.*
 import com.wj.gradle.seniorapplication.utils.SystemPrint

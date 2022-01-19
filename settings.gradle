@@ -91,3 +91,4 @@ void systemPrintln(String info) {
 }
 
 
+include ':pluginCode:wjapkprotect'

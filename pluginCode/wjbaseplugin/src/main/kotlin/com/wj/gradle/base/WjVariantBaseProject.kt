@@ -1,5 +1,8 @@
 package com.wj.gradle.base
 
+import com.android.build.api.transform.Transform
+import com.android.build.gradle.AppExtension
+import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
@@ -7,7 +10,29 @@ import com.wj.gradle.base.utils.SystemPrint
 
 /**
  * Created by wenjing.liu on 2021/10/29 in J1.
- * 自定义Gradle Plugin的基工程
+ *
+ * 一、自定义Gradle Plugin的基工程:
+ * [优势：可快速创建可基于当前variant的创建Task的Project]
+ *
+ * 二、使用方式
+ * 1.在自定义Gradle Plugin的工程的build.gradle下添加如下代码：
+ * repositories {
+ *     //配置自定义插件的maven依赖。闭包的调用
+ *      maven {
+ *            //引用本地gradle的目录
+ *         url uri('../../plugins')
+ *      }
+ * }
+ * dependencies {
+ *     //引用本地gradle
+ *      implementation 'com.wj.gradle.plugins:variantbaseplugin:1.0.0'
+ * }
+ * 2.在自定义Gradle Plugin的工程的新建类继承{@link WjVariantBaseProject}
+ *
+ * 通过上述两个步骤就可以快速的创建一个添加Task的工程
+ *
+ * TODO 后面考虑怎么把build.gradle里面配置的内容添加到这个里面
+ *
  * @author wenjing.liu
  */
 abstract class WjVariantBaseProject : Plugin<Project> {
@@ -17,38 +42,96 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private var variantName: String = ""
 
-    override fun apply(p0: Project) {
+
+    /**
+     * TODO 该方法暂时不可复写
+     */
+    final override fun apply(p0: Project) {
+        SystemPrint.outPrintln("===  in code apply")
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
         if (!getValidVariantNameInBuild(p0)) {
             return
         }
+        addTransformTaskByExtension(p0)
         SystemPrint.outPrintln("Welcome ${javaClass.simpleName}}")
-        addTasksForVariantAfterEvaluate(p0)
+        addTasksForBuildVariantAfterEvaluate(p0)
+
     }
 
     /**
      * 创建属性扩展
+     * 考虑到并不是所有的gradle都需要扩展属性，所以如果不需要扩展属性，该方法仅重载即可
      * @param project
      */
     abstract fun createExtension(project: Project)
 
     /**
-     * 在项目配置完之后添加自定义的Task
-     * @param project
+     * 在项目配置完之后添加自定义的Task。
+     * 如果没有特殊要求，凡是继承自{@ DefaultTask} 、{@IncrementalTask}、{@link NonIncrementalTask}等都是在项目配置完成之后添加Task
      */
-    abstract fun addTasksForVariantAfterEvaluate(project: Project, variantName: String)
+    abstract fun getAfterEvaluateTaskDependsOn(): MutableList<TaskWrapper>
+
+    /**
+     * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
+     *
+     * 所有继承自{@ Transform}的Task需要添加到该plugin都要通过该方法返回
+     */
+    abstract fun getRegisterTransformTasks(): MutableList<Transform>
+
+
+    /**
+     * 获取当前的variant的name
+     */
+    open fun getVariantName(): String {
+        return variantName
+    }
+
+    /**
+     * 因为这个task是在项目构建之前添加到项目中的，而extension只有在项目构建后才能得到
+     * 所以这里将传入project，在task中取得配置的内容
+     */
+    private fun addTransformTaskByExtension(project: Project) {
+        val extension = project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
+        val transforms = getRegisterTransformTasks()
+        //循环取出Transform添加到project中
+        transforms.forEach {
+            extension.registerTransform(it)
+        }
+    }
 
     /**
      * 在项目配置完之后添加自定义的Task
      * @param project
      */
-    private fun addTasksForVariantAfterEvaluate(project: Project) {
-
+    private fun addTasksForBuildVariantAfterEvaluate(project: Project) {
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            addTasksForVariantAfterEvaluate(project, variantName)
+            val tasks = getAfterEvaluateTaskDependsOn()
+            //循环取出Task添加到project中
+            tasks.forEach {
+                registerTaskAfterEvaluate(project, it)
+            }
         }
+    }
+
+    /**
+     * 为每个Task注册到project中
+     */
+    private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
+        val provider = project.tasks.register(wrapper.tag, wrapper.willRunTaskClass)
+        val task = provider.get()
+        val dependsOnTask = project.tasks.getByPath(wrapper.dependsOnTaskName)
+        if (wrapper.isDependsOn) {
+            dependsOnTask.dependsOn(task)
+        } else {
+            dependsOnTask.finalizedBy(task)
+        }
+        //回调返回每个Task实例
+        if (wrapper.taskRegisterListener == null) {
+            return
+        }
+        wrapper.taskRegisterListener.willRunTaskRegistered(provider, task)
     }
 
     /**
@@ -74,4 +157,35 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         }
         return true
     }
+
+
+    /**
+     * 添加repositories
+     */
+//    private fun addRepositories(project: Project) {
+//        addMavenCentralToRepositories(project)
+//        addThisBaseProjectToRepositories(project)
+//    }
+
+    /**
+     * 将本工程添加到repositories中
+     */
+//    private fun addThisBaseProjectToRepositories(project: Project) {
+//        val path = getThisBaseProjectMavenUrl()
+//        if (path == null || path.isEmpty()) {
+//            return
+//        }
+//        project.repositories.maven {
+//            it.url = project.uri(path)
+//        }
+//    }
+
+
+    /**
+     * 添加mavenCentral()
+     */
+//    private fun addMavenCentralToRepositories(project: Project) {
+//        project.repositories.mavenCentral()
+//    }
+
 }

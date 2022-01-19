@@ -3,23 +3,25 @@ apply plugin: 'maven'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
 
+repositories {
+    maven {
+        url uri("../../plugins")
+    }
+}
+
 dependencies {
     implementation gradleApi()
     implementation "com.android.tools.build:gradle:$gradle_version"
-}
-
-repositories {
-    mavenCentral()
+    implementation "com.wj.gradle.plugins:variantbaseplugin:1.0.0"
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
             pom.groupId = "com.wj.gradle.plugins"
-            pom.artifactId = "variantbaseplugin"
+            pom.artifactId = "wjapkprotect"
             pom.version = "1.0.0"
             repository(url: uri("../../plugins"))
         }
     }
 }
-
