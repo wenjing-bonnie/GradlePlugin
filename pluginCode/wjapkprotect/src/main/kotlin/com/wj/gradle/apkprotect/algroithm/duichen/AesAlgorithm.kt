@@ -20,7 +20,6 @@ open class AesAlgorithm {
     private val PASSWORD = "123456"
     private val CHARSET = Charsets.UTF_8
 
-
     /**
      * 加密之后已base64编码字符串输出
      * @param context 需要加密的字符串
@@ -28,8 +27,17 @@ open class AesAlgorithm {
      */
     open fun encryptToBase64(context: String): ByteArray? {
         return encryptToBase64(context.toByteArray(CHARSET))
-
     }
+
+    /**
+     * 加密之后已base64编码字符串输出
+     * @param context 需要加密的文件
+     * @return 返回byte[]
+     */
+//    open fun encryptToBase64(context: File): ByteArray? {
+//
+//
+//    }
 
     /**
      * 加密之后已base64编码字符串输出
