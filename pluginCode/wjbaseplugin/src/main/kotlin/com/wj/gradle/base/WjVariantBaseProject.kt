@@ -44,7 +44,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
 
 
     /**
-     * TODO 该方法暂时不可复写
+     * TODO 暂定该方法不可复写
      */
     final override fun apply(p0: Project) {
         resetGlobalTag(javaClass.simpleName)
@@ -56,8 +56,9 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         addTransformTaskByExtension(p0)
         SystemPrint.outPrintln("Welcome ${javaClass.simpleName}")
         addTasksForBuildVariantAfterEvaluate(p0)
-
+        applyExceptRegister(p0)
     }
+
 
     /**
      * 创建属性扩展
@@ -71,6 +72,13 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     open fun resetGlobalTag(tag: String) {
         SystemPrint.TAG = tag
+    }
+
+    /**
+     * 供子工程进行在apply()中添加相应的代码
+     */
+    open fun applyExceptRegister(project: Project) {
+
     }
 
     /**
