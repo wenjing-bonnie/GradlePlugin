@@ -23,45 +23,35 @@ open class AesAlgorithm {
 
     /**
      * 加密之后已base64编码字符串输出
+     * @param context 需要加密的字符串
      */
-    open fun encryptToBase64(context: String): ByteArray {
-        //1.获取一个密码器
-        val cipher = Cipher.getInstance(AES)
-        //2.初始化密码器
-        cipher.init(Cipher.ENCRYPT_MODE, getAesSecretKey())
-        //3.加密context.toByteArray(CHARSET)
-        val encryptBytes = cipher.doFinal(context.toByteArray(CHARSET))
-
-        //1.加密
-        // val encryptBytes = getBytesFromCipher(Cipher.ENCRYPT_MODE, context.toByteArray(CHARSET))
-        //2.加密后的数据转进行base64编码
-        //val base64Bytes = Base64.getEncoder().encode(encryptBytes)
-        //return base64Bytes
-        return encryptBytes
+    open fun encryptToBase64(context: String): ByteArray? {
+        try {
+            //1.加密
+            val encryptBytes = getBytesFromCipher(Cipher.ENCRYPT_MODE, context.toByteArray(CHARSET))
+            //2.加密后的数据转进行base64编码
+            return Base64.getEncoder().encode(encryptBytes)
+        } catch (e: Exception) {
+        }
+        return null
     }
 
     /**
      * 解密
+     *
+     * @param contents 被base64编码之后的加密数据
      */
     open fun decryptFromBase64(contents: ByteArray): String? {
-
-        //1.获取一个密码器
-        val cipher = Cipher.getInstance(AES)
-        //2.初始化密码器
-        cipher.init(Cipher.DECRYPT_MODE, getAesSecretKey())
-        //3.加密context.toByteArray(CHARSET)
         try {
-            val decryptBytes = cipher.doFinal(contents)
+            //1.Base64解码
+            val originalBytes = Base64.getDecoder().decode(contents)
+            //2.解密
+            val decryptBytes = getBytesFromCipher(Cipher.DECRYPT_MODE, originalBytes)
+            //3.解密之后的内容
             return String(decryptBytes, CHARSET)
         } catch (e: Exception) {
-            e.printStackTrace()
+
         }
-        //1.Base64解码
-        // val originalBytes = Base64.getDecoder().decode(contents)
-        //2.解密
-        //val decryptBytes = getBytesFromCipher(Cipher.DECRYPT_MODE, contents)
-        //3.解密之后的内容
-        // return decryptBytes
         return null
     }
 
