@@ -24,11 +24,21 @@ open class AesAlgorithm {
     /**
      * 加密之后已base64编码字符串输出
      * @param context 需要加密的字符串
+     * @return 返回byte[]
      */
     open fun encryptToBase64(context: String): ByteArray? {
+        return encryptToBase64(context.toByteArray(CHARSET))
+
+    }
+
+    /**
+     * 加密之后已base64编码字符串输出
+     * @param context 需要加密的byte[]
+     */
+    open fun encryptToBase64(contents: ByteArray): ByteArray? {
         try {
             //1.加密
-            val encryptBytes = getBytesFromCipher(Cipher.ENCRYPT_MODE, context.toByteArray(CHARSET))
+            val encryptBytes = getBytesFromCipher(Cipher.ENCRYPT_MODE, contents)
             //2.加密后的数据转进行base64编码
             return Base64.getEncoder().encode(encryptBytes)
         } catch (e: Exception) {
@@ -40,15 +50,25 @@ open class AesAlgorithm {
      * 解密
      *
      * @param contents 被base64编码之后的加密数据
+     *
+     * @return 返回解密的字符串
      */
-    open fun decryptFromBase64(contents: ByteArray): String? {
+    open fun decryptFromBase64ToString(contents: ByteArray): String? {
+        val decodeBytes = decryptFromBase64(contents) ?: return null
+        return String(decodeBytes, CHARSET)
+    }
+
+    /**
+     * 解密
+     *
+     * @param contents 被base64编码之后的加密数据
+     */
+    open fun decryptFromBase64(contents: ByteArray): ByteArray? {
         try {
             //1.Base64解码
             val originalBytes = Base64.getDecoder().decode(contents)
-            //2.解密
-            val decryptBytes = getBytesFromCipher(Cipher.DECRYPT_MODE, originalBytes)
-            //3.解密之后的内容
-            return String(decryptBytes, CHARSET)
+            //2.解密之后的内容
+            return getBytesFromCipher(Cipher.DECRYPT_MODE, originalBytes)
         } catch (e: Exception) {
 
         }

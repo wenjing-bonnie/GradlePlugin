@@ -18,7 +18,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
     override fun applyExceptRegister(project: Project) {
         val aesAlgorithm = AesAlgorithm()
         val encode = aesAlgorithm.encryptToBase64("123456") ?: return
-        val decode = aesAlgorithm.decryptFromBase64(encode)
+        val decode = aesAlgorithm.decryptFromBase64ToString(encode)
         SystemPrint.outPrintln("encode = " + aesAlgorithm.encryptBytes2Hex(encode) + " \n decode = " + decode)
     }
 
