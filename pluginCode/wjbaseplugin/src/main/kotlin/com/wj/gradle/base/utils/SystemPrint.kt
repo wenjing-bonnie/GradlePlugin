@@ -18,7 +18,7 @@ object SystemPrint {
      */
     fun outPrintln(info: String) {
         if (DEBUG) {
-            println("<- $TAG -> : $info")
+            println("->> $TAG <<- : $info")
         }
     }
 
