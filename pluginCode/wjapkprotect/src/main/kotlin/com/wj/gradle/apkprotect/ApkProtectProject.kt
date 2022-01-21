@@ -23,6 +23,16 @@ open class ApkProtectProject : WjVariantBaseProject() {
         aesFile()
     }
 
+
+    override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
+        return mutableListOf()
+    }
+
+    override fun getRegisterTransformTasks(): MutableList<Transform> {
+        return mutableListOf()
+    }
+
+
     fun aesString() {
         val aesAlgorithm = AesStringAlgorithm()
         val encode = aesAlgorithm.encryptToBase64("123456") ?: return
@@ -35,18 +45,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
         val path =
             "/Users/j1/Documents/android/code/GradlePlugin/pluginCode/wjapkprotect/src/main/kotlin/com/wj/gradle/apkprotect/ApkProtectProject.kt"
         val encodeFile = aes.encrypt(File(path)) ?: return
-        SystemPrint.outPrintln("encode file \n" + aes.getFileContent(encodeFile))
-
         val decodeFile = aes.decrypt(encodeFile)
-        SystemPrint.outPrintln("decode file \n" + aes.getFileContent(decodeFile))
-    }
-
-    override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
-        return mutableListOf()
-    }
-
-    override fun getRegisterTransformTasks(): MutableList<Transform> {
-        return mutableListOf()
     }
 
 
