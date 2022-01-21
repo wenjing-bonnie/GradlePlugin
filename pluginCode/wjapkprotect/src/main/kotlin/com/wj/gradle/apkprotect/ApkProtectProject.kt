@@ -4,6 +4,7 @@ import com.android.build.api.transform.Transform
 import com.wj.gradle.apkprotect.algroithm.duichen.AbstractAesAlgorithm
 import com.wj.gradle.apkprotect.algroithm.duichen.AesFileAlgorithm
 import com.wj.gradle.apkprotect.algroithm.duichen.AesStringAlgorithm
+import com.wj.gradle.apkprotect.utils.ZipUtils
 import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
 import com.wj.gradle.base.utils.SystemPrint
@@ -19,8 +20,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
 
 
     override fun applyExceptRegister(project: Project) {
-        aesString()
-        aesFile()
+        ZipUtils.zip(project)
     }
 
 
@@ -30,22 +30,6 @@ open class ApkProtectProject : WjVariantBaseProject() {
 
     override fun getRegisterTransformTasks(): MutableList<Transform> {
         return mutableListOf()
-    }
-
-
-    fun aesString() {
-        val aesAlgorithm = AesStringAlgorithm()
-        val encode = aesAlgorithm.encryptToBase64("123456") ?: return
-        val decode = aesAlgorithm.decryptFromBase64ToString(encode)
-        SystemPrint.outPrintln("encode = " + aesAlgorithm.encryptBytes2Hex(encode) + " \n decode = " + decode)
-    }
-
-    fun aesFile() {
-        val aes = AesFileAlgorithm()
-        val path =
-            "/Users/j1/Documents/android/code/GradlePlugin/pluginCode/wjapkprotect/src/main/kotlin/com/wj/gradle/apkprotect/ApkProtectProject.kt"
-        val encodeFile = aes.encrypt(File(path)) ?: return
-        val decodeFile = aes.decrypt(encodeFile)
     }
 
 

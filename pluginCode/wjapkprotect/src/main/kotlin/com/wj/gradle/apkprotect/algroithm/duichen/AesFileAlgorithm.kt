@@ -126,4 +126,15 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
         return sourceFilePath.substring(sourceFilePath.lastIndexOf(".") + 1)
     }
 
+    /**
+     * test code
+     */
+    fun aesFile() {
+        val aes = AesFileAlgorithm()
+        val path =
+            "/Users/j1/Documents/android/code/GradlePlugin/pluginCode/wjapkprotect/src/main/kotlin/com/wj/gradle/apkprotect/ApkProtectProject.kt"
+        val encodeFile = aes.encrypt(File(path)) ?: return
+        val decodeFile = aes.decrypt(encodeFile)
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect.algroithm.duichen
 
+import com.wj.gradle.base.utils.SystemPrint
 import java.util.*
 import javax.crypto.Cipher
 
@@ -8,7 +9,7 @@ import javax.crypto.Cipher
  *
  * @author wenjing.liu
  */
-class AesStringAlgorithm :AbstractAesAlgorithm(){
+class AesStringAlgorithm : AbstractAesAlgorithm() {
 
     /**
      * 加密之后已base64编码字符串输出
@@ -76,10 +77,20 @@ class AesStringAlgorithm :AbstractAesAlgorithm(){
     /**
      * 获取一个密码器
      */
-    open fun getBytesFromCipher(opmode: Int, bytes: ByteArray): ByteArray {
+    fun getBytesFromCipher(opmode: Int, bytes: ByteArray): ByteArray {
         //3.加密context.toByteArray(CHARSET)
         val bytes = getAesCipher(opmode).doFinal(bytes)
         return bytes
+    }
+
+    /**
+     * test code
+     */
+    private fun aesString() {
+        val aesAlgorithm = AesStringAlgorithm()
+        val encode = aesAlgorithm.encryptToBase64("123456") ?: return
+        val decode = aesAlgorithm.decryptFromBase64ToString(encode)
+        SystemPrint.outPrintln("encode = " + aesAlgorithm.encryptBytes2Hex(encode) + " \n decode = " + decode)
     }
 
 }
