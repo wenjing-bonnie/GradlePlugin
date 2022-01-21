@@ -34,12 +34,9 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
             val cache = ByteArray(1024)
             var lineByte: Int = cipherInputStream.read(cache)
             while (lineByte > 0) {
-                SystemPrint.outPrintln("en 1 lineByte  = " + lineByte)
                 outputStream.write(cache, 0, lineByte)
                 lineByte = cipherInputStream.read(cache)
-                SystemPrint.outPrintln("en 2 lineByte  = " + lineByte)
             }
-            SystemPrint.outPrintln("en 3 lineByte  = " + getFileContent(encryptFile))
             cipherInputStream.close()
 
         } catch (e: Exception) {
@@ -73,7 +70,6 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
             val cache = ByteArray(1024)
             var lineByte = inputStream.read(cache)
             while (lineByte > 0) {
-                SystemPrint.outPrintln("de lineByte  = " + lineByte)
                 cipherOutputStream.write(cache, 0, lineByte)
                 lineByte = inputStream.read(cache)
             }
@@ -106,6 +102,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
             var content = bufferReader.readLine()
             while (content != null) {
                 buffer.append(content)
+                buffer.append("\n")
                 content = bufferReader.readLine()
             }
             return buffer.toString()
