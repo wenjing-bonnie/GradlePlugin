@@ -15,7 +15,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
 
 
     override fun applyExceptRegister(project: Project) {
-        ZipUtils.zipApk(project)
+        ZipUtils.zipFile(project)
     }
 
 

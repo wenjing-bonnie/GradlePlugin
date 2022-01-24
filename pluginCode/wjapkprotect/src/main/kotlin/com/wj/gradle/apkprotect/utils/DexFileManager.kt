@@ -1,5 +1,7 @@
 package com.wj.gradle.apkprotect.utils
 
+import java.io.File
+
 /**
  * Created by wenjing.liu on 2022/1/21 in J1.
  *
@@ -8,6 +10,14 @@ package com.wj.gradle.apkprotect.utils
  *
  * @author wenjing.liu
  */
-open class DexFileManager {
+object DexFileManager {
+
+
+    fun zipApk(
+        unZipApkFolder: File,
+        zipFileDescPath: String
+    ): File? {
+      return  ZipUtils.zipFile(unZipApkFolder, zipFileDescPath, "apk")
+    }
 }
 

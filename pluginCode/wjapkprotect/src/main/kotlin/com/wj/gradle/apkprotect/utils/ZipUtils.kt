@@ -63,21 +63,21 @@ object ZipUtils {
      * @param unZipFiles 需要压缩的文件列表
      * @param zipFileDescPath 保存压缩之后的apk的路径
      * @param zipFileName 压缩之后的文件名,需要包含后缀名
+     * @param zipSuffix 压缩的后缀名,默认为.apk
      * @return 返回压缩文件保存的绝对路径
      */
-    fun zipApk(
+    fun zipFile(
         unZipApkFolder: File,
         zipFileDescPath: String,
+        zipSuffix: String
     ): File? {
 
-        val zipFile = createFile("$zipFileDescPath/${unZipApkFolder.name}.apk")
-        SystemPrint.outPrintln(zipFile.path)
+        val zipFile = createZipFile(unZipApkFolder, zipFileDescPath, zipSuffix)
         var zipOutputStream: ZipOutputStream? = null
-
+        //压缩文件
         try {
             zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
             zip(unZipApkFolder, zipOutputStream, "")
-
         } finally {
             zipOutputStream?.close()
         }
@@ -85,8 +85,7 @@ object ZipUtils {
         if (!zipFile.exists() || zipFile.length() == 0L) {
             return null
         }
-
-        SystemPrint.outPrintln("The ${unZipApkFolder.name}.apk finished to zip !")
+        SystemPrint.outPrintln("The ${zipFile.name} finished to zip !")
         return zipFile
     }
 
@@ -105,25 +104,32 @@ object ZipUtils {
             } else {
                 parentName = "$parentName/"
             }
+            //要将所有的文件都要通过ZipOutputStream写入
             for (file in files) {
                 zip(file, zipOutputStream, parentName + file.name)
             }
-
         } else {
-            try {
-                zipOutputStream.putNextEntry(ZipEntry(parent))
-                val buffer = ByteArray(1024)
-                var inputStream = FileInputStream(unZipFile)
-                var len: Int = inputStream.read(buffer)
-                while (len > 0) {
-                    zipOutputStream.write(buffer, 0, len)
-                    len = inputStream.read(buffer)
-                }
-                zipOutputStream.closeEntry()
+            //压缩单个文件
+            zipSingleFile(unZipFile, zipOutputStream, parent)
+        }
+    }
 
-            } finally {
-
+    /**
+     * 压缩单个文件
+     */
+    private fun zipSingleFile(unZipFile: File, zipOutputStream: ZipOutputStream, parent: String) {
+        try {
+            zipOutputStream.putNextEntry(ZipEntry(parent))
+            val buffer = ByteArray(1024)
+            var inputStream = FileInputStream(unZipFile)
+            var len: Int = inputStream.read(buffer)
+            while (len > 0) {
+                zipOutputStream.write(buffer, 0, len)
+                len = inputStream.read(buffer)
             }
+            zipOutputStream.closeEntry()
+
+        } finally {
 
         }
     }
@@ -138,9 +144,22 @@ object ZipUtils {
 
 
     /**
-     * 创建File
+     * 创建最后的压缩文件
      */
-    private fun createFile(filePath: String): File {
+    private fun createZipFile(
+        unZipApkFolder: File,
+        zipFileDescPath: String,
+        zipSuffix: String
+    ): File {
+        return createFile("$zipFileDescPath/${unZipApkFolder.name}.${getZipFileSuffix(zipSuffix)}")
+    }
+
+    /**
+     * 创建文件
+     */
+    private fun createFile(
+        filePath: String,
+    ): File {
         val file = File(filePath)
         val parentFile = file.parentFile!!
         if (!parentFile.exists()) {
@@ -152,22 +171,35 @@ object ZipUtils {
         return file
     }
 
+    /**
+     * 获取apk的名字
+     */
     private fun getApkName(zipFile: File): String {
         return zipFile.name.substring(0, zipFile.name.lastIndexOf(".apk"))
     }
 
+    /**
+     * 获取压缩文件的后缀名
+     */
+    private fun getZipFileSuffix(zipSuffix: String): String {
+        var zip = "apk"
+        if (zipSuffix.isNotEmpty()) {
+            zip = zipSuffix
+        }
+        return zip
+    }
 
     /**
      * test code
      */
-    fun zipApk(project: Project) {
+    fun zipFile(project: Project) {
         val zipPath =
             project.projectDir.absolutePath + "/build/outputs/apk/huawei/debug/app-huawei-debug.apk"
         val descPath = project.projectDir.absolutePath + "/build"
         SystemPrint.outPrintln(zipPath)
         val path = unZipApk(File(zipPath), descPath)
         SystemPrint.outPrintln("unzip is \n" + path)
-        zipApk(File(path), descPath)
+        zipFile(File(path), descPath, "")
     }
 
 }
