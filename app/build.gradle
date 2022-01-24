@@ -10,7 +10,7 @@ plugins {
     //gradle plugin高级进阶
     id 'com.wj.seniorapplication'
     //apk加固插件
-    id 'com.wj.apkprotect'
+   // id 'com.wj.apkprotect'
 }
 
 /**com.wj.manifest中配置的扩展属性*/
