@@ -70,7 +70,7 @@ object ZipUtils {
         zipFileDescPath: String,
     ): File? {
 
-        val zipFile = createFile("$zipFileDescPath/${unZipApkFolder.name}.zip")
+        val zipFile = createFile("$zipFileDescPath/${unZipApkFolder.name}.apk")
         SystemPrint.outPrintln(zipFile.path)
         var zipOutputStream: ZipOutputStream? = null
 
