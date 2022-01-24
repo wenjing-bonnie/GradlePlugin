@@ -8,7 +8,7 @@ import android.util.Log
  *
  * @author wenjing.liu
  */
-class GradleApplication : Application() {
+open class GradleApplication : Application() {
 
 
     override fun onCreate() {

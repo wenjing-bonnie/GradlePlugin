@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
-class MainActivity : Activity() {
+open class MainActivity1 : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,10 +63,10 @@ class MainActivity : Activity() {
         //8.Glide.with().load().listener()：设置各种图片一些过程监听
 
 
-        Glide.with(this)
-            .load("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp2.itc.cn%2Fimages01%2F20210825%2F78c16cf6c33044cebb5426ec3135a949.jpeg&refer=http%3A%2F%2Fp2.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645001321&t=bbb54a3d2b85d0f55c6f7cc15e97cf9f")
-            .apply(option)
-            .into(imageView)
+//        Glide.with(this)
+//            .load("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp2.itc.cn%2Fimages01%2F20210825%2F78c16cf6c33044cebb5426ec3135a949.jpeg&refer=http%3A%2F%2Fp2.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645001321&t=bbb54a3d2b85d0f55c6f7cc15e97cf9f")
+//            .apply(option)
+//            .into(imageView)
 
 
         //10.更改Glide的配置：继承AppGlideModule，并且通过@GlideModule注解自定义类

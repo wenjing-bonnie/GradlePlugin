@@ -95,8 +95,6 @@ object ZipUtils {
      */
     private fun zip(unZipFile: File, zipOutputStream: ZipOutputStream, parent: String) {
         var parentName = parent
-        SystemPrint.outPrintln("parentName = " + parentName)
-        SystemPrint.outPrintln("unZipFile = " + unZipFile.name + " , " + unZipFile.isDirectory)
 
         if (unZipFile.isDirectory) {
             val files = unZipFile.listFiles()
@@ -107,7 +105,6 @@ object ZipUtils {
             } else {
                 parentName = "$parentName/"
             }
-            SystemPrint.outPrintln("size = " + files.size)
             for (file in files) {
                 zip(file, zipOutputStream, parentName + file.name)
             }
