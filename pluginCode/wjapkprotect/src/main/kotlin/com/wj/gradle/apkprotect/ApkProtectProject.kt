@@ -17,7 +17,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
 
 
     override fun applyExceptRegister(project: Project) {
-        testExtension(project)
+       // testExtension(project)
     }
 
     /**
@@ -25,7 +25,6 @@ open class ApkProtectProject : WjVariantBaseProject() {
      */
     override fun createExtension(project: Project) {
         super.createExtension(project)
-        SystemPrint.outPrintln("begin extension")
         project.extensions.create(
             ApkProtectExtension.TAG,
             ApkProtectExtension::class.javaObjectType
@@ -33,22 +32,22 @@ open class ApkProtectProject : WjVariantBaseProject() {
     }
 
 
-    override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
-        return mutableListOf()
+    override fun getAfterEvaluateTasks(): List<TaskWrapper> {
+        return  listOf()
     }
 
-    override fun getRegisterTransformTasks(): MutableList<Transform> {
-        return mutableListOf()
+    override fun getRegisterTransformTasks(): List<Transform> {
+        return listOf()
     }
 
     /**'
-     * 测试extension
+     * 测试extension ok
      */
     private fun testExtension(project: Project){
         project.afterEvaluate{
             val extension =  getCreatedExtension(project,ApkProtectExtension::class.javaObjectType)
             if (extension != null) {
-                SystemPrint.outPrintln(extension.lazyApkFilePath.asFile.get().absolutePath)
+                SystemPrint.outPrintln(extension.lazyApkDirectory.asFile.get().absolutePath)
                 SystemPrint.outPrintln(extension.unzipDirectory.asFile.get().absolutePath)
             }
         }

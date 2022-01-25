@@ -18,7 +18,7 @@ abstract class ApkProtectExtension {
      * apk存放的路径
      */
     @get:InputFile
-    abstract val lazyApkFilePath:RegularFileProperty
+    abstract val lazyApkDirectory:DirectoryProperty
     /**
      * 解压之后的apk存放的路径
      */

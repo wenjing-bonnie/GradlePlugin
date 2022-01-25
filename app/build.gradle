@@ -14,8 +14,8 @@ plugins {
 }
 
 apkProtectExtension{
-    lazyApkFilePath  = file("build/app-huawei-debug.apk")
-    unzipDirectory = file("build/")
+    //lazyApkFile  = file("build/app-huawei-debug.apk")
+    //unzipDirectory = file("build/")
 }
 
 /**com.wj.manifest中配置的扩展属性*/

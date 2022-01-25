@@ -90,7 +90,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getAfterEvaluateTasks(): MutableList<TaskWrapper>
+    abstract fun getAfterEvaluateTasks(): List<TaskWrapper>
 
     /**
      * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
@@ -99,7 +99,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getRegisterTransformTasks(): MutableList<Transform>
+    abstract fun getRegisterTransformTasks(): List<Transform>
 
 
     /**
