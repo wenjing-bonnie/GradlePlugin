@@ -3,6 +3,7 @@ package com.wj.gradle.apkprotect.utils
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.*
+import java.lang.IllegalArgumentException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -11,11 +12,13 @@ import java.util.zip.ZipOutputStream
  * Created by wenjing.liu on 2022/1/21 in J1.
  *
  * 压缩和解压缩apk文件
+ *
  * @author wenjing.liu
  */
 object ZipAndUnZipApkManager {
-    
+
     /**
+     * 将文件夹压缩成.apk
      * @param unZipFiles 需要压缩的文件列表
      * @param zipFileDescPath 保存压缩之后的apk的路径
      * @param zipFileName 压缩之后的文件名,需要包含后缀名
@@ -30,19 +33,35 @@ object ZipAndUnZipApkManager {
     }
 
     /**
-     * 解压缩
+     * 将.apk解压缩成文件夹
+     *
      * @param zipFile 需要解压的文件
      * @param descDirPath 解压文件存放的目录
      * @return 返回的是解压之后的文件夹的绝对路径
      */
     fun unZipApk(zipFile: File, descDirPath: String): String {
+        if(!zipFile.name.endsWith(".apk")){
+            throw IllegalArgumentException("The zip file must end with .apk")
+        }
+        return unZipFile(zipFile,descDirPath)
+    }
 
+    /**
+     * 解压缩成文件夹
+     *
+     * @param zipFile 需要解压的文件
+     * @param descDirPath 解压文件存放的目录
+     * @return 返回的是解压之后的文件夹的绝对路径
+     */
+    private fun unZipFile(zipFile: File, descDirPath: String): String {
+        if (!zipFile.exists()){
+            throw IllegalArgumentException("The zip file not exist !")
+        }
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
         val buffer = ByteArray(1024)
         //目标的文件夹,以传入的文件名字来创建文件夹
         val resultFileAbsoluteDir = descDirPath + "/" + getApkName(zipFile)
-
         try {
             val zip = ZipFile(zipFile)
             val zipEntries = zip.entries()
@@ -53,7 +72,7 @@ object ZipAndUnZipApkManager {
                 //获取解压文件的路径
                 inputStream = zip.getInputStream(zipEntry)
                 //以文件的名字作为最外层的文件夹
-                val descFilePath = resultFileAbsoluteDir + "/" + zipEntryName
+                val descFilePath = "$resultFileAbsoluteDir/$zipEntryName"
                 val descFile = createFile(descFilePath)
                 //读文件
                 outputStream = FileOutputStream(descFile)
@@ -105,6 +124,8 @@ object ZipAndUnZipApkManager {
     }
 
     /**
+     * 循环每个文件夹里面的文件进行通过ZipOutputStream进行压缩
+     *
      * @param parent 第一次传入为"",里面若再有文件夹要加上父文件夹的名字
      */
     private fun zip(unZipFile: File, zipOutputStream: ZipOutputStream, parent: String) {
@@ -143,20 +164,10 @@ object ZipAndUnZipApkManager {
                 len = inputStream.read(buffer)
             }
             zipOutputStream.closeEntry()
-
         } finally {
 
         }
     }
-
-    /**
-     * 压缩文件
-     * @param unZipFilesDir 需要压缩的文件夹
-     * @param zipFileDescPath 保存压缩之后的apk的路径
-     * @param suffix 压缩的文件后缀名
-     * @return 返回压缩文件保存的绝对路径
-     */
-
 
     /**
      * 创建最后的压缩文件
@@ -216,7 +227,4 @@ object ZipAndUnZipApkManager {
         SystemPrint.outPrintln("unzip is \n" + path)
         zipApk(File(path), descPath)
     }
-
-
-
 }
