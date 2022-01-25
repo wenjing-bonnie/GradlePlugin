@@ -11,11 +11,11 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by wenjing.liu on 2022/1/21 in J1.
  *
- * 压缩和解压缩apk文件
+ * 压缩和解压缩apk文件的帮助类
  *
  * @author wenjing.liu
  */
-object ZipAndUnZipApkManager {
+object ZipAndUnZipApkUtils {
 
     /**
      * 将文件夹压缩成.apk
