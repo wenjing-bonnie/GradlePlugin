@@ -3,6 +3,7 @@ package com.wj.gradle.base.tasks
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
+import java.lang.IllegalArgumentException
 
 /**
  * Created by wenjing.liu on 2022/1/19 in J1.
@@ -13,7 +14,7 @@ import org.gradle.api.tasks.TaskProvider
  */
 open class TaskWrapper private constructor(
     /**获取即将加入的Task的类名*/
-    val willRunTaskClass: Class<Task>,
+    val willRunTaskClass: Class<out Task>,
     /**该即将加入的Task的Tag*/
     val tag: String,
     /**该锚点TaskTask的名字*/
@@ -24,19 +25,19 @@ open class TaskWrapper private constructor(
     val taskRegisterListener: IWillRunTaskRegisteredListener?
 ) {
 
-    open class Builder {
+    object Builder {
 
-        private lateinit var willRunTaskClass: Class<Task>
-        private var tag: String = SystemPrint.TAG
+        private lateinit var willRunTaskClass: Class<out Task>
+        private lateinit var willRunTaskTag: String
         private var isDependsOn: Boolean = true
         private lateinit var dependsOnTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
 
-
         /**
          * 执行将要执行的Task的类名
+         * open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
          */
-        open fun setWillRunTaskClass(name: Class<Task>): Builder {
+        open fun setWillRunTaskClass(name: Class<out Task>): Builder {
             this.willRunTaskClass = name
             return this
         }
@@ -66,29 +67,43 @@ open class TaskWrapper private constructor(
         /**
          * 该Task的Tag
          */
-        open fun setTag(tag: String): Builder {
-            this.tag = tag
+        open fun setWillRunTaskTag(tag: String): Builder {
+            this.willRunTaskTag = tag
             return this
         }
 
         /**
          * 设置监听回调
          */
-        open fun setTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
+        open fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
             this.taskRegisterListener = listener
             return this
         }
 
 
         open fun builder(): TaskWrapper {
+            checkArgument()
             val wrapper = TaskWrapper(
                 willRunTaskClass,
-                tag,
+                willRunTaskTag,
                 dependsOnTaskName,
                 isDependsOn,
                 taskRegisterListener
             )
             return wrapper
+        }
+
+        //使用懒加载,应该不需要自己做检查了,kotlin会去检查是否赋值
+        private fun checkArgument() {
+
+            if (willRunTaskTag.isEmpty()) {
+                throw  IllegalArgumentException("Must set tag is not empty for will run task")
+            }
+
+            if (dependsOnTaskName.isEmpty()) {
+                throw IllegalArgumentException("Must set anchor task for will run task")
+            }
+
         }
     }
 

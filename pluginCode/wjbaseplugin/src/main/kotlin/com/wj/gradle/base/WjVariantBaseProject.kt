@@ -7,6 +7,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
 import com.wj.gradle.base.utils.SystemPrint
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 
 /**
  * Created by wenjing.liu on 2021/10/29 in J1.
@@ -90,7 +92,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getAfterEvaluateTasks(): List<TaskWrapper>
+    abstract fun getAfterEvaluateTasks(): MutableList<TaskWrapper>
 
     /**
      * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
@@ -99,7 +101,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getRegisterTransformTasks(): List<Transform>
+    abstract fun getRegisterTransformTasks(): MutableList<Transform>
 
 
     /**
@@ -160,7 +162,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         if (wrapper.taskRegisterListener == null) {
             return
         }
-        wrapper.taskRegisterListener.willRunTaskRegistered(provider, task)
+        wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>, task)
     }
 
     /**
