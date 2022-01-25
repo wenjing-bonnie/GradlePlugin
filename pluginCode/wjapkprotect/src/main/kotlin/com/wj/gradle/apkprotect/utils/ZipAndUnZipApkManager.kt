@@ -10,9 +10,24 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by wenjing.liu on 2022/1/21 in J1.
  *
+ * 压缩和解压缩apk文件
  * @author wenjing.liu
  */
-object ZipUtils {
+object ZipAndUnZipApkManager {
+    
+    /**
+     * @param unZipFiles 需要压缩的文件列表
+     * @param zipFileDescPath 保存压缩之后的apk的路径
+     * @param zipFileName 压缩之后的文件名,需要包含后缀名
+     * @param zipSuffix 压缩的后缀名,默认为.apk
+     * @return 返回压缩文件保存的绝对路径
+     */
+    fun zipApk(
+        unZipApkFolder: File,
+        zipFileDescPath: String
+    ): File? {
+        return  zipFile(unZipApkFolder, zipFileDescPath, "apk")
+    }
 
     /**
      * 解压缩
@@ -66,7 +81,7 @@ object ZipUtils {
      * @param zipSuffix 压缩的后缀名,默认为.apk
      * @return 返回压缩文件保存的绝对路径
      */
-    fun zipFile(
+   private fun zipFile(
         unZipApkFolder: File,
         zipFileDescPath: String,
         zipSuffix: String
@@ -199,7 +214,9 @@ object ZipUtils {
         SystemPrint.outPrintln(zipPath)
         val path = unZipApk(File(zipPath), descPath)
         SystemPrint.outPrintln("unzip is \n" + path)
-        zipFile(File(path), descPath, "")
+        zipApk(File(path), descPath)
     }
+
+
 
 }

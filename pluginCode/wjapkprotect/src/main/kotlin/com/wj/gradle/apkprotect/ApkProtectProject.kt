@@ -1,7 +1,7 @@
 package com.wj.gradle.apkprotect
 
 import com.android.build.api.transform.Transform
-import com.wj.gradle.apkprotect.utils.ZipUtils
+import com.wj.gradle.apkprotect.utils.ZipAndUnZipApkManager
 import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Project
@@ -15,7 +15,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
 
 
     override fun applyExceptRegister(project: Project) {
-        ZipUtils.zipFile(project)
+        ZipAndUnZipApkManager.zipFile(project)
     }
 
 
