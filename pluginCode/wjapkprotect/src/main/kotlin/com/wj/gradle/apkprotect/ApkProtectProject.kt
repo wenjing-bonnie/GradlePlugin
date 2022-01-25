@@ -1,6 +1,7 @@
 package com.wj.gradle.apkprotect
 
 import com.android.build.api.transform.Transform
+import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.ZipAndUnZipApkUtils
@@ -8,6 +9,8 @@ import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 
 /**
  * Created by wenjing.liu on 2022/1/19 in J1.
@@ -41,7 +44,6 @@ open class ApkProtectProject : WjVariantBaseProject() {
             TaskWrapper.Builder.setAnchorTaskName("preBuild")
                 .setWillRunTaskClass(UnzipApkIncrementalTask::class.javaObjectType)
                 .setWillRunTaskTag(UnzipApkIncrementalTask.TAG)
-                .setWillRunTaskRegisterListener(object :TaskWrapper.IWillRunTaskRegisteredListener{})
         //("assemble",true,UnzipApkIncrementalTask.TAG)
         tasks.add(unzipTask.builder())
         return tasks

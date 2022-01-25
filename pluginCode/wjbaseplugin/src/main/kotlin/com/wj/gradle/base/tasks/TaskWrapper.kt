@@ -1,6 +1,5 @@
 package com.wj.gradle.base.tasks
 
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import java.lang.IllegalArgumentException
@@ -37,7 +36,7 @@ open class TaskWrapper private constructor(
          * 执行将要执行的Task的类名
          * open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
          */
-        open fun setWillRunTaskClass(name: Class<out Task>): Builder {
+        open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
             this.willRunTaskClass = name
             return this
         }
@@ -95,15 +94,12 @@ open class TaskWrapper private constructor(
 
         //使用懒加载,应该不需要自己做检查了,kotlin会去检查是否赋值
         private fun checkArgument() {
-
             if (willRunTaskTag.isEmpty()) {
                 throw  IllegalArgumentException("Must set tag is not empty for will run task")
             }
-
             if (dependsOnTaskName.isEmpty()) {
                 throw IllegalArgumentException("Must set anchor task for will run task")
             }
-
         }
     }
 
@@ -114,8 +110,9 @@ open class TaskWrapper private constructor(
     interface IWillRunTaskRegisteredListener {
         /**
          * 将注册到Project的provider返回
+         * @param provider 可通过provider.get()得到Task
          * */
-        fun willRunTaskRegistered(provider: TaskProvider<Task>, task: Task)
+        fun  willRunTaskRegistered(provider: TaskProvider<Task>)
     }
 
 }

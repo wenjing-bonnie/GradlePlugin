@@ -50,7 +50,20 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      */
     private fun setConfigFromExtension() {
         val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
-            ?: return
+
+        if (extension == null) {
+            lazyApkDirectory.set(File(getApkDefaultDirectory()))
+            unzipDirectory.set(File(getUnzipDirectory()))
+            return
+        }
+
+        if(extension.lazyApkDirectory.get() == null){
+            extension.lazyApkDirectory.set(File(getApkDefaultDirectory()))
+        }
+        if (extension.unzipDirectory.get() == null){
+            extension.unzipDirectory.set(File(getUnzipDirectory()))
+        }
+        SystemPrint.outPrintln("" + extension.lazyApkDirectory)
         lazyApkDirectory.set(extension.lazyApkDirectory.get())
         unzipDirectory.set(extension.unzipDirectory.get())
     }
@@ -70,12 +83,13 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         return apkList
     }
 
-//    private fun getApkVariantNamePath():String{
-//        //variantName
-//        var path = "debug"
-//        val pattern = Pattern.compile("(.*?)Debug")
-//        return path
-//    }
+    private fun getApkDefaultDirectory(): String {
+        return "${project.projectDir.absolutePath}/build/outputs/apk/"
+    }
+
+    private fun getUnzipDirectory(): String {
+        return "${project.projectDir.absolutePath}/build/protect/"
+    }
 
 
 }

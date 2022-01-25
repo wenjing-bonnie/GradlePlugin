@@ -4,6 +4,7 @@ include ':pluginCode:manifestplugin'
 include ':pluginCode:seniorapplicationplugin'
 include ':libs:StatiLibrary'
 include ':pluginCode:wjbaseplugin'
+include ':pluginCode:wjapkprotect'
 //生命周期的监听
 this.gradle.addBuildListener(new BuildListener() {
     @Override
@@ -91,4 +92,4 @@ void systemPrintln(String info) {
 }
 
 
-include ':pluginCode:wjapkprotect'
+

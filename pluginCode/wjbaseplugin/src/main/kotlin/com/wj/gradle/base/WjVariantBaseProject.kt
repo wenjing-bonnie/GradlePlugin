@@ -2,6 +2,7 @@ package com.wj.gradle.base
 
 import com.android.build.api.transform.Transform
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -114,8 +115,8 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     /**
      * 获取注册的extension
      */
-    open fun <T> getCreatedExtension(project: Project,clss:Class<T>):T?{
-         return   project.extensions.findByType(clss)
+    open fun <T> getCreatedExtension(project: Project, clss: Class<T>): T? {
+        return project.extensions.findByType(clss)
     }
 
     /**
@@ -151,18 +152,21 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
         val provider = project.tasks.register(wrapper.tag, wrapper.willRunTaskClass)
-        val task = provider.get()
         val dependsOnTask = project.tasks.getByPath(wrapper.dependsOnTaskName)
         if (wrapper.isDependsOn) {
-            dependsOnTask.dependsOn(task)
+            dependsOnTask.dependsOn(provider.get())
         } else {
-            dependsOnTask.finalizedBy(task)
+            dependsOnTask.finalizedBy(provider.get())
+        }
+        //自动为Task绑定variantName
+        if (provider.get() is AndroidVariantTask) {
+            (provider.get() as AndroidVariantTask).variantName = variantName
         }
         //回调返回每个Task实例
         if (wrapper.taskRegisterListener == null) {
             return
         }
-        wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>, task)
+        wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>)
     }
 
     /**
