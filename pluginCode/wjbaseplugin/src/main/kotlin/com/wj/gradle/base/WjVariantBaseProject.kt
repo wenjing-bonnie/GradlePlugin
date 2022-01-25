@@ -65,10 +65,12 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * 考虑到并不是所有的gradle都需要扩展属性，所以该方法不做抽象
      * @param project
      */
-    open fun createExtension(project: Project) {}
+    open fun createExtension(project: Project) {
+    }
 
     /**
      * 设置全局的Tag标识,默认为
+     * TODO 这里还没有验证成功
      */
     open fun resetGlobalTag(tag: String) {
         SystemPrint.TAG = tag
@@ -105,6 +107,13 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     open fun getVariantName(): String {
         return variantName
+    }
+
+    /**
+     * 获取注册的extension
+     */
+    open fun <T> getCreatedExtension(project: Project,clss:Class<T>):T?{
+         return   project.extensions.findByType(clss)
     }
 
     /**
