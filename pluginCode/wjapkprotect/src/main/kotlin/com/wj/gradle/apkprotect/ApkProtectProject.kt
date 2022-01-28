@@ -1,10 +1,8 @@
 package com.wj.gradle.apkprotect
 
 import com.android.build.api.transform.Transform
-import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
-import com.wj.gradle.apkprotect.utils.ZipAndUnZipApkUtils
 import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
 import com.wj.gradle.base.utils.SystemPrint
@@ -40,14 +38,31 @@ open class ApkProtectProject : WjVariantBaseProject() {
      */
     override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
         val tasks = mutableListOf<TaskWrapper>()
-        val unzipTask =
-            TaskWrapper.Builder.setAnchorTaskName("preBuild")
-                .setWillRunTaskClass(UnzipApkIncrementalTask::class.javaObjectType)
-                .setWillRunTaskTag(UnzipApkIncrementalTask.TAG)
-        //("assemble",true,UnzipApkIncrementalTask.TAG)
-        tasks.add(unzipTask.builder())
+        tasks.add(getUnzipApkIncrementalTaskWrapper())
         return tasks
     }
+
+    /**
+     * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
+     */
+    private fun getUnzipApkIncrementalTaskWrapper(): TaskWrapper {
+        val unzipTaskBuilder =
+            TaskWrapper.Builder.setAnchorTaskName("assembleHuaweiDebug")
+                .setWillRunTaskClass(UnzipApkIncrementalTask::class.javaObjectType)
+                .setWillRunTaskTag(UnzipApkIncrementalTask.TAG)
+                .setWillRunTaskRegisterListener(object :
+                    TaskWrapper.IWillRunTaskRegisteredListener {
+                    override fun willRunTaskRegistered(provider: TaskProvider<Task>) {
+                        val unzipTask = provider.get()
+                        if (unzipTask !is UnzipApkIncrementalTask) {
+                            return
+                        }
+                        unzipTask.setConfigFromExtensionAfterEvaluate()
+                    }
+                })
+        return unzipTaskBuilder.builder();
+    }
+
 
     override fun getRegisterTransformTasks(): MutableList<Transform> {
         return mutableListOf()

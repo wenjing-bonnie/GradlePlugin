@@ -3,6 +3,7 @@ package com.wj.gradle.apkprotect.tasks.unzip
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.base.utils.SystemPrint
+import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
@@ -28,6 +29,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         const val TAG: String = "UnzipApkIncrementalTask"
     }
 
+    //必须在实例化该Task通过set进行赋值
     @get:Incremental
     @get:InputFile
     abstract val lazyApkDirectory: DirectoryProperty
@@ -37,45 +39,54 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
 
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "The unZip begin ...")
-        setConfigFromExtension()
-        val apkDirectory = lazyApkDirectory.get().asFile
-        getAllApks(apkDirectory)
-        if (!apkDirectory.exists()) {
+        val workqueue = workerExecutor.noIsolation()
+
+       // val apkDirectory = lazyApkDirectory.get().asFileTree
+       // getAllApks(apkDirectory)
+       // if (!apkDirectory.exists()) {
             // lazyApkFile.set(File())
-        }
+      //  }
+        //analyticsService
     }
 
     /**
-     * 根据配置的内容来设置inputs内容
+     * 根据配置的内容来设置inputs内容,必须在添加到project的时候进行调用初始化input/output
+     *
+     * 1.配置.apk存放的路径.
+     * 默认的取["${project.projectDir.absolutePath}/build/outputs/apk/"]
+     * 2.配置解压之后的apk存放的路径.
+     * 默认取["${project.projectDir.absolutePath}/build/protect/]
      */
-    private fun setConfigFromExtension() {
-        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
+    open fun setConfigFromExtensionAfterEvaluate() {
+        project.afterEvaluate {
+            setConfigFromExtension()
+        }
+    }
 
+    private fun setConfigFromExtension() {
+        //设置默认值
+       // setDefaultConfig()
+        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
         if (extension == null) {
-            lazyApkDirectory.set(File(getApkDefaultDirectory()))
-            unzipDirectory.set(File(getUnzipDirectory()))
+            setDefaultConfig()
             return
         }
-
-        if(extension.lazyApkDirectory.get() == null){
-            extension.lazyApkDirectory.set(File(getApkDefaultDirectory()))
+        if (extension.lazyApkDirectory.orNull != null) {
+            lazyApkDirectory.set(extension.lazyApkDirectory.get().asFile)
         }
-        if (extension.unzipDirectory.get() == null){
-            extension.unzipDirectory.set(File(getUnzipDirectory()))
+        if (extension.unzipDirectory.orNull != null) {
+            unzipDirectory.set(extension.unzipDirectory.get().asFile)
         }
-        SystemPrint.outPrintln("" + extension.lazyApkDirectory)
-        lazyApkDirectory.set(extension.lazyApkDirectory.get())
-        unzipDirectory.set(extension.unzipDirectory.get())
     }
 
     //build/outputs/apk/huawei/debug
     private fun getAllApks(apkDirectory: File): List<File> {
         val apkList = listOf<File>()
         //  variantName
+        SystemPrint.outPrintln(apkDirectory.path + " \n " + apkDirectory.exists() + "\n" + apkDirectory.isDirectory)
         if (!apkDirectory.exists() || !apkDirectory.isDirectory) {
             throw IllegalArgumentException("The apk directory is invalid !")
         }
-
         val files = apkDirectory.listFiles()
         for (file in files) {
             SystemPrint.outPrintln(TAG, file.path)
@@ -83,13 +94,39 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         return apkList
     }
 
-    private fun getApkDefaultDirectory(): String {
-        return "${project.projectDir.absolutePath}/build/outputs/apk/"
+    /**
+     * 设置默认值
+     */
+    private fun setDefaultConfig() {
+        lazyApkDirectory.set(getApkDefaultDirectory())
+        unzipDirectory.set(getUnzipDirectory())
     }
 
-    private fun getUnzipDirectory(): String {
-        return "${project.projectDir.absolutePath}/build/protect/"
+    /**
+     * 默认的.apk存放的路径.
+     */
+    private fun getApkDefaultDirectory(): File {
+        val defaultPath = "${project.projectDir.absolutePath}/build/outputs/apk/huawei/debug/app-huawei-debug.apk"
+        val defaultDirectory = project.file(defaultPath)
+        //SystemPrint.outPrintln("default = " + defaultDirectory.path)
+        if (!defaultDirectory.exists()) {
+            defaultDirectory.mkdirs()
+        }
+        return defaultDirectory
     }
 
-
+    /**
+     * 默认的解压之后的apk存放的路径.
+     */
+    private fun getUnzipDirectory(): File {
+        val unzipPath = "${project.projectDir.absolutePath}/build/protect/"
+        val unzipDirectory = project.file(unzipPath)
+        //SystemPrint.outPrintln("default = " + unzipDirectory.path)
+        if (unzipDirectory.exists()) {
+            unzipDirectory.delete()
+        } else {
+            unzipDirectory.mkdirs()
+        }
+        return unzipDirectory
+    }
 }

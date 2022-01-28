@@ -2,6 +2,7 @@ package com.wj.gradle.base
 
 import com.android.build.api.transform.Transform
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Plugin
@@ -10,6 +11,7 @@ import java.util.regex.Pattern
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.provider.Provider
 
 /**
  * Created by wenjing.liu on 2021/10/29 in J1.
@@ -44,6 +46,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * variant name
      */
     private var variantName: String = ""
+    private lateinit var analyticsService: Provider<AnalyticsService>
 
 
     /**
@@ -51,6 +54,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     final override fun apply(p0: Project) {
         resetGlobalTag(javaClass.simpleName)
+        initAnalyticsService(p0)
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
         if (!getValidVariantNameInBuild(p0)) {
@@ -119,6 +123,10 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         return project.extensions.findByType(clss)
     }
 
+    private fun initAnalyticsService(project: Project) {
+        analyticsService = AnalyticsService.RegistrationAction(project).execute()
+    }
+
     /**
      * 因为这个task是在项目构建之前添加到项目中的，而extension只有在项目构建后才能得到
      * 所以这里将传入project，在task中取得配置的内容
@@ -161,6 +169,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         //自动为Task绑定variantName
         if (provider.get() is AndroidVariantTask) {
             (provider.get() as AndroidVariantTask).variantName = variantName
+            (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
         }
         //回调返回每个Task实例
         if (wrapper.taskRegisterListener == null) {
