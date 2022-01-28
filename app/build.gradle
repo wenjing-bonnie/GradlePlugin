@@ -13,10 +13,10 @@ plugins {
     id 'com.wj.apkprotect'
 }
 
-apkProtectExtension{
-    lazyApkDirectory  = file("build/")
-    unzipDirectory = file("build/")
-}
+//apkProtectExtension{
+//    lazyApkDirectory  = file("build/")
+//    unzipDirectory = file("build/")
+//}
 
 /**com.wj.manifest中配置的扩展属性*/
 manifestKotlin {

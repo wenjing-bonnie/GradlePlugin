@@ -41,11 +41,11 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         SystemPrint.outPrintln(TAG, "The unZip begin ...")
         val workqueue = workerExecutor.noIsolation()
 
-       // val apkDirectory = lazyApkDirectory.get().asFileTree
-       // getAllApks(apkDirectory)
-       // if (!apkDirectory.exists()) {
-            // lazyApkFile.set(File())
-      //  }
+        val apkDirectory = lazyApkDirectory.get().asFile
+        getAllApks(apkDirectory)
+        // if (!apkDirectory.exists()) {
+        // lazyApkFile.set(File())
+        //  }
         //analyticsService
     }
 
@@ -65,7 +65,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
 
     private fun setConfigFromExtension() {
         //设置默认值
-       // setDefaultConfig()
+        setDefaultConfig()
         val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
         if (extension == null) {
             setDefaultConfig()
@@ -79,7 +79,9 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         }
     }
 
-    //build/outputs/apk/huawei/debug
+    /**
+     * 获取[ //build/outputs/apk/huawei/debug]目录下所有变体下的apk
+     */
     private fun getAllApks(apkDirectory: File): List<File> {
         val apkList = listOf<File>()
         //  variantName
@@ -106,7 +108,8 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      * 默认的.apk存放的路径.
      */
     private fun getApkDefaultDirectory(): File {
-        val defaultPath = "${project.projectDir.absolutePath}/build/outputs/apk/huawei/debug/app-huawei-debug.apk"
+        val defaultPath =
+            "${project.projectDir.absolutePath}/build/outputs/apk/"
         val defaultDirectory = project.file(defaultPath)
         //SystemPrint.outPrintln("default = " + defaultDirectory.path)
         if (!defaultDirectory.exists()) {
