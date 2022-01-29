@@ -46,7 +46,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         val workqueue = workerExecutor.noIsolation()
         allApks.clear()
         val apkDirectory = lazyApkDirectory.get().asFile
-        getAllApks(apkDirectory)
+        getAllApksFromApkDirectory(apkDirectory)
         for (file in allApks) {
             SystemPrint.outPrintln(TAG, file.path)
         }
@@ -89,7 +89,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     /**
      * 获取[ //build/outputs/apk/huawei/debug]目录下所有变体下的apk
      */
-    private fun getAllApks(apkDirectory: File) {
+    private fun getAllApksFromApkDirectory(apkDirectory: File) {
         //  variantName
         if (!apkDirectory.exists()) {
             throw IllegalArgumentException("The apk directory is not exist !")
@@ -99,9 +99,8 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             return
         }
         for (file in files) {
-            SystemPrint.outPrintln(TAG, file.path)
             if (file.isDirectory) {
-                getAllApks(file)
+                getAllApksFromApkDirectory(file)
             } else if (file.isFile && file.name.endsWith(".apk")) {
                 allApks.add(file)
             }
