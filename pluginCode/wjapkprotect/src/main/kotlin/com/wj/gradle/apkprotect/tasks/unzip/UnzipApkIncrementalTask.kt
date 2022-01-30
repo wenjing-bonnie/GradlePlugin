@@ -41,6 +41,9 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      */
     private val allApks = mutableListOf<File>()
 
+    /**
+     *
+     */
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "The unZip begin ...")
         val workqueue = workerExecutor.noIsolation()
@@ -146,9 +149,11 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
 
     /**
      * 从默认的debug/release的获取productFlavors
+     * 因为在配置阶段就要调用该方法对[lazyApkDirectory]进行赋值,所以
      */
     private fun getApkPathByVariantName(): String {
         var productFlavors = ""
+        //SystemPrint.outPrintln(TAG, "variantName = " + variantName)
         val regex = if (isDebugBuildType()) {
             "(\\w+)Debug"
         } else {
@@ -160,6 +165,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             //group(0)整个字符串;group(1)第一个括号内的内容;group(2)第二个括号内的内容
             productFlavors = matcher.group(1)
         }
+        //SystemPrint.outPrintln(TAG, "productFlavors = " + productFlavors)
         return productFlavors
     }
 
