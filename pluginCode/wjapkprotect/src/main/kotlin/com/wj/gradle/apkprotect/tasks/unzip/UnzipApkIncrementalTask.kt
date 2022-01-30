@@ -91,7 +91,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      */
     private fun getAllApksFromApkDirectory(apkDirectory: File) {
         //  variantName
-        if (!apkDirectory.exists()) {
+        if (!apkDirectory.exists() || apkDirectory.isFile) {
             throw IllegalArgumentException("The apk directory is not exist !")
         }
         val files = apkDirectory.listFiles()
@@ -141,6 +141,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         } else {
             rootPath
         }
+        //return rootPath
     }
 
     /**

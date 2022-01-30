@@ -12,9 +12,9 @@ buildscript {
             url uri('plugins')
         }
         //modpush
-        maven {
-            url "https://mvn.mob.com/android"
-        }
+//        maven {
+//            url "https://mvn.mob.com/android"
+//        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradle_version"
@@ -26,7 +26,7 @@ buildscript {
         classpath "com.wj.gradle.plugins:seniorapplicationplugin:1.0.0"
         classpath "com.wj.gradle.plugins:wjapkprotect:1.0.0"
         // 注册MobSDK
-        classpath 'com.mob.sdk:MobSDK:+'
+        //classpath 'com.mob.sdk:MobSDK:+'
     }
 }
 
