@@ -2,6 +2,8 @@ package com.wj.gradle.apkprotect.tasks.unzip
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
+import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkAction
+import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkActionParameters
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
@@ -33,6 +35,9 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     @get:InputDirectory
     abstract val lazyApkDirectory: DirectoryProperty
 
+    /**
+     * 解压之后的文件存放的上级目录,以apk的名字存放解压之后的文件
+     */
     @get:OutputDirectory
     abstract val unzipDirectory: DirectoryProperty
 
@@ -48,15 +53,18 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         SystemPrint.outPrintln(TAG, "The unZip begin ...")
         val workqueue = workerExecutor.noIsolation()
         allApks.clear()
+        //1.find all apk files in lazyApkDirectory
         val apkDirectory = lazyApkDirectory.get().asFile
         getAllApksFromApkDirectory(apkDirectory)
         for (file in allApks) {
-            SystemPrint.outPrintln(TAG, file.path)
+            SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
+            //2.unzip .apk to unzipDirectory
+            workqueue.submit(UnzipApkAction::class.javaObjectType) { params: UnzipApkActionParameters ->
+                params.unzipApk.set(file)
+                params.unzipDirectory.set(unzipDirectory.get())
+            }
         }
-        // if (!apkDirectory.exists()) {
-        // lazyApkFile.set(File())
-        //  }
-        //analyticsService
+
     }
 
     /**

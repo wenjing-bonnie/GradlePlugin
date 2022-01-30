@@ -29,21 +29,21 @@ object ZipAndUnZipApkUtils {
         unZipApkFolder: File,
         zipFileDescPath: String
     ): File? {
-        return  zipFile(unZipApkFolder, zipFileDescPath, "apk")
+        return zipFile(unZipApkFolder, zipFileDescPath, "apk")
     }
 
     /**
      * 将.apk解压缩成文件夹
      *
      * @param zipFile 需要解压的文件
-     * @param descDirPath 解压文件存放的目录
+     * @param descDirPath 解压文件存放的上级目录
      * @return 返回的是解压之后的文件夹的绝对路径
      */
     fun unZipApk(zipFile: File, descDirPath: String): String {
-        if(!zipFile.name.endsWith(".apk")){
+        if (!zipFile.name.endsWith(".apk")) {
             throw IllegalArgumentException("The zip file must end with .apk")
         }
-        return unZipFile(zipFile,descDirPath)
+        return unZipFile(zipFile, descDirPath)
     }
 
     /**
@@ -54,7 +54,7 @@ object ZipAndUnZipApkUtils {
      * @return 返回的是解压之后的文件夹的绝对路径
      */
     private fun unZipFile(zipFile: File, descDirPath: String): String {
-        if (!zipFile.exists()){
+        if (!zipFile.exists()) {
             throw IllegalArgumentException("The zip file not exist !")
         }
         var inputStream: InputStream? = null
@@ -62,6 +62,8 @@ object ZipAndUnZipApkUtils {
         val buffer = ByteArray(1024)
         //目标的文件夹,以传入的文件名字来创建文件夹
         val resultFileAbsoluteDir = descDirPath + "/" + getApkName(zipFile)
+        //删除之前创建的文件夹
+        deleteFile(resultFileAbsoluteDir)
         try {
             val zip = ZipFile(zipFile)
             val zipEntries = zip.entries()
@@ -100,7 +102,7 @@ object ZipAndUnZipApkUtils {
      * @param zipSuffix 压缩的后缀名,默认为.apk
      * @return 返回压缩文件保存的绝对路径
      */
-   private fun zipFile(
+    private fun zipFile(
         unZipApkFolder: File,
         zipFileDescPath: String,
         zipSuffix: String
@@ -213,6 +215,13 @@ object ZipAndUnZipApkUtils {
             zip = zipSuffix
         }
         return zip
+    }
+
+    private fun deleteFile(filePath: String) {
+        val file = File(filePath)
+        if (file.exists()) {
+            file.delete()
+        }
     }
 
     /**
