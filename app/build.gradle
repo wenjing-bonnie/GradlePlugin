@@ -6,7 +6,8 @@ plugins {
     //TODO 暂时隐藏该插件 2021/11/12
     //id 'com.mob.sdk'
     //对manifest进行exported适配及version管理
-    id 'com.wj.manifest'
+    //TODO 暂时隐藏该插件 2022/1/30
+    // id 'com.wj.manifest'
     //gradle plugin高级进阶
     id 'com.wj.seniorapplication'
     //apk加固插件
@@ -19,25 +20,26 @@ plugins {
 //}
 
 /**com.wj.manifest中配置的扩展属性*/
-manifestKotlin {
-    versionManager file("version.xml")
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolVersion rootProject.ext.buildToolVersion
-    defaultConfig {
-        applicationId "com.wj.gradle.plugin"
-        minSdkVersion rootProject.ext.minSdkVersion
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles file("proguard-rules.pro")
-        }
-        dev {
-            minifyEnabled true
-            proguardFiles file("proguard-rules.pro")
-        }
-    }
-}
+//TODO 暂时隐藏该插件 2022/1/30
+//manifestKotlin {
+//    versionManager file("version.xml")
+//    compileSdkVersion rootProject.ext.compileSdkVersion
+//    buildToolVersion rootProject.ext.buildToolVersion
+//    defaultConfig {
+//        applicationId "com.wj.gradle.plugin"
+//        minSdkVersion rootProject.ext.minSdkVersion
+//    }
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles file("proguard-rules.pro")
+//        }
+//        dev {
+//            minifyEnabled true
+//            proguardFiles file("proguard-rules.pro")
+//        }
+//    }
+//}
 
 //TODO 暂时不知道为什么下面这个情况
 // 若进行配置自定义的configurations，必须configurations后面紧挨着dependencies
