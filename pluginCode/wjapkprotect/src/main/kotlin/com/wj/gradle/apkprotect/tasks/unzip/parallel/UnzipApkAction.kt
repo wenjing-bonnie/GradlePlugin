@@ -16,7 +16,7 @@ abstract class UnzipApkAction : WorkAction<UnzipApkActionParameters> {
         ZipAndUnZipApkUtils.unZipApk(unzipApk, unzipDirectory.path)
         SystemPrint.outPrintln(
             TAG,
-            "The ${unzipApk.name} finished to unzip to ${unzipDirectory.name}"
+            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath}"
         )
     }
 }

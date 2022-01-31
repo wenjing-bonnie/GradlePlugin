@@ -122,9 +122,9 @@ open class SeniorApplicationProject : Plugin<Project> {
     private fun getValidVariantNameInBuild(project: Project): Boolean {
         var parameter = project.gradle.startParameter.taskRequests.toString()
         var regex = if (parameter.contains("assemble")) {
-            "assemble(\\w+)"
+            ":app:assemble(\\w+)"
         } else {
-            "generate(\\w+)"
+            ":app:generate(\\w+)"
         }
         var pattern = Pattern.compile(regex)
         var matcher = pattern.matcher(parameter)

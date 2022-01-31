@@ -62,8 +62,6 @@ object ZipAndUnZipApkUtils {
         val buffer = ByteArray(1024)
         //目标的文件夹,以传入的文件名字来创建文件夹
         val resultFileAbsoluteDir = descDirPath + "/" + getApkName(zipFile)
-        //删除之前创建的文件夹
-        deleteFile(resultFileAbsoluteDir)
         try {
             val zip = ZipFile(zipFile)
             val zipEntries = zip.entries()

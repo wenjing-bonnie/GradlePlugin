@@ -53,12 +53,14 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         SystemPrint.outPrintln(TAG, "The unZip begin ...")
         val workqueue = workerExecutor.noIsolation()
         allApks.clear()
-        //1.find all apk files in lazyApkDirectory
+        //1.delete unzip directory
+        deleteAndReMkdirsUnzipDirectory()
+        //2.find all apk files in lazyApkDirectory
         val apkDirectory = lazyApkDirectory.get().asFile
         getAllApksFromApkDirectory(apkDirectory)
+        //3.unzip .apk to unzipDirectory
         for (file in allApks) {
-            SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
-            //2.unzip .apk to unzipDirectory
+            //SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
             workqueue.submit(UnzipApkAction::class.javaObjectType) { params: UnzipApkActionParameters ->
                 params.unzipApk.set(file)
                 params.unzipDirectory.set(unzipDirectory.get())
@@ -204,5 +206,13 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             unzipDirectory.mkdirs()
         }
         return unzipDirectory
+    }
+
+    private fun deleteAndReMkdirsUnzipDirectory(){
+        val unzipDirectory = unzipDirectory.get().asFile
+        if (unzipDirectory.exists()){
+            unzipDirectory.delete()
+        }
+        unzipDirectory.mkdirs()
     }
 }
