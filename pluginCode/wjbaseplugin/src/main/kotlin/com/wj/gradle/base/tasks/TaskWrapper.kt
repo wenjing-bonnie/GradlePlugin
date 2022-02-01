@@ -43,7 +43,8 @@ open class TaskWrapper private constructor(
 
         /**
          * 设置瞄点task名字
-         * @beforeAnchor:true:在该Task之前执行目标Task,通过dependsOn添加targetTask
+         *
+         * @param isDependsOn:true:在该Task之前执行目标Task,通过dependsOn添加targetTask
          * false:在Task之后执行目标Task,通过finalizedBy执行Task
          *
          */
@@ -76,6 +77,15 @@ open class TaskWrapper private constructor(
          */
         open fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
             this.taskRegisterListener = listener
+            return this
+        }
+
+        /**
+         * 设置在锚点Task之前还是之后执行Task
+         * @param isDependsOn true:在锚点Task之前去执行该Task
+         */
+        open fun setIsDependsOn(isDependsOn: Boolean): Builder {
+            this.isDependsOn = isDependsOn
             return this
         }
 
@@ -112,7 +122,7 @@ open class TaskWrapper private constructor(
          * 将注册到Project的provider返回
          * @param provider 可通过provider.get()得到Task
          * */
-        fun  willRunTaskRegistered(provider: TaskProvider<Task>)
+        fun willRunTaskRegistered(provider: TaskProvider<Task>)
     }
 
 }

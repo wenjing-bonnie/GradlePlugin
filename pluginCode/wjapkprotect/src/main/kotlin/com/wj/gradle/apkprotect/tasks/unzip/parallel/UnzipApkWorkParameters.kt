@@ -4,7 +4,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.workers.WorkParameters
 
-interface UnzipApkActionParameters : WorkParameters {
+interface UnzipApkWorkParameters : WorkParameters {
     /**
      * 需要解压的apk
      */

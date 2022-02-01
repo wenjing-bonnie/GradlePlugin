@@ -7,7 +7,7 @@ import org.gradle.workers.WorkAction
 /**
  * 解压每个.apk
  */
-abstract class UnzipApkAction : WorkAction<UnzipApkActionParameters> {
+abstract class UnzipApkAction : WorkAction<UnzipApkWorkParameters> {
     val TAG = "UnzipApkAction"
 
     override fun execute() {
