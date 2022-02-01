@@ -32,6 +32,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     }
 
     //必须在实例化该Task通过set进行赋值,否则会抛出异常
+    //No value has been specified for property 'zipApkDirectory'.
     @get:Incremental
     @get:InputDirectory
     abstract val lazyApkDirectory: DirectoryProperty

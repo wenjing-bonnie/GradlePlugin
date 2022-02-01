@@ -5,6 +5,7 @@ import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkAction
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkWorkParameters
 import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
@@ -35,6 +36,7 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         val unzipDirectory = unzipRootDirectory.get().asFile
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
+            SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)
             workQueue.submit(ZipApkAction::class.javaObjectType) { params: ZipApkWorkParameters ->
                 params.unzipApkDirectory.set(apk)
                 params.zipApkDirectory.set(zipApkDirectory)
@@ -66,6 +68,7 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         }
         if (extension.unzipDirectory.orNull != null) {
             unzipRootDirectory.set(extension.unzipDirectory.get().asFile)
+            zipApkDirectory.set(extension.unzipDirectory.get().asFile)
         }
     }
 
@@ -74,6 +77,7 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
      */
     private fun setDefaultConfig() {
         unzipRootDirectory.set(ZipAndUnzipApkDefaultPath.getUnzipRootDirectory(project))
+        zipApkDirectory.set(ZipAndUnzipApkDefaultPath.getUnzipRootDirectory(project))
     }
 
 }

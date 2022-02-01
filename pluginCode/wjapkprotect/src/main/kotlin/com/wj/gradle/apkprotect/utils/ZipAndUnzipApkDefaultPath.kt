@@ -1,6 +1,5 @@
 package com.wj.gradle.apkprotect.utils
 
-import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import org.gradle.api.Project
 import java.io.File
 import java.util.regex.Pattern
