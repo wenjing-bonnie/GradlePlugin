@@ -160,22 +160,23 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
         SystemPrint.outPrintln(wrapper.toString())
+        //要执行的Task，也是生产-消费Task中的消费Task,最终添加到项目依赖
         val provider =
             project.tasks.register(wrapper.tag, wrapper.willRunTaskClass) as TaskProvider<Task>
         val dependsOnTask = project.tasks.getByPath(wrapper.anchorTaskName)
-        var consumerTaskProvider: TaskProvider<Task>? = null
-        if (wrapper.isConsumerTask()) {
-            consumerTaskProvider =
+        var producerTaskProvider: TaskProvider<Task>? = null
+        if (wrapper.isConsumerProducerTask()) {
+            producerTaskProvider =
                 project.tasks.register(
-                    wrapper.consumerTag,
-                    wrapper.consumerTaskClass
+                    wrapper.producerTag,
+                    wrapper.producerTaskClass
                 ) as TaskProvider<Task>?
         }
 
-        if (wrapper.isConsumerTask() && consumerTaskProvider != null) {
-            addTask(dependsOnTask, consumerTaskProvider, wrapper.isDependsOn)
+        if (wrapper.isDependsOn) {
+            dependsOnTask.dependsOn(provider.get())
         } else {
-            addTask(dependsOnTask, provider, wrapper.isDependsOn)
+            dependsOnTask.finalizedBy(provider.get())
         }
 
         //自动为Task绑定variantName
@@ -183,16 +184,16 @@ abstract class WjVariantBaseProject : Plugin<Project> {
             (provider.get() as AndroidVariantTask).variantName = variantName
             (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
         }
-        //为消费Task
-        if (consumerTaskProvider != null && consumerTaskProvider is AndroidVariantTask) {
-            (consumerTaskProvider.get() as AndroidVariantTask).variantName = variantName
-            (consumerTaskProvider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
+        //生产Task
+        if (producerTaskProvider != null && producerTaskProvider.get() is AndroidVariantTask) {
+            (producerTaskProvider.get() as AndroidVariantTask).variantName = variantName
+            (producerTaskProvider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
         }
         //回调返回每个Task实例
         if (wrapper.taskRegisterListener == null) {
             return
         }
-        wrapper.taskRegisterListener.willRunTaskRegistered(provider, consumerTaskProvider)
+        wrapper.taskRegisterListener.willRunTaskRegistered(provider, producerTaskProvider)
     }
 
     private fun addTask(dependsOnTask: Task, provider: TaskProvider<Task>, isDependsOn: Boolean) {

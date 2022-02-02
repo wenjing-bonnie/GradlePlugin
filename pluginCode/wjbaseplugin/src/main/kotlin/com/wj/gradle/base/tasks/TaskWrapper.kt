@@ -12,14 +12,14 @@ import java.lang.IllegalArgumentException
  * @author wenjing.liu
  */
 open class TaskWrapper private constructor(
-    /**获取即将加入的Task的类名*/
+    /**获取即将加入的Task的类名,生产-消费Task中的消费Task,最终添加到项目依赖*/
     val willRunTaskClass: Class<out Task>,
-    /**消费Task，若有则赋值*/
-    val consumerTaskClass: Class<out Task>?,
+    /**生产Task，若有则赋值*/
+    val producerTaskClass: Class<out Task>?,
     /**该即将加入的Task的Tag*/
     val tag: String,
-    /**消费Task的Tag，若有则赋值*/
-    val consumerTag: String?,
+    /**生产Task的Tag，若有则赋值*/
+    val producerTag: String?,
     /**该锚点TaskTask的名字*/
     val anchorTaskName: String,
     /**在锚点Task之前还是之后执行Task*/
@@ -31,22 +31,22 @@ open class TaskWrapper private constructor(
     override fun toString(): String {
         return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n " +
                 "anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} \n" +
-                " consumer task is '${consumerTaskClass?.simpleName}' , tag is $consumerTag"
+                " consumer task is '${producerTaskClass?.simpleName}' , tag is $producerTag"
     }
 
     /**
      * 是生产-消费的Task
      */
-    fun isConsumerTask(): Boolean {
-        return consumerTaskClass != null && consumerTag != null
+    fun isConsumerProducerTask(): Boolean {
+        return producerTaskClass != null && producerTag != null
     }
 
     object Builder {
 
         private lateinit var willRunTaskClass: Class<out Task>
-        private var consumerTaskClass: Class<out Task>? = null
+        private var producerTaskClass: Class<out Task>? = null
         private lateinit var willRunTaskTag: String
-        private var consumerTaskTag: String? = null
+        private var produceraskTag: String? = null
         private var isDependsOn: Boolean = true
         private lateinit var anchorTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
@@ -62,15 +62,15 @@ open class TaskWrapper private constructor(
 
         /**
          * 设置要执行的Task（生产Task）及消费Task
-         * @param consumerTask  要执行的Task
-         * @param producerTask 生产Task，该生产Task依赖于消费Task
+         * @param consumerTask  要执行的Task,也是生产-消费Task中的消费Task,最终添加到项目依赖
+         * @param producerTask 生产Task，生产Task为消费Task提供inputs,通过flatMap{]添加到项目依赖中
          */
         fun setWillRunTaskClass(
             producerTask: Class<out Task>,
             consumerTask: Class<out Task>
         ): Builder {
-            this.willRunTaskClass = producerTask
-            this.consumerTaskClass = consumerTask
+            this.willRunTaskClass = consumerTask
+            this.producerTaskClass = producerTask
             return this
 
         }
@@ -94,12 +94,12 @@ open class TaskWrapper private constructor(
 
         /**
          * 该Task的Tag
-         * @param tag 生产Task的tag
+         * @param tag 要执行的Task的tag，也是生产-消费Task中的消费Task,最终添加到项目依赖
          * @param producerTag 消费Task的tag
          */
         fun setWillRunTaskTag(tag: String, producerTag: String): Builder {
             this.willRunTaskTag = tag
-            this.consumerTaskTag = producerTag
+            this.produceraskTag = producerTag
             return this
         }
 
@@ -124,9 +124,9 @@ open class TaskWrapper private constructor(
             checkArgument()
             val wrapper = TaskWrapper(
                 willRunTaskClass,
-                consumerTaskClass,
+                producerTaskClass,
                 willRunTaskTag,
-                consumerTaskTag,
+                produceraskTag,
                 anchorTaskName,
                 isDependsOn,
                 taskRegisterListener
@@ -143,7 +143,7 @@ open class TaskWrapper private constructor(
                 throw IllegalArgumentException("Must set anchor task for will run task")
             }
 
-            if ((consumerTaskClass != null && consumerTaskTag == null) || (consumerTaskClass == null && consumerTaskTag != null)) {
+            if ((producerTaskClass != null && produceraskTag == null) || (producerTaskClass == null && produceraskTag != null)) {
                 throw IllegalAccessException("If you set producer task , must set the producer task 's tag  and class")
             }
         }
@@ -163,16 +163,5 @@ open class TaskWrapper private constructor(
             provider: TaskProvider<Task>,
             producerProvider: TaskProvider<Task>?
         )
-
-        /**
-         * 再将Task添加到依赖锚点之前
-         * @param provider 可通过provider.get()得到Task
-         * @param producerProvider 若有消费Task，则返回该消费Task,若没有此时返回的为null
-         */
-        fun willRunTaskBeforeDependsOnAnchorTask(
-            provider: TaskProvider<Task>,
-            producerProvider: TaskProvider<Task>?
-        )
     }
-
 }

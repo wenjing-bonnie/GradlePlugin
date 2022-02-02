@@ -52,41 +52,27 @@ open class ApkProtectProject : WjVariantBaseProject() {
         val unzipTaskBuilder =
             TaskWrapper.Builder.setAnchorTaskName("preBuild")
                 .setWillRunTaskClass(
-                    UnzipApkIncrementalTask::class.javaObjectType,
-                    ZipApkIncrementalTask::class.javaObjectType
+                    ZipApkIncrementalTask::class.javaObjectType,
+                    UnzipApkIncrementalTask::class.javaObjectType
                 )
-                .setWillRunTaskTag(UnzipApkIncrementalTask.TAG, ZipApkIncrementalTask.TAG)
+                .setWillRunTaskTag(ZipApkIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
-                    override fun willRunTaskBeforeDependsOnAnchorTask(
-                        provider: TaskProvider<Task>,
-                        producerProvider: TaskProvider<Task>?
-                    ) {
-                        val unzipTask = provider.get()
-                        if (unzipTask !is UnzipApkIncrementalTask || producerProvider == null) {
-                            return
-                        }
-                        val zipTask = producerProvider.get()
-                        if (zipTask !is ZipApkIncrementalTask) {
-                            return
-                        }
-                        unzipTask.setConfigFromExtensionAfterEvaluate()
-                        zipTask.unzipRootDirectory.set((provider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
-                            it.unzipDirectory
-                        })
-
-                    }
-
                     override fun willRunTaskRegistered(
                         provider: TaskProvider<Task>,
                         producerProvider: TaskProvider<Task>?
                     ) {
-                        val unzipTask = provider.get()
-                        if (unzipTask !is UnzipApkIncrementalTask || producerProvider == null) {
+                        //消费Task
+                        val zipTask = provider.get()
+                        if (zipTask !is ZipApkIncrementalTask) {
                             return
                         }
-                        val zipTask = producerProvider.get()
-                        if (zipTask !is ZipApkIncrementalTask) {
+                        //生产Task
+                        if (producerProvider == null) {
+                            return
+                        }
+                        val unzipTask = producerProvider.get()
+                        if (unzipTask !is UnzipApkIncrementalTask) {
                             return
                         }
                         unzipTask.setConfigFromExtensionAfterEvaluate()
