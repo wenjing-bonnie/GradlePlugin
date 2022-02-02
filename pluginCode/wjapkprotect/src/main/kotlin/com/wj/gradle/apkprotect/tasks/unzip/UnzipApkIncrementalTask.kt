@@ -41,6 +41,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      * 解压之后的文件存放的上级目录,以apk的名字存放解压之后的文件
      */
     @get:OutputDirectory
+    @get:Incremental
     abstract val unzipDirectory: DirectoryProperty
 
     /**
@@ -105,7 +106,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      * 设置默认值
      */
     private fun setDefaultConfig() {
-        lazyApkDirectory.set(getApkDefaultDirectory(project,variantName))
+        lazyApkDirectory.set(getApkDefaultDirectory(project, variantName))
         unzipDirectory.set(getUnzipRootDirectory(project))
     }
 
@@ -130,9 +131,9 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         }
     }
 
-    private fun deleteAndReMkdirsUnzipDirectory(){
+    private fun deleteAndReMkdirsUnzipDirectory() {
         val unzipDirectory = unzipDirectory.get().asFile
-        if (unzipDirectory.exists()){
+        if (unzipDirectory.exists()) {
             unzipDirectory.delete()
         }
         unzipDirectory.mkdirs()

@@ -160,31 +160,46 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
         SystemPrint.outPrintln(wrapper.toString())
-        val provider = project.tasks.register(wrapper.tag, wrapper.willRunTaskClass)
+        val provider =
+            project.tasks.register(wrapper.tag, wrapper.willRunTaskClass) as TaskProvider<Task>
         val dependsOnTask = project.tasks.getByPath(wrapper.anchorTaskName)
-        if (wrapper.isDependsOn) {
-            dependsOnTask.dependsOn(provider.get())
-        } else {
-            dependsOnTask.finalizedBy(provider.get())
+        var consumerTaskProvider: TaskProvider<Task>? = null
+        if (wrapper.isConsumerTask()) {
+            consumerTaskProvider =
+                project.tasks.register(
+                    wrapper.consumerTag,
+                    wrapper.consumerTaskClass
+                ) as TaskProvider<Task>?
         }
+
+        if (wrapper.isConsumerTask() && consumerTaskProvider != null) {
+            addTask(dependsOnTask, consumerTaskProvider, wrapper.isDependsOn)
+        } else {
+            addTask(dependsOnTask, provider, wrapper.isDependsOn)
+        }
+
         //自动为Task绑定variantName
         if (provider.get() is AndroidVariantTask) {
             (provider.get() as AndroidVariantTask).variantName = variantName
             (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
         }
+        //为消费Task
+        if (consumerTaskProvider != null && consumerTaskProvider is AndroidVariantTask) {
+            (consumerTaskProvider.get() as AndroidVariantTask).variantName = variantName
+            (consumerTaskProvider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
+        }
         //回调返回每个Task实例
         if (wrapper.taskRegisterListener == null) {
             return
         }
-        if (wrapper.producerTaskClass != null && wrapper.producerTag != null) {
-            val producerTaskProvider =
-                project.tasks.register(wrapper.producerTag, wrapper.producerTaskClass)
-            wrapper.taskRegisterListener.willRunTaskRegistered(
-                provider as TaskProvider<Task>,
-                producerTaskProvider as TaskProvider<Task>
-            )
+        wrapper.taskRegisterListener.willRunTaskRegistered(provider, consumerTaskProvider)
+    }
+
+    private fun addTask(dependsOnTask: Task, provider: TaskProvider<Task>, isDependsOn: Boolean) {
+        if (isDependsOn) {
+            dependsOnTask.dependsOn(provider.get())
         } else {
-            wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>, null)
+            dependsOnTask.finalizedBy(provider.get())
         }
     }
 

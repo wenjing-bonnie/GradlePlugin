@@ -11,6 +11,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 import java.io.File
 
@@ -22,10 +23,17 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         const val TAG: String = "ZipApkIncrementalTask"
     }
 
+    init {
+        outputs.upToDateWhen {
+            true
+        }
+    }
+
     /**
      * 存放所有的解压之后的文件夹
      */
     @get:InputDirectory
+    @get:Incremental
     abstract val unzipRootDirectory: DirectoryProperty
 
     /**
