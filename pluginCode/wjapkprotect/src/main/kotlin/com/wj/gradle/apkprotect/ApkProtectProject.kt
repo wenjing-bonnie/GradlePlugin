@@ -40,7 +40,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
     override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
         val tasks = mutableListOf<TaskWrapper>()
         tasks.add(getUnzipApkIncrementalTaskWrapper())
-        tasks.add(getZipApkIncrementalTaskWrapper())
+        //tasks.add(getZipApkIncrementalTaskWrapper())
         return tasks
     }
 
@@ -50,19 +50,32 @@ open class ApkProtectProject : WjVariantBaseProject() {
     private fun getUnzipApkIncrementalTaskWrapper(): TaskWrapper {
         val unzipTaskBuilder =
             TaskWrapper.Builder.setAnchorTaskName("assembleHuaweiDebug")
-                .setWillRunTaskClass(UnzipApkIncrementalTask::class.javaObjectType)
-                .setWillRunTaskTag(UnzipApkIncrementalTask.TAG)
+                .setWillRunTaskClass(
+                    UnzipApkIncrementalTask::class.javaObjectType,
+                    ZipApkIncrementalTask::class.javaObjectType
+                )
+                .setWillRunTaskTag(UnzipApkIncrementalTask.TAG, ZipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
-                    override fun willRunTaskRegistered(provider: TaskProvider<Task>) {
+                    override fun willRunTaskRegistered(
+                        provider: TaskProvider<Task>,
+                        producerProvider: TaskProvider<Task>?
+                    ) {
                         val unzipTask = provider.get()
-                        if (unzipTask !is UnzipApkIncrementalTask) {
+                        if (unzipTask !is UnzipApkIncrementalTask || producerProvider == null) {
+                            return
+                        }
+                        val zipTask = producerProvider.get()
+                        if (zipTask !is ZipApkIncrementalTask) {
                             return
                         }
                         unzipTask.setConfigFromExtensionAfterEvaluate()
+                        zipTask.unzipRootDirectory.set((provider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
+                            it.unzipDirectory
+                        })
                     }
                 })
-        return unzipTaskBuilder.builder();
+        return unzipTaskBuilder.builder()
     }
 
     /**
@@ -75,11 +88,15 @@ open class ApkProtectProject : WjVariantBaseProject() {
             .setAnchorTaskName(UnzipApkIncrementalTask.TAG)
             .setIsDependsOn(false)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
-                override fun willRunTaskRegistered(provider: TaskProvider<Task>) {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
                     val zipTask = provider.get()
                     if (zipTask !is ZipApkIncrementalTask) {
                         return
                     }
+                    //  zipTask.unzipRootDirectory.set()
                     zipTask.setConfigFromExtensionAfterEvaluate()
                 }
             })

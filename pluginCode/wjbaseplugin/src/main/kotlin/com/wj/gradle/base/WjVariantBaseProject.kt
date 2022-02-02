@@ -159,8 +159,9 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * 为每个Task注册到project中
      */
     private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
+        SystemPrint.outPrintln(wrapper.toString())
         val provider = project.tasks.register(wrapper.tag, wrapper.willRunTaskClass)
-        val dependsOnTask = project.tasks.getByPath(wrapper.dependsOnTaskName)
+        val dependsOnTask = project.tasks.getByPath(wrapper.anchorTaskName)
         if (wrapper.isDependsOn) {
             dependsOnTask.dependsOn(provider.get())
         } else {
@@ -175,7 +176,16 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         if (wrapper.taskRegisterListener == null) {
             return
         }
-        wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>)
+        if (wrapper.producerTaskClass != null && wrapper.producerTag != null) {
+            val producerTaskProvider =
+                project.tasks.register(wrapper.producerTag, wrapper.producerTaskClass)
+            wrapper.taskRegisterListener.willRunTaskRegistered(
+                provider as TaskProvider<Task>,
+                producerTaskProvider as TaskProvider<Task>
+            )
+        } else {
+            wrapper.taskRegisterListener.willRunTaskRegistered(provider as TaskProvider<Task>, null)
+        }
     }
 
     /**

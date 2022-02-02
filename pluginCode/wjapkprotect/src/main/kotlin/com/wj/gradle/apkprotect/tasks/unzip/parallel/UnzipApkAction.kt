@@ -8,15 +8,13 @@ import org.gradle.workers.WorkAction
  * 解压每个.apk
  */
 abstract class UnzipApkAction : WorkAction<UnzipApkWorkParameters> {
-    val TAG = "UnzipApkAction"
 
     override fun execute() {
         val unzipApk = parameters.unzipApk.get().asFile
         val unzipDirectory = parameters.unzipDirectory.get().asFile
         ZipAndUnZipApkUtils.unZipApk(unzipApk, unzipDirectory.path)
         SystemPrint.outPrintln(
-            TAG,
-            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath}"
+            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath} in UnzipApkAction"
         )
     }
 }

@@ -14,68 +14,92 @@ import java.lang.IllegalArgumentException
 open class TaskWrapper private constructor(
     /**获取即将加入的Task的类名*/
     val willRunTaskClass: Class<out Task>,
+    /**消费Task，若有则赋值*/
+    val producerTaskClass: Class<out Task>?,
     /**该即将加入的Task的Tag*/
     val tag: String,
+    /**消费Task的Tag，若有则赋值*/
+    val producerTag: String?,
     /**该锚点TaskTask的名字*/
-    val dependsOnTaskName: String,
+    val anchorTaskName: String,
     /**在锚点Task之前还是之后执行Task*/
     val isDependsOn: Boolean,
     /**回调监听*/
     val taskRegisterListener: IWillRunTaskRegisteredListener?
 ) {
 
+    override fun toString(): String {
+        return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n " +
+                "anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} \n"
+        " producer task is '${producerTaskClass?.simpleName}' , tag is $producerTag"
+    }
+
     object Builder {
 
         private lateinit var willRunTaskClass: Class<out Task>
+        private var producerTaskClass: Class<out Task>? = null
         private lateinit var willRunTaskTag: String
+        private var producerTaskTag: String? = null
         private var isDependsOn: Boolean = true
-        private lateinit var dependsOnTaskName: String
+        private lateinit var anchorTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
 
         /**
-         * 执行将要执行的Task的类名
+         * 设置执行将要执行的Task的类名
          * open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
          */
-        open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
+        fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
             this.willRunTaskClass = name
             return this
         }
 
         /**
-         * 设置瞄点task名字
-         *
-         * @param isDependsOn:true:在该Task之前执行目标Task,通过dependsOn添加targetTask
-         * false:在Task之后执行目标Task,通过finalizedBy执行Task
-         *
+         * 设置要执行的Task（生产Task）及消费Task
+         * @param consumerTask  要执行的Task
+         * @param producerTask 生产Task，该生产Task依赖于消费Task
          */
-        open fun setAnchorTaskName(name: String, isDependsOn: Boolean): Builder {
-            this.dependsOnTaskName = name
-            this.isDependsOn = isDependsOn
+        fun setWillRunTaskClass(
+            consumerTask: Class<out Task>,
+            producerTask: Class<out Task>
+        ): Builder {
+            this.willRunTaskClass = consumerTask
+            this.producerTaskClass = producerTask
             return this
+
         }
 
         /**
          * 设置瞄点task名字
-         * @beforeAnchor:true:在该Task之前执行目标Task,通过dependsOn添加targetTask
-         * false:在Task之后执行目标Task,通过finalizedBy执行Task
          *
          */
-        open fun setAnchorTaskName(name: String): Builder {
-            return this.setAnchorTaskName(name, true)
+        fun setAnchorTaskName(name: String): Builder {
+            this.anchorTaskName = name
+            return this
         }
 
         /**
          * 该Task的Tag
          */
-        open fun setWillRunTaskTag(tag: String): Builder {
+        fun setWillRunTaskTag(tag: String): Builder {
             this.willRunTaskTag = tag
+            return this
+        }
+
+        /**
+         * 该Task的Tag
+         * @param tag 生产Task的tag
+         * @param producerTag 消费Task的tag
+         */
+        fun setWillRunTaskTag(tag: String, producerTag: String): Builder {
+            this.willRunTaskTag = tag
+            this.producerTaskTag = producerTag
             return this
         }
 
         /**
          * 设置监听回调
          */
-        open fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
+        fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
             this.taskRegisterListener = listener
             return this
         }
@@ -84,18 +108,19 @@ open class TaskWrapper private constructor(
          * 设置在锚点Task之前还是之后执行Task
          * @param isDependsOn true:在锚点Task之前去执行该Task
          */
-        open fun setIsDependsOn(isDependsOn: Boolean): Builder {
+        fun setIsDependsOn(isDependsOn: Boolean): Builder {
             this.isDependsOn = isDependsOn
             return this
         }
 
-
-        open fun builder(): TaskWrapper {
+        fun builder(): TaskWrapper {
             checkArgument()
             val wrapper = TaskWrapper(
                 willRunTaskClass,
+                producerTaskClass,
                 willRunTaskTag,
-                dependsOnTaskName,
+                producerTaskTag,
+                anchorTaskName,
                 isDependsOn,
                 taskRegisterListener
             )
@@ -107,7 +132,7 @@ open class TaskWrapper private constructor(
             if (willRunTaskTag.isEmpty()) {
                 throw  IllegalArgumentException("Must set tag is not empty for will run task")
             }
-            if (dependsOnTaskName.isEmpty()) {
+            if (anchorTaskName.isEmpty()) {
                 throw IllegalArgumentException("Must set anchor task for will run task")
             }
         }
@@ -121,8 +146,12 @@ open class TaskWrapper private constructor(
         /**
          * 将注册到Project的provider返回
          * @param provider 可通过provider.get()得到Task
+         * @param producerProvider 若有消费Task，则返回该消费Task,若没有此时返回的为null
          * */
-        fun willRunTaskRegistered(provider: TaskProvider<Task>)
+        fun willRunTaskRegistered(
+            provider: TaskProvider<Task>,
+            producerProvider: TaskProvider<Task>?
+        )
     }
 
 }

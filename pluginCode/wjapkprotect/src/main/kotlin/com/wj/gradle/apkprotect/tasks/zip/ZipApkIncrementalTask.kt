@@ -6,13 +6,16 @@ import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkAction
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkWorkParameters
 import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath
 import com.wj.gradle.base.utils.SystemPrint
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.gradle.work.InputChanges
+import java.io.File
 
 /**
- * 压缩.apk
+ * 压缩.apk，消费Task，此时的inputs接收[UnzipApkIncrementalTask]的outputs
  */
 abstract class ZipApkIncrementalTask : NewIncrementalTask() {
     companion object {
@@ -28,13 +31,15 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
     /**
      * 存放输出的apk文件的文件夹
      */
-    @get:OutputDirectory
+    // @get:OutputDirectory
     abstract val zipApkDirectory: DirectoryProperty
 
     override fun doTaskAction(inputChanges: InputChanges) {
         val workQueue = workerExecutor.noIsolation()
         val unzipDirectory = unzipRootDirectory.get().asFile
         val allApkDirectories = unzipDirectory.listFiles()
+        SystemPrint.outPrintln(TAG, unzipDirectory.path + "\n" + allApkDirectories.size)
+        SystemPrint.outPrintln(TAG, "" + File("${unzipDirectory.path}/app-huawei-debug").exists())
         for (apk in allApkDirectories) {
             SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)
             workQueue.submit(ZipApkAction::class.javaObjectType) { params: ZipApkWorkParameters ->

@@ -18,7 +18,7 @@ import java.lang.IllegalArgumentException
 /**
  * 增量编译,可直接创建并行Task
  *
- * 解压缩apk
+ * 解压缩apk，为生产Task，该Task的outputs为消费Task[ZipApkIncremtentalTask]的inputs
  *
  * 1.配置.apk存放的路径.
  * 默认的取["${project.projectDir.absolutePath}/build/outputs/apk/"]
@@ -56,7 +56,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         val workqueue = workerExecutor.noIsolation()
         allApks.clear()
         //1.delete unzip directory
-        deleteAndReMkdirsUnzipDirectory()
+        //deleteAndReMkdirsUnzipDirectory()
         //2.find all apk files in lazyApkDirectory
         val apkDirectory = lazyApkDirectory.get().asFile
         getAllApksFromApkDirectory(apkDirectory)
