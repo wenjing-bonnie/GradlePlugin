@@ -48,8 +48,9 @@ open class ApkProtectProject : WjVariantBaseProject() {
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
     private fun getUnzipApkIncrementalTaskWrapper(): TaskWrapper {
+        //assembleHuaweiDebug
         val unzipTaskBuilder =
-            TaskWrapper.Builder.setAnchorTaskName("assembleHuaweiDebug")
+            TaskWrapper.Builder.setAnchorTaskName("preBuild")
                 .setWillRunTaskClass(
                     UnzipApkIncrementalTask::class.javaObjectType,
                     ZipApkIncrementalTask::class.javaObjectType

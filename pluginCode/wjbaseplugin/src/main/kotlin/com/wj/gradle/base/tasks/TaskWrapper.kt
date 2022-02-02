@@ -30,8 +30,8 @@ open class TaskWrapper private constructor(
 
     override fun toString(): String {
         return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n " +
-                "anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} \n"
-        " producer task is '${producerTaskClass?.simpleName}' , tag is $producerTag"
+                "anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} \n" +
+                " producer task is '${producerTaskClass?.simpleName}' , tag is $producerTag"
     }
 
     object Builder {
@@ -134,6 +134,10 @@ open class TaskWrapper private constructor(
             }
             if (anchorTaskName.isEmpty()) {
                 throw IllegalArgumentException("Must set anchor task for will run task")
+            }
+
+            if ((producerTaskClass != null && producerTaskTag == null) || (producerTaskClass == null && producerTaskTag != null)) {
+                throw IllegalAccessException("If you set producer task , must set the producer task 's tag  and class")
             }
         }
     }
