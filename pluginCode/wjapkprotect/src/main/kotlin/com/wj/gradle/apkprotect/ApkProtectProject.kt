@@ -85,31 +85,6 @@ open class ApkProtectProject : WjVariantBaseProject() {
         return unzipTaskBuilder.builder()
     }
 
-    /**
-     * 压缩文件
-     */
-    private fun getZipApkIncrementalTaskWrapper(): TaskWrapper {
-        val zipTaskBuilder = TaskWrapper.Builder
-            .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
-            .setAnchorTaskName(UnzipApkIncrementalTask.TAG)
-            .setIsDependsOn(false)
-//            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
-//                override fun willRunTaskRegistered(
-//                    provider: TaskProvider<Task>,
-//                    producerProvider: TaskProvider<Task>?
-//                ) {
-//                    val zipTask = provider.get()
-//                    if (zipTask !is ZipApkIncrementalTask) {
-//                        return
-//                    }
-//                    //  zipTask.unzipRootDirectory.set()
-//                    zipTask.setConfigFromExtensionAfterEvaluate()
-//                }
-//            })
-        return zipTaskBuilder.builder()
-    }
-
     override fun getRegisterTransformTasks(): MutableList<Transform> {
         return mutableListOf()
     }
