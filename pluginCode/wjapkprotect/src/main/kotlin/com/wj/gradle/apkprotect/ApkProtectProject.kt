@@ -76,7 +76,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
                             return
                         }
                         unzipTask.setConfigFromExtensionAfterEvaluate()
-                        zipTask.unzipRootDirectory.set((provider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
+                        zipTask.unzipRootDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
                             it.unzipDirectory
                         })
 

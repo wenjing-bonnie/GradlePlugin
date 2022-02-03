@@ -46,7 +46,7 @@ open class TaskWrapper private constructor(
         private lateinit var willRunTaskClass: Class<out Task>
         private var producerTaskClass: Class<out Task>? = null
         private lateinit var willRunTaskTag: String
-        private var produceraskTag: String? = null
+        private var producerTaskTag: String? = null
         private var isDependsOn: Boolean = true
         private lateinit var anchorTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
@@ -66,8 +66,8 @@ open class TaskWrapper private constructor(
          * @param producerTask 生产Task，生产Task为消费Task提供inputs,通过flatMap{]添加到项目依赖中
          */
         fun setWillRunTaskClass(
-            producerTask: Class<out Task>,
-            consumerTask: Class<out Task>
+            consumerTask: Class<out Task>,
+            producerTask: Class<out Task>
         ): Builder {
             this.willRunTaskClass = consumerTask
             this.producerTaskClass = producerTask
@@ -99,7 +99,7 @@ open class TaskWrapper private constructor(
          */
         fun setWillRunTaskTag(tag: String, producerTag: String): Builder {
             this.willRunTaskTag = tag
-            this.produceraskTag = producerTag
+            this.producerTaskTag = producerTag
             return this
         }
 
@@ -126,7 +126,7 @@ open class TaskWrapper private constructor(
                 willRunTaskClass,
                 producerTaskClass,
                 willRunTaskTag,
-                produceraskTag,
+                producerTaskTag,
                 anchorTaskName,
                 isDependsOn,
                 taskRegisterListener
@@ -143,7 +143,7 @@ open class TaskWrapper private constructor(
                 throw IllegalArgumentException("Must set anchor task for will run task")
             }
 
-            if ((producerTaskClass != null && produceraskTag == null) || (producerTaskClass == null && produceraskTag != null)) {
+            if ((producerTaskClass != null && producerTaskTag == null) || (producerTaskClass == null && producerTaskTag != null)) {
                 throw IllegalAccessException("If you set producer task , must set the producer task 's tag  and class")
             }
         }

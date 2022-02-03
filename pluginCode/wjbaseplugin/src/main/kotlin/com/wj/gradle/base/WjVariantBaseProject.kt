@@ -196,6 +196,11 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         wrapper.taskRegisterListener.willRunTaskRegistered(provider, producerTaskProvider)
     }
 
+    private fun initAndroidVariantTask(provider: TaskProvider<Task>){
+        (provider.get() as AndroidVariantTask).variantName = variantName
+        (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
+    }
+
     private fun addTask(dependsOnTask: Task, provider: TaskProvider<Task>, isDependsOn: Boolean) {
         if (isDependsOn) {
             dependsOnTask.dependsOn(provider.get())
