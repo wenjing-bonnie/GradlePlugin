@@ -29,9 +29,9 @@ open class TaskWrapper private constructor(
 ) {
 
     override fun toString(): String {
-        return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n " +
-                "                   anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} ;\n" +
-                "                   consumer task is '${producerTaskClass?.simpleName}' , tag is $producerTag ."
+        return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n" +
+                "                     anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} ;\n" +
+                "                     consumer task is '${producerTaskClass?.simpleName}' , tag is $producerTag ."
     }
 
     /**
@@ -41,8 +41,10 @@ open class TaskWrapper private constructor(
         return producerTaskClass != null && producerTag != null
     }
 
-    object Builder {
-
+    /**
+     * 使用内部类代替静态类，否则里面的变量不能每次重新赋值
+     */
+    class Builder {
         private lateinit var willRunTaskClass: Class<out Task>
         private var producerTaskClass: Class<out Task>? = null
         private lateinit var willRunTaskTag: String
@@ -50,6 +52,17 @@ open class TaskWrapper private constructor(
         private var isDependsOn: Boolean = true
         private lateinit var anchorTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
+
+//
+//        /**
+//         * 因为是静态类，所以里面的变量要进行初始化的赋值
+//         */
+//        init {
+//            producerTaskClass = null
+//            producerTaskTag = null
+//            taskRegisterListener = null
+//            isDependsOn = true
+//        }
 
         /**
          * 设置执行将要执行的Task的类名

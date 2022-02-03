@@ -100,7 +100,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getAfterEvaluateTasks(): MutableList<TaskWrapper>
+    abstract fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapper>
 
     /**
      * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
@@ -109,7 +109,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getRegisterTransformTasks(): MutableList<Transform>
+    abstract fun getRegisterTransformTasks(project: Project): MutableList<Transform>
 
 
     /**
@@ -136,7 +136,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private fun addTransformTaskByExtension(project: Project) {
         val extension = project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
-        val transforms = getRegisterTransformTasks()
+        val transforms = getRegisterTransformTasks(project)
         //循环取出Transform添加到project中
         transforms.forEach {
             extension.registerTransform(it)
@@ -150,7 +150,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     private fun addTasksForBuildVariantAfterEvaluate(project: Project) {
         //在项目配置结束之后,添加自定义的Task
         project.afterEvaluate {
-            val tasks = getAfterEvaluateTasks()
+            val tasks = getAfterEvaluateTasks(project)
             //循环取出Task添加到project中
             tasks.forEach {
                 registerTaskAfterEvaluate(project, it)
@@ -181,17 +181,10 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         } else {
             dependsOnTask.finalizedBy(provider.get())
         }
-
         //自动为Task绑定variantName
-        if (provider.get() is AndroidVariantTask) {
-            (provider.get() as AndroidVariantTask).variantName = variantName
-            (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
-        }
+        initAndroidVariantTask(provider)
         //生产Task
-        if (producerTaskProvider != null && producerTaskProvider.get() is AndroidVariantTask) {
-            (producerTaskProvider.get() as AndroidVariantTask).variantName = variantName
-            (producerTaskProvider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
-        }
+        initAndroidVariantTask(producerTaskProvider)
         //回调返回每个Task实例
         if (wrapper.taskRegisterListener == null) {
             return
@@ -199,18 +192,17 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         wrapper.taskRegisterListener.willRunTaskRegistered(provider, producerTaskProvider)
     }
 
-    private fun initAndroidVariantTask(provider: TaskProvider<Task>) {
+    /**
+     * 初始化AndroidVariantTask的[AndroidVariantTask#variantName]和[AndroidVariantTask#analyticsService]
+     */
+    private fun initAndroidVariantTask(provider: TaskProvider<Task>?) {
+        if (provider == null || provider.get() !is AndroidVariantTask) {
+            return
+        }
         (provider.get() as AndroidVariantTask).variantName = variantName
         (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
     }
 
-    private fun addTask(dependsOnTask: Task, provider: TaskProvider<Task>, isDependsOn: Boolean) {
-        if (isDependsOn) {
-            dependsOnTask.dependsOn(provider.get())
-        } else {
-            dependsOnTask.finalizedBy(provider.get())
-        }
-    }
 
     /**
      * 在build过程中获取variant name,需要注意这种方法不适用于sync.

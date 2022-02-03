@@ -45,12 +45,15 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         unzipRootDirectory.flatMap { project.layout.buildDirectory.dir("${it.asFile.path}/apps/") }
 
     override fun doTaskAction(inputChanges: InputChanges) {
-        SystemPrint.outPrintln(TAG,"The zip begin ...")
+        SystemPrint.outPrintln(TAG, "The zip begin ...")
         val workQueue = workerExecutor.noIsolation()
         val unzipDirectory = unzipRootDirectory.get().asFile
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
-           // SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)
+            if (apk.name.equals(zipApkDirectory.get().asFile.name)) {
+                continue
+            }
+            // SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)
             workQueue.submit(ZipApkAction::class.javaObjectType) { params: ZipApkWorkParameters ->
                 params.unzipApkDirectory.set(apk)
                 params.zipApkDirectory.set(zipApkDirectory)

@@ -21,6 +21,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
 
     /**
      * 对文件进行 AES 加密
+     * @return 返回的是加密之后的文件
      */
     open fun encrypt(sourceFile: File): File? {
         var inputStream: FileInputStream? = null
@@ -57,6 +58,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
 
     /**
      * 解密
+     * @return 返回解密之后的文件
      */
     open fun decrypt(encodeFile: File): File? {
         var inputStream: FileInputStream? = null
