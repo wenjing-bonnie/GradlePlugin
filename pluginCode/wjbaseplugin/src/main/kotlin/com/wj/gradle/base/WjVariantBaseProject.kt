@@ -46,14 +46,17 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * variant name
      */
     private var variantName: String = ""
-    private lateinit var analyticsService: Provider<AnalyticsService>
 
+    /**
+     * 并行Task的必须设置的属性
+     */
+    private lateinit var analyticsService: Provider<AnalyticsService>
 
     /**
      * TODO 暂定该方法不可复写
      */
     final override fun apply(p0: Project) {
-        resetGlobalTag(javaClass.simpleName)
+        //resetGlobalTag(javaClass.simpleName)
         initAnalyticsService(p0)
         //在配置扩展属性的时候,一定要保证无论什么情况都可以调用到.像如果把该方法移到if之后,则会始终找不到配置的扩展属性
         createExtension(p0)
@@ -196,7 +199,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         wrapper.taskRegisterListener.willRunTaskRegistered(provider, producerTaskProvider)
     }
 
-    private fun initAndroidVariantTask(provider: TaskProvider<Task>){
+    private fun initAndroidVariantTask(provider: TaskProvider<Task>) {
         (provider.get() as AndroidVariantTask).variantName = variantName
         (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
     }

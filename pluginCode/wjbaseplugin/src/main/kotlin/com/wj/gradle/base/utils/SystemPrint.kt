@@ -11,7 +11,7 @@ import com.android.build.gradle.internal.cxx.logging.warnln
  */
 object SystemPrint {
     var DEBUG: Boolean = true
-    var TAG: String = "ManifestKotlinProject"
+    var TAG: String = "WjVariantBaseProject"
 
     /**
      * 日志输出
@@ -62,7 +62,7 @@ object SystemPrint {
      * 获取可用的tag
      */
     private fun getTag(tag: String): String {
-        var length = tag.length
+        val length = tag.length
         if (length <= 30) {
             return tag
         }

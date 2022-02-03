@@ -89,7 +89,7 @@ object ZipAndUnZipApkUtils {
             inputStream?.close()
             outputStream?.close()
         }
-        SystemPrint.outPrintln("The ${zipFile.name} finish 'unzip' in \n$descDirPath !")
+        SystemPrint.outPrintln("The ${zipFile.name} finish 'unzip' in \n$descDirPath ")
         return resultFileAbsoluteDir
     }
 
@@ -119,7 +119,7 @@ object ZipAndUnZipApkUtils {
         if (!zipFile.exists() || zipFile.length() == 0L) {
             return null
         }
-        SystemPrint.outPrintln("The ${zipFile.name} finish 'zip' in \n$zipFileDescPath!")
+        SystemPrint.outPrintln("The ${zipFile.name} finish 'zip' in \n$zipFileDescPath")
         return zipFile
     }
 

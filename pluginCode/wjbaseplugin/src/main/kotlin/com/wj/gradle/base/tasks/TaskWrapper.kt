@@ -30,8 +30,8 @@ open class TaskWrapper private constructor(
 
     override fun toString(): String {
         return "will run task is '${willRunTaskClass.simpleName}' , tag is $tag ; \n " +
-                "anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} \n" +
-                " consumer task is '${producerTaskClass?.simpleName}' , tag is $producerTag"
+                "                   anchor task is '$anchorTaskName' run before the anchor is ${isDependsOn} ;\n" +
+                "                   consumer task is '${producerTaskClass?.simpleName}' , tag is $producerTag ."
     }
 
     /**
