@@ -17,9 +17,10 @@ import javax.crypto.spec.SecretKeySpec
 abstract class AbstractAesAlgorithm {
     private val AES = "AES"
     private val KET_SIZE = 128
-    private val PASSWORD = "123456"
+    //private val PASSWORD = "123456"
     val CHARSET = Charsets.UTF_8
 
+    abstract fun getPassword(): String;
 
     /**
      * 获取一个密码器
@@ -32,7 +33,6 @@ abstract class AbstractAesAlgorithm {
         return cipher
     }
 
-
     /**
      * 对密钥进行处理
      * 根据传入的seed构建密钥生成器
@@ -43,7 +43,7 @@ abstract class AbstractAesAlgorithm {
         //2.初始化生成器
         //kgen.init(KET_SIZE, SecureRandom(PASSWORD.toByteArray(CHARSET)))
         val secureRandom = SecureRandom.getInstance("SHA1PRNG")
-        secureRandom.setSeed(PASSWORD.toByteArray())
+        secureRandom.setSeed(getPassword().toByteArray())
         kgen.init(KET_SIZE, secureRandom)
         //3.产生原始对称密钥
         val originalKey: SecretKey = kgen.generateKey()

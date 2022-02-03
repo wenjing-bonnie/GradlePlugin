@@ -11,6 +11,10 @@ import javax.crypto.Cipher
  */
 class AesStringAlgorithm : AbstractAesAlgorithm() {
 
+    override fun getPassword(): String {
+        return "123456"
+    }
+
     /**
      * 加密之后已base64编码字符串输出
      * @param context 需要加密的字符串

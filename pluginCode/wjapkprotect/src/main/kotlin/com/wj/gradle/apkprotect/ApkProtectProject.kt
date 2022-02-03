@@ -2,8 +2,8 @@ package com.wj.gradle.apkprotect
 
 import com.android.build.api.transform.Transform
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
+import com.wj.gradle.apkprotect.tasks.encode.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
-import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
 import com.wj.gradle.base.utils.SystemPrint
@@ -39,7 +39,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
      */
     override fun getAfterEvaluateTasks(): MutableList<TaskWrapper> {
         val tasks = mutableListOf<TaskWrapper>()
-        tasks.add(getUnzipApkIncrementalTaskWrapper())
+        tasks.add(getUnzipApkAndEncodeDexTaskWrapper())
         //tasks.add(getZipApkIncrementalTaskWrapper())
         return tasks
     }
@@ -47,15 +47,15 @@ open class ApkProtectProject : WjVariantBaseProject() {
     /**
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
-    private fun getUnzipApkIncrementalTaskWrapper(): TaskWrapper {
+    private fun getUnzipApkAndEncodeDexTaskWrapper(): TaskWrapper {
         //assembleHuaweiDebug
         val unzipTaskBuilder =
             TaskWrapper.Builder.setAnchorTaskName("preBuild")
                 .setWillRunTaskClass(
-                    ZipApkIncrementalTask::class.javaObjectType,
+                    EncodeDexIncrementalTask::class.javaObjectType,
                     UnzipApkIncrementalTask::class.javaObjectType
                 )
-                .setWillRunTaskTag(ZipApkIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
+                .setWillRunTaskTag(EncodeDexIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
                     override fun willRunTaskRegistered(
@@ -63,8 +63,8 @@ open class ApkProtectProject : WjVariantBaseProject() {
                         producerProvider: TaskProvider<Task>?
                     ) {
                         //消费Task
-                        val zipTask = provider.get()
-                        if (zipTask !is ZipApkIncrementalTask) {
+                        val encodeTask = provider.get()
+                        if (encodeTask !is EncodeDexIncrementalTask) {
                             return
                         }
                         //生产Task
@@ -76,7 +76,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
                             return
                         }
                         unzipTask.setConfigFromExtensionAfterEvaluate()
-                        zipTask.unzipRootDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
+                        encodeTask.dexDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
                             it.unzipDirectory
                         })
 

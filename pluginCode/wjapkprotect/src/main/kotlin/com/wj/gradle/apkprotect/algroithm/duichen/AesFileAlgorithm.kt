@@ -15,6 +15,9 @@ import javax.crypto.CipherOutputStream
  */
 open class AesFileAlgorithm : AbstractAesAlgorithm() {
 
+    override fun getPassword(): String {
+        return "123456"
+    }
 
     /**
      * 对文件进行 AES 加密
