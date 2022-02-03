@@ -1,1 +1,0 @@
-/Users/liuwenjing/Documents/workspace/androidworkspace/GradlePlugin/buildSrc/build/classes/groovy/main/com/wj/buildsrc/manifest/ManifestGroovyProject.class:/Users/liuwenjing/Documents/workspace/androidworkspace/GradlePlugin/buildSrc/build/classes/kotlin/main/com/wj/buildsrc/ManifestKotlinProject.class
