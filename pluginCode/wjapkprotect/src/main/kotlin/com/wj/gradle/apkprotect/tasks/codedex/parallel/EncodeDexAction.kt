@@ -1,7 +1,6 @@
-package com.wj.gradle.apkprotect.tasks.encode.parallel
+package com.wj.gradle.apkprotect.tasks.codedex.parallel
 
 import com.wj.gradle.apkprotect.algroithm.duichen.AesFileAlgorithm
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.workers.WorkAction
 
 /**

@@ -1,4 +1,4 @@
-package com.wj.gradle.apkprotect.tasks.encode.parallel
+package com.wj.gradle.apkprotect.tasks.codedex.parallel
 
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.workers.WorkParameters

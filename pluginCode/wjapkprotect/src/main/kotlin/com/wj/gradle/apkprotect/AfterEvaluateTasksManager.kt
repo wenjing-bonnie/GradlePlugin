@@ -1,6 +1,7 @@
 package com.wj.gradle.apkprotect
 
-import com.wj.gradle.apkprotect.tasks.encode.EncodeDexIncrementalTask
+import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
+import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath
@@ -26,7 +27,7 @@ open class AfterEvaluateTasksManager {
                     EncodeDexIncrementalTask::class.javaObjectType,
                     UnzipApkIncrementalTask::class.javaObjectType
                 )
-                .setWillRunTaskTag(EncodeDexIncrementalTask.TAG_ENCODE, UnzipApkIncrementalTask.TAG)
+                .setWillRunTaskTag(EncodeDexIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
                     override fun willRunTaskRegistered(
@@ -52,10 +53,10 @@ open class AfterEvaluateTasksManager {
      */
     open fun getDecodeIncrementalTaskWrapper(project: Project): TaskWrapper {
         val builder = TaskWrapper.Builder()
-            .setWillRunTaskClass(EncodeDexIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(EncodeDexIncrementalTask.TAG_DECODE)
+            .setWillRunTaskClass(DecodeDexIncrementalTask::class.javaObjectType)
+            .setWillRunTaskTag(DecodeDexIncrementalTask.TAG)
             .setIsDependsOn(false)
-            .setAnchorTaskName(EncodeDexIncrementalTask.TAG_ENCODE)
+            .setAnchorTaskName(EncodeDexIncrementalTask.TAG)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,
@@ -75,7 +76,7 @@ open class AfterEvaluateTasksManager {
     open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
         //TODO 暂时设置TAG_DECODE为锚点，测试加密解密之后可行
         val builder = TaskWrapper.Builder()
-            .setAnchorTaskName(EncodeDexIncrementalTask.TAG_DECODE)
+            .setAnchorTaskName(DecodeDexIncrementalTask.TAG)
             .setIsDependsOn(false)
             .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
@@ -112,7 +113,6 @@ open class AfterEvaluateTasksManager {
             return
         }
         unzipTask.setConfigFromExtensionAfterEvaluate()
-        encodeTask.isEncodeTask = true
         encodeTask.dexDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
             it.unzipDirectory
         })
@@ -156,7 +156,6 @@ open class AfterEvaluateTasksManager {
         if (unzipApkIncrementalTask !is UnzipApkIncrementalTask) {
             return
         }
-        decodeTask.isEncodeTask = false
         //TODO 这里的获取方式需要优化
         //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         decodeTask.dexDirectory.set(ZipAndUnzipApkDefaultPath.getUnzipRootDirectory(project))
