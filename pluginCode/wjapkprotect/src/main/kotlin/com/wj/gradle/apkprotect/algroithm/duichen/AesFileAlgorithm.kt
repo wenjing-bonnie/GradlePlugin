@@ -66,7 +66,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
         val decryptFile = File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
 
         try {
-            SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
+           // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
             inputStream = FileInputStream(encodeFile)
             outputStream = FileOutputStream(decryptFile)
 
