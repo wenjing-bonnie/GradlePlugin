@@ -76,10 +76,10 @@ open class AfterEvaluateTasksManager {
     open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
         //TODO 暂时设置TAG_DECODE为锚点，测试加密解密之后可行
         val builder = TaskWrapper.Builder()
-            .setAnchorTaskName(DecodeDexIncrementalTask.TAG)
-            .setIsDependsOn(false)
             .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
+            .setAnchorTaskName(DecodeDexIncrementalTask.TAG)
+            .setIsDependsOn(false)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,
