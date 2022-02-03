@@ -13,8 +13,8 @@ abstract class UnzipApkAction : WorkAction<UnzipApkWorkParameters> {
         val unzipApk = parameters.unzipApk.get().asFile
         val unzipDirectory = parameters.unzipDirectory.get().asFile
         ZipAndUnZipApkUtils.unZipApk(unzipApk, unzipDirectory.path)
-        SystemPrint.outPrintln(
-            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath} in UnzipApkAction"
-        )
+//        SystemPrint.outPrintln(
+//            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath} in UnzipApkAction"
+//        )
     }
 }
