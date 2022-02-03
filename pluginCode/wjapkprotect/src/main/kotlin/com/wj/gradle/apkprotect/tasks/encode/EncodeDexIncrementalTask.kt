@@ -38,7 +38,7 @@ abstract class EncodeDexIncrementalTask : NewIncrementalTask() {
     var isEncodeTask: Boolean = true
 
     override fun doTaskAction(inputChanges: InputChanges) {
-        SystemPrint.outPrintln(TAG_ENCODE, "The encode dex ...")
+        beginPrintln()
         val workQueue = workerExecutor.noIsolation()
         SystemPrint.outPrintln(TAG_ENCODE, dexDirectory.get().asFile.path)
         val dexParentFiles = dexDirectory.get().asFile.listFiles()
@@ -63,6 +63,14 @@ abstract class EncodeDexIncrementalTask : NewIncrementalTask() {
 
     }
 
+    private fun beginPrintln() {
+        if (isEncodeTask) {
+            SystemPrint.outPrintln(TAG_ENCODE, "The encode dex ...")
+        } else {
+            SystemPrint.outPrintln(TAG_DECODE, "The decode dex ...")
+        }
+    }
+
     private fun encodeDexAction(workQueue: WorkQueue, dex: File) {
         workQueue.submit(EncodeDexAction::class.javaObjectType) { it: EncodeDexWorkParameters ->
             it.dexFile.set(dex)
@@ -74,6 +82,6 @@ abstract class EncodeDexIncrementalTask : NewIncrementalTask() {
         workQueue.submit(DecodeDexAction::class.javaObjectType) { it: EncodeDexWorkParameters ->
             it.dexFile.set(dex)
         }
-        SystemPrint.outPrintln(TAG_ENCODE, "The ${dex.name} finished to decode .")
+        SystemPrint.outPrintln(TAG_DECODE, "The ${dex.name} finished to decode .")
     }
 }
