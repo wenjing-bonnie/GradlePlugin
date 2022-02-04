@@ -102,6 +102,7 @@ this.afterEvaluate {
 
 }
 
+
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
@@ -144,5 +145,10 @@ android {
 //            java.srcDirs = ['src']
 //        }
 //    }
+
+    dexOptions{
+        javaMaxHeapSize "1024m"
+        incremental true
+    }
 }
 
