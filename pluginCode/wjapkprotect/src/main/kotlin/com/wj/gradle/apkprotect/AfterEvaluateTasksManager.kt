@@ -148,7 +148,7 @@ open class AfterEvaluateTasksManager {
         project: Project
     ) {
         val decodeTask = provider.get()
-        if (decodeTask !is EncodeDexIncrementalTask) {
+        if (decodeTask !is DecodeDexIncrementalTask) {
             return
         }
 
