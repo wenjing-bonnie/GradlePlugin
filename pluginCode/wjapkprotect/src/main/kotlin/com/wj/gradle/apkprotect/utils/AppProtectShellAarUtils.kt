@@ -64,7 +64,7 @@ object AppProtectShellAarUtils {
             val copyCommand = "cp ${dexFile.absolutePath} ${apk.absolutePath}"
             val runtimeUtils = AppProtectRuntimeUtils()
             val error = runtimeUtils.runtimeExecCommand(copyCommand)
-            val okValue = "Finished to copy\n ${dexFile.absolutePath}\n to \n${apk.absolutePath}"
+            val okValue = "Finished to 'copy' \n ${dexFile.absolutePath}\n to \n${apk.absolutePath}"
             printRuntimeResult(error, okValue)
         }
     }
@@ -83,7 +83,7 @@ object AppProtectShellAarUtils {
         val error = runtime.runtimeExecCommand(command)
         printRuntimeResult(
             error,
-            "The ${classJar.name} to ${aarDex.name} is finished in\n ${aarDex.parent}"
+            "Finished to 'dx' ${classJar.name} to ${aarDex.name} in\n ${aarDex.parent}"
         )
     }
 
