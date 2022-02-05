@@ -3,7 +3,6 @@ package com.wj.gradle.apkprotect.utils
 import com.android.build.gradle.AppExtension
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FilenameFilter
 import java.lang.RuntimeException
@@ -11,7 +10,7 @@ import java.lang.RuntimeException
 /**
  * 将壳aar转化成.dex
  */
-object AppProtectDx {
+object AppProtectJar2DexUtils {
 
     private val TAG = javaClass.simpleName
 
@@ -19,6 +18,7 @@ object AppProtectDx {
      * 将aar转化成dex文件，默认的存放到build/protect/aar
      * @param aarFile aar的文件
      * @param project
+     * @return 返回生成的dex文件
      */
     fun jar2Dex(aarFile: File, project: Project): File {
         //1.获取默认的操作aar文件的路径
@@ -52,20 +52,10 @@ object AppProtectDx {
         if (dxTools.isEmpty()) {
             throw RuntimeException("Can not find \"dx\" , make sure the project set sdk location right")
         }
-        val runtime = Runtime.getRuntime()
-        val process =
-            runtime.exec("$dxTools/dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}")
-        SystemPrint.outPrintln(
-            TAG,
-            "$dxTools/dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}"
-        )
-        try {
-            process.waitFor()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-        val exitValue = process.exitValue()
-        if (exitValue == 0) {
+        val runtime = AppProtectRuntimeUtils()
+        val command = "$dxTools/dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}"
+        val exitValue = runtime.runtimeExecCommand(command)
+        if (exitValue.isEmpty()) {
             SystemPrint.outPrintln(
                 TAG,
                 "The ${classJar.name} to ${aarDex.name} is finished in\n ${aarDex.parent}"
@@ -73,17 +63,7 @@ object AppProtectDx {
             return
         }
         //错误信息输出
-        val inputStream = process.errorStream
-        var len = -1
-        var buffer = ByteArray(1024)
-        val bos = ByteArrayOutputStream()
-        len = inputStream.read(buffer)
-        while (len != -1) {
-            bos.write(buffer, 0, len)
-            len = inputStream.read(buffer)
-        }
-        val error = "dx run failed , error is \n${String(bos.toByteArray(), Charsets.UTF_8)}"
-        SystemPrint.errorPrintln(TAG, error)
+        SystemPrint.errorPrintln(TAG, exitValue)
 
     }
 
@@ -92,7 +72,5 @@ object AppProtectDx {
             project.extensions.findByType(AppExtension::class.javaObjectType)
                 ?: return ""
         return "${androidExtension.sdkDirectory.absolutePath}/build-tools/${androidExtension.buildToolsVersion}"
-
-
     }
 }
