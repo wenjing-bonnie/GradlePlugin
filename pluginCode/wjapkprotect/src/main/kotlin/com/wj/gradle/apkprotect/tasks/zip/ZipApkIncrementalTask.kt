@@ -3,26 +3,23 @@ package com.wj.gradle.apkprotect.tasks.zip
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkAction
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkWorkParameters
+import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectoryUtils
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 
 /**
- * 压缩.apk，消费Task，此时的inputs接收[UnzipApkIncrementalTask]的outputs
+ * TODO 这里的备注还需要完善
+ * 压缩.apk，消费Task，此时的inputs接收[ShellAar2DexIncrementalTask]的outputs
  */
 abstract class ZipApkIncrementalTask : NewIncrementalTask() {
     companion object {
         const val TAG: String = "ZipApkIncrementalTask"
-    }
-
-    init {
-        outputs.upToDateWhen {
-            true
-        }
     }
 
     /**
@@ -35,8 +32,9 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
     /**
      * 存放输出的apk文件的文件夹
      */
-    private val zipApkDirectory: Provider<Directory> =
-        unzipRootDirectory.flatMap { project.layout.buildDirectory.dir("${it.asFile.path}/apps/") }
+    @get:OutputDirectory
+    @get:Incremental
+    abstract val zipApkDirectory: DirectoryProperty
 
     override fun doTaskAction(inputChanges: InputChanges) {
         SystemPrint.outPrintln(TAG, "The zip begin ...")
@@ -44,7 +42,7 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         val unzipDirectory = unzipRootDirectory.get().asFile
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
-            if (apk.name.equals(zipApkDirectory.get().asFile.name)) {
+            if (AppProtectProcessDirectoryUtils.isValidApkUnzipDirectory(apk)) {
                 continue
             }
             // SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)

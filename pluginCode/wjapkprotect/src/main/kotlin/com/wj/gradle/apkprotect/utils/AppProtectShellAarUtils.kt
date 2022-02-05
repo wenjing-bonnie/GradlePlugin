@@ -53,11 +53,7 @@ object AppProtectShellAarUtils {
         val allApks = unzipDirectory.listFiles(object : FileFilter {
             override fun accept(p0: File?): Boolean {
                 //去除本身
-                return (p0?.isDirectory == true) && (!p0.name.equals(
-                    AppProtectProcessDirectoryUtils.getShellAarDefaultRootDirectory(
-                        project
-                    ).name
-                ))
+                return AppProtectProcessDirectoryUtils.isValidApkUnzipDirectory(p0)
             }
         })
         for (apk in allApks) {

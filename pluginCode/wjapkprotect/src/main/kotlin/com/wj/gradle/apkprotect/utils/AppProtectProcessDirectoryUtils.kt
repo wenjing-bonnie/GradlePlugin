@@ -10,6 +10,9 @@ import java.util.regex.Pattern
  * 放到build目录下有个好处就是在rebuild的时候，可以删除重新生成
  */
 object AppProtectProcessDirectoryUtils {
+    private val APKS_UNSIGNED = "apks-unsigned"
+    private val APKS_SIGNED = "apks-signed"
+    private val AAR = "aar"
 
     /**
      *  从[ApkProtectExtension]中获取配置的解压文件夹，如果没有设置则使用默认值
@@ -38,6 +41,22 @@ object AppProtectProcessDirectoryUtils {
     }
 
     /**
+     * 存放压缩之后的无签名的apk
+     */
+    fun getUnsignedApkZipDirectoryFromUnzipDirectory(project: Project): File {
+        val unzipDirectory = getUnzipRootDirectoryBaseExtensions(project)
+        return File(unzipDirectory, APKS_UNSIGNED)
+    }
+
+    /**
+     * 存放压缩之后的签名的apk
+     */
+    fun getSignedApkZipDirectoryFromUnzipDirectory(project: Project): File {
+        val unzipDirectory = getUnzipRootDirectoryBaseExtensions(project)
+        return File(unzipDirectory, APKS_SIGNED)
+    }
+
+    /**
      * 默认的解压之后的apk存放的路径.
      */
     private fun getUnzipDefaultRootDirectory(project: Project): File {
@@ -57,8 +76,22 @@ object AppProtectProcessDirectoryUtils {
      * 默认的处理壳aar的根目录
      */
     fun getShellAarDefaultRootDirectory(project: Project): File {
-        val aarPath = "${project.projectDir.absolutePath}/build/protect/aar"
+        val aarPath = "${project.projectDir.absolutePath}/build/protect/${AAR}"
         return createEmptyDirectory(project, aarPath)
+    }
+
+    /**
+     * 判断是不是一个有效的apk解压之后的文件夹
+     * 不能为'aar'、'apks-unsigned'、apks-signed
+     */
+    fun isValidApkUnzipDirectory(file: File?): Boolean {
+        if (file == null) {
+            return false
+        }
+        return file.isDirectory &&
+                (!file.name.equals(AAR)) &&
+                (!file.name.equals(APKS_UNSIGNED)) &&
+                (!file.name.equals(APKS_SIGNED))
     }
 
     /**

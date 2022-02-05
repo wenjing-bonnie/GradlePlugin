@@ -33,6 +33,7 @@ open class AppProtectRuntimeUtils {
             bos.write(buffer, 0, len)
             len = inputStream.read(buffer)
         }
+        bos.close()
         process.destroy()
         return "Runtime failed , error is \n${String(bos.toByteArray(), Charsets.UTF_8)}"
     }
