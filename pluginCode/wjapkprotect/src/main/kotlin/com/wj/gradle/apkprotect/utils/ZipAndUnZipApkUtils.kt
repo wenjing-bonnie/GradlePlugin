@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream
  * @author wenjing.liu
  */
 object ZipAndUnZipApkUtils {
+    private val TAG = javaClass.simpleName
 
     /**
      * 将文件夹压缩成.apk
@@ -89,7 +90,7 @@ object ZipAndUnZipApkUtils {
             inputStream?.close()
             outputStream?.close()
         }
-        SystemPrint.outPrintln("The ${zipFile.name} finish 'unzip' in \n$descDirPath ")
+        SystemPrint.outPrintln(TAG, "The ${zipFile.name} finish 'unzip' in \n$descDirPath ")
         return resultFileAbsoluteDir
     }
 
@@ -119,7 +120,7 @@ object ZipAndUnZipApkUtils {
         if (!zipFile.exists() || zipFile.length() == 0L) {
             return null
         }
-        SystemPrint.outPrintln("The ${zipFile.name} finish 'zip' in \n$zipFileDescPath")
+        SystemPrint.outPrintln(TAG, "The ${zipFile.name} finish 'zip' in \n$zipFileDescPath")
         return zipFile
     }
 
@@ -229,9 +230,9 @@ object ZipAndUnZipApkUtils {
         val zipPath =
             project.projectDir.absolutePath + "/build/outputs/apk/huawei/debug/app-huawei-debug.apk"
         val descPath = project.projectDir.absolutePath + "/build"
-        SystemPrint.outPrintln(zipPath)
+        SystemPrint.outPrintln(TAG, zipPath)
         val path = unZipApk(File(zipPath), descPath)
-        SystemPrint.outPrintln("unzip is \n" + path)
+        SystemPrint.outPrintln(TAG, "unzip is \n" + path)
         zipApk(File(path), descPath)
     }
 }

@@ -4,8 +4,9 @@ import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkAction
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkWorkParameters
+import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath
 import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getApkDefaultDirectory
-import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getUnzipRootDirectory
+import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getUnzipDefaultRootDirectory
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
@@ -32,10 +33,10 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     }
 
     //必须在实例化该Task通过set进行赋值,否则会抛出异常
-    //No value has been specified for property 'zipApkDirectory'.
+    //No value has been specified for property 'apkDirectory'.
     @get:Incremental
     @get:InputDirectory
-    abstract val lazyApkDirectory: DirectoryProperty
+    abstract val apkDirectory: DirectoryProperty
 
     /**
      * 解压之后的文件存放的上级目录,以apk的名字存放解压之后的文件
@@ -59,7 +60,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         //1.delete unzip directory
         //deleteAndReMkdirsUnzipDirectory()
         //2.find all apk files in lazyApkDirectory
-        val apkDirectory = lazyApkDirectory.get().asFile
+        val apkDirectory = apkDirectory.get().asFile
         getAllApksFromApkDirectory(apkDirectory)
         //3.unzip .apk to unzipDirectory
         for (file in allApks) {
@@ -87,27 +88,17 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     }
 
     private fun setConfigFromExtension() {
-        //设置默认值
-        setDefaultConfig()
-        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
-        if (extension == null) {
-            setDefaultConfig()
-            return
-        }
-        if (extension.apkDirectory.orNull != null) {
-            lazyApkDirectory.set(extension.apkDirectory.get().asFile)
-        }
-        if (extension.unzipDirectory.orNull != null) {
-            unzipDirectory.set(extension.unzipDirectory.get().asFile)
-        }
-    }
-
-    /**
-     * 设置默认值
-     */
-    private fun setDefaultConfig() {
-        lazyApkDirectory.set(getApkDefaultDirectory(project, variantName))
-        unzipDirectory.set(getUnzipRootDirectory(project))
+        unzipDirectory.set(
+            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+                project
+            )
+        )
+        apkDirectory.set(
+            AppProtectDefaultPath.getApkDirectoryBaseExtensions(
+                project,
+                variantName
+            )
+        )
     }
 
     /**

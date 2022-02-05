@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect.utils
 
+import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import org.gradle.api.Project
 import java.io.File
 import java.util.regex.Pattern
@@ -10,9 +11,35 @@ import java.util.regex.Pattern
 object AppProtectDefaultPath {
 
     /**
+     *  从[ApkProtectExtension]中获取配置的解压文件夹，如果没有设置则使用默认值
+     */
+    fun getUnzipRootDirectoryBaseExtensions(project: Project): File {
+        val defaultFile = getUnzipDefaultRootDirectory(project)
+        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
+            ?: return defaultFile
+        if (extension.unzipDirectory.orNull == null) {
+            return defaultFile
+        }
+        return extension.unzipDirectory.get().asFile
+    }
+
+    /**
+     *  从[ApkProtectExtension]中获取配置的解压文件夹，如果没有设置则使用默认值
+     */
+    fun getApkDirectoryBaseExtensions(project: Project, variantName: String): File {
+        val defaultFile = getApkDefaultDirectory(project, variantName)
+        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
+            ?: return defaultFile
+        if (extension.apkDirectory.orNull == null) {
+            return defaultFile
+        }
+        return extension.apkDirectory.get().asFile
+    }
+
+    /**
      * 默认的解压之后的apk存放的路径.
      */
-    fun getUnzipRootDirectory(project: Project): File {
+    fun getUnzipDefaultRootDirectory(project: Project): File {
         val unzipPath = "${project.projectDir.absolutePath}/build/protect/"
         return createEmptyDirectory(project, unzipPath)
     }
@@ -28,7 +55,7 @@ object AppProtectDefaultPath {
     /**
      * 默认的处理壳aar的根目录
      */
-    fun getShellAarRootDirectory(project: Project): File {
+    fun getShellAarDefaultRootDirectory(project: Project): File {
         val aarPath = "${project.projectDir.absolutePath}/build/protect/aar"
         return createEmptyDirectory(project, aarPath)
     }
@@ -47,7 +74,6 @@ object AppProtectDefaultPath {
         } else {
             rootPath
         }
-        //return rootPath
     }
 
 

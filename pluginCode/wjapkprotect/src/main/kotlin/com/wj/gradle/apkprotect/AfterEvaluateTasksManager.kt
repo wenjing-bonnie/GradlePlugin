@@ -22,8 +22,8 @@ open class AfterEvaluateTasksManager {
      * 第一步:添加解压和加密Task，两个为生产-消费的Task
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
-    open fun getUnzipApkAndEncodeDexTaskWrapper(): TaskWrapper {
-        //assembleHuaweiDebug
+    open fun getUnzipApkAndEncodeDexTaskWrapper(project: Project): TaskWrapper {
+        //TODO 还没有找到合适的锚点 assembleHuaweiDebug
         val unzipTaskBuilder =
             TaskWrapper.Builder().setAnchorTaskName("preBuild")
                 .setWillRunTaskClass(
@@ -37,7 +37,7 @@ open class AfterEvaluateTasksManager {
                         provider: TaskProvider<Task>,
                         producerProvider: TaskProvider<Task>?
                     ) {
-                        initUnzipAndEncodeTask(provider, producerProvider)
+                        initUnzipAndEncodeTask(provider, producerProvider, project)
                     }
                 })
         return unzipTaskBuilder.builder()
@@ -116,7 +116,8 @@ open class AfterEvaluateTasksManager {
      */
     private fun initUnzipAndEncodeTask(
         provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?
+        producerProvider: TaskProvider<Task>?,
+        project: Project
     ) {
         //消费Task
         val encodeTask = provider.get()
@@ -152,10 +153,18 @@ open class AfterEvaluateTasksManager {
         aarTask.shellAarFileProperty.set(getAarFileFromExtension(project))
     }
 
-    private fun getAarFileFromExtension(project: Project): RegularFile? {
+    /**
+     * 从配置中获取aar的路径
+     */
+    private fun getAarFileFromExtension(project: Project): RegularFile {
         val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
-            ?: return null
-        return extension.shellAarFile.get()
+            ?: throw RuntimeException("Not found the \"shellAarFile\". You must set by apkProtectExtension{} in build.gradle!")
+        val shellAarFile = extension.shellAarFile.get()
+        //TODO 需要验证没有配置该属性是否可以抛出异常
+        if (shellAarFile == null) {
+            throw RuntimeException("Not found the \"shellAarFile\". You must set by apkProtectExtension{} in build.gradle!")
+        }
+        return shellAarFile
     }
 
     /**
@@ -178,7 +187,11 @@ open class AfterEvaluateTasksManager {
         }
         //TODO 这里的获取方式需要优化
         //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        zipTask.unzipRootDirectory.set(AppProtectDefaultPath.getUnzipRootDirectory(project))
+        zipTask.unzipRootDirectory.set(
+            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+                project
+            )
+        )
     }
 
     /**
@@ -200,7 +213,11 @@ open class AfterEvaluateTasksManager {
         }
         //TODO 这里的获取方式需要优化
         //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        decodeTask.dexDirectory.set(AppProtectDefaultPath.getUnzipRootDirectory(project))
+        decodeTask.dexDirectory.set(
+            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+                project
+            )
+        )
     }
 
 }
