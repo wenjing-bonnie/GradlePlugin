@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 /**
  * 默认的路径
  */
-object AppProtectProcessDirectory {
+object AppProtectProcessDirectoryUtils {
 
     /**
      *  从[ApkProtectExtension]中获取配置的解压文件夹，如果没有设置则使用默认值
