@@ -21,6 +21,7 @@ open class AppProtectRuntimeUtils {
         }
         val exitValue = process.exitValue()
         if (exitValue == 0) {
+            process.destroy()
             return ""
         }
         //错误信息输出
@@ -32,6 +33,7 @@ open class AppProtectRuntimeUtils {
             bos.write(buffer, 0, len)
             len = inputStream.read(buffer)
         }
+        process.destroy()
         return "Runtime failed , error is \n${String(bos.toByteArray(), Charsets.UTF_8)}"
     }
 }
