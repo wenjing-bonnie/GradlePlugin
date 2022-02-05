@@ -8,16 +8,17 @@ plugins {
     //对manifest进行exported适配及version管理
     //TODO 暂时隐藏该插件 2022/1/30
     // id 'com.wj.manifest'
+    //TODO 暂时隐藏该插件 2022/02/05 后面需要考虑怎么通过configurations来解决这个问题
     //gradle plugin高级进阶
-    id 'com.wj.seniorapplication'
+    //id 'com.wj.seniorapplication'
     //apk加固插件
     id 'com.wj.apkprotect'
 }
 
-//apkProtectExtension{
-//    lazyApkDirectory  = file("build/")
-//    unzipDirectory = file("build/")
-//}
+apkProtectExtension{
+    apkDirectory  = file("build/")
+    unzipDirectory = file("build/")
+}
 
 /**com.wj.manifest中配置的扩展属性*/
 //TODO 暂时隐藏该插件 2022/1/30
@@ -76,21 +77,21 @@ dependencies {
 
 }
 
-
+//TODO 暂时隐藏该插件 2022/02/05
 /**com.wj.seniorapplication配置的扩展属性*/
-seniorApplicationKotlin {
-    incremental {
-        inputFile file("inputs/1.txt")
-        inputFiles files("inputs")
-        inputDir file("inputs")
-        outputFile file("outputs/output.txt")
-    }
-    lazyExtensionProperty = file("inputs/1.txt")
-    md5CodecClasspath.from(configurations.codec.files)
-    autoLog {
-        autoLogTimeout 400L
-    }
-}
+//seniorApplicationKotlin {
+//    incremental {
+//        inputFile file("inputs/1.txt")
+//        inputFiles files("inputs")
+//        inputDir file("inputs")
+//        outputFile file("outputs/output.txt")
+//    }
+//    lazyExtensionProperty = file("inputs/1.txt")
+//    md5CodecClasspath.from(configurations.codec.files)
+//    autoLog {
+//        autoLogTimeout 400L
+//    }
+//}
 
 
 //第三种：监听Project配置阶段
@@ -146,7 +147,7 @@ android {
 //        }
 //    }
 
-    dexOptions{
+    dexOptions {
         javaMaxHeapSize "1024m"
         incremental true
     }

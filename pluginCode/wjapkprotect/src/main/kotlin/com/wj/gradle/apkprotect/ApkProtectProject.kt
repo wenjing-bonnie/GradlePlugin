@@ -54,7 +54,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
         project.afterEvaluate {
             val extension = getCreatedExtension(project, ApkProtectExtension::class.javaObjectType)
             if (extension != null) {
-                SystemPrint.outPrintln(extension.lazyApkDirectory.asFile.get().absolutePath)
+                SystemPrint.outPrintln(extension.apkDirectory.asFile.get().absolutePath)
                 SystemPrint.outPrintln(extension.unzipDirectory.asFile.get().absolutePath)
             }
         }

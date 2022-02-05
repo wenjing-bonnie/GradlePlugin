@@ -94,8 +94,8 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             setDefaultConfig()
             return
         }
-        if (extension.lazyApkDirectory.orNull != null) {
-            lazyApkDirectory.set(extension.lazyApkDirectory.get().asFile)
+        if (extension.apkDirectory.orNull != null) {
+            lazyApkDirectory.set(extension.apkDirectory.get().asFile)
         }
         if (extension.unzipDirectory.orNull != null) {
             unzipDirectory.set(extension.unzipDirectory.get().asFile)
