@@ -15,10 +15,11 @@ plugins {
     id 'com.wj.apkprotect'
 }
 
+
 apkProtectExtension {
 //    apkDirectory  = file("build/")
 //    unzipDirectory = file("build/")
-    shellAarFile = file("${rootDir.absolutePath}/libs/appprotectshelllibrary/build/outputs/aar")
+    shellAarFile = file("${rootDir.absolutePath}/libs/appprotectshelllibrary/build/outputs/aar/appprotectshelllibrary-debug.aar")
 }
 
 /**com.wj.manifest中配置的扩展属性*/
@@ -104,15 +105,14 @@ this.afterEvaluate {
 
 }
 
-
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolVersion
 
     defaultConfig {
         applicationId "com.wj.gradle.plugin"
-        minSdkVersion 23
-        targetSdkVersion 31
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 

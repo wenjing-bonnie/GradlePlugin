@@ -31,7 +31,7 @@ abstract class ApkProtectExtension {
     /**
      * 壳aar的文件路径
      */
-    @get:InputFile
+    @get:InputDirectory
     abstract val shellAarFile: RegularFileProperty
 
 }

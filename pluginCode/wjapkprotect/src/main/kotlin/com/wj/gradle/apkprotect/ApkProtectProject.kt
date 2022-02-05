@@ -36,9 +36,10 @@ open class ApkProtectProject : WjVariantBaseProject() {
     override fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapper> {
         val afterManager = AfterEvaluateTasksManager()
         val tasks = mutableListOf<TaskWrapper>()
-        tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper())
-        tasks.add(afterManager.getDecodeIncrementalTaskWrapper(project))
-        tasks.add(afterManager.getZipIncrementalTaskWrapper(project))
+        tasks.add(afterManager.getShellAar2DexTaskWrapper(project))
+        //tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper())
+        //tasks.add(afterManager.getDecodeIncrementalTaskWrapper(project))
+        //tasks.add(afterManager.getZipIncrementalTaskWrapper(project))
         return tasks
     }
 

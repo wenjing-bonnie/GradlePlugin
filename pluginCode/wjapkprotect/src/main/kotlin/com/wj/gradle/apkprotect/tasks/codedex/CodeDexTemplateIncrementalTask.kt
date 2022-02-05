@@ -1,10 +1,6 @@
 package com.wj.gradle.apkprotect.tasks.codedex
 
-import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.apkprotect.tasks.codedex.parallel.DecodeDexAction
-import com.wj.gradle.apkprotect.tasks.codedex.parallel.EncodeDexAction
-import com.wj.gradle.apkprotect.tasks.codedex.parallel.EncodeDexWorkParameters
-import com.wj.gradle.base.utils.SystemPrint
+import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.work.Incremental
@@ -15,11 +11,7 @@ import java.io.File
 /**
  * 对apk里面解压之后的所有.dex进行加密
  */
-abstract class CodeDexTemplateIncrementalTask : NewIncrementalTask() {
-
-    init {
-        outputs.upToDateWhen { true }
-    }
+abstract class CodeDexTemplateIncrementalTask : NewIncrementalWithoutOutputsTask() {
 
     @get:Incremental
     @get:InputDirectory

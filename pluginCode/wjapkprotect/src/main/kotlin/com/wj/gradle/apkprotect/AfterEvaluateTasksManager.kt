@@ -12,7 +12,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
-import java.io.File
 
 /**
  * 处理项目配置之后的Task
@@ -51,7 +50,7 @@ open class AfterEvaluateTasksManager {
     fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
         val shellAar = TaskWrapper.Builder().setAnchorTaskName("preBuild")
             .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
-            .setAnchorTaskName(ShellAar2DexIncrementalTask::class.simpleName + "")
+            .setWillRunTaskTag(ShellAar2DexIncrementalTask::class.simpleName + "")
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,
@@ -158,7 +157,7 @@ open class AfterEvaluateTasksManager {
             ?: return null
         return extension.shellAarFile.get()
     }
-    
+
     /**
      * 初始化压缩apk的Task[ZipApkIncrementalTask]
      */
