@@ -1,14 +1,18 @@
 package com.wj.gradle.apkprotect
 
+import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
+import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
+import java.io.File
 
 /**
  * 处理项目配置之后的Task
@@ -39,9 +43,25 @@ open class AfterEvaluateTasksManager {
                 })
         return unzipTaskBuilder.builder()
     }
+
     /**
      * 第二步：生成解密dex，存放到解压之后的文件夹
      */
+
+    fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
+        val shellAar = TaskWrapper.Builder().setAnchorTaskName("preBuild")
+            .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
+            .setAnchorTaskName(ShellAar2DexIncrementalTask::class.simpleName + "")
+            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
+                    initShellAar2DexIncrementalTask(provider, producerProvider, project)
+                }
+            })
+        return shellAar.builder()
+    }
 
     /**
      * 第三步：
@@ -93,7 +113,7 @@ open class AfterEvaluateTasksManager {
 
 
     /**
-     * 初始化解压apk和加密的Task
+     * 初始化解压apk和加密的Task[EncodeDexIncrementalTask]
      */
     private fun initUnzipAndEncodeTask(
         provider: TaskProvider<Task>,
@@ -118,9 +138,29 @@ open class AfterEvaluateTasksManager {
         })
     }
 
-
     /**
-     * 初始化压缩apk的Task
+     * 初始化[ShellAar2DexIncrementalTask]
+     */
+    private fun initShellAar2DexIncrementalTask(
+        provider: TaskProvider<Task>,
+        producerProvider: TaskProvider<Task>?,
+        project: Project
+    ) {
+        val aarTask = provider.get()
+        if (aarTask !is ShellAar2DexIncrementalTask) {
+            return
+        }
+        aarTask.shellAarFileProperty.set(getAarFileFromExtension(project))
+    }
+
+    private fun getAarFileFromExtension(project: Project): RegularFile? {
+        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
+            ?: return null
+        return extension.shellAarFile.get()
+    }
+    
+    /**
+     * 初始化压缩apk的Task[ZipApkIncrementalTask]
      */
     private fun initZipIncrementalTask(
         provider: TaskProvider<Task>,
@@ -143,7 +183,7 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 初始化解密task
+     * 初始化解密task[DecodeDexIncrementalTask]
      */
     private fun initDecodeIncrementalTask(
         provider: TaskProvider<Task>,

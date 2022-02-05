@@ -65,6 +65,7 @@ open class TaskWrapper private constructor(
 //        }
 
         /**
+         *
          * 设置执行将要执行的Task的类名
          * open fun <T : Task> setWillRunTaskClass(name: Class<T>): Builder {
          */
@@ -90,7 +91,6 @@ open class TaskWrapper private constructor(
 
         /**
          * 设置瞄点task名字
-         *
          */
         fun setAnchorTaskName(name: String): Builder {
             this.anchorTaskName = name
@@ -100,6 +100,7 @@ open class TaskWrapper private constructor(
         /**
          * 该Task的Tag
          */
+        @Deprecated("auto use the task class name instead of this set method")
         fun setWillRunTaskTag(tag: String): Builder {
             this.willRunTaskTag = tag
             return this
@@ -118,6 +119,7 @@ open class TaskWrapper private constructor(
 
         /**
          * 设置监听回调
+         * TODO 暂时没有想到怎么将传入的类作为返回，目前需要进行强制转化一下！！！ 2022/02/05
          */
         fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
             this.taskRegisterListener = listener
