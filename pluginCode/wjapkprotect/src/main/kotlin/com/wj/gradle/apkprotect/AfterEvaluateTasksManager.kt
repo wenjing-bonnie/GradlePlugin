@@ -6,7 +6,7 @@ import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
-import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath
+import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectory
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -158,13 +158,14 @@ open class AfterEvaluateTasksManager {
      */
     private fun getAarFileFromExtension(project: Project): RegularFile {
         val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
-            ?: throw RuntimeException("Not found the \"shellAarFile\". You must set by apkProtectExtension{} in build.gradle!")
-        val shellAarFile = extension.shellAarFile.get()
-        //TODO 需要验证没有配置该属性是否可以抛出异常
-        if (shellAarFile == null) {
+            ?: throw RuntimeException("Not found the \"shellAarFile\". You must set \"shellAarFile\" by apkProtectExtension{} in build.gradle!")
+
+        val shellAarFile = extension.shellAarFile
+        //TODO 需要优化成自定义壳aar及加密的dex的方式
+        if (shellAarFile.orNull == null) {
             throw RuntimeException("Not found the \"shellAarFile\". You must set by apkProtectExtension{} in build.gradle!")
         }
-        return shellAarFile
+        return shellAarFile.get()
     }
 
     /**
@@ -188,7 +189,7 @@ open class AfterEvaluateTasksManager {
         //TODO 这里的获取方式需要优化
         //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         zipTask.unzipRootDirectory.set(
-            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+            AppProtectProcessDirectory.getUnzipRootDirectoryBaseExtensions(
                 project
             )
         )
@@ -214,7 +215,7 @@ open class AfterEvaluateTasksManager {
         //TODO 这里的获取方式需要优化
         //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         decodeTask.dexDirectory.set(
-            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+            AppProtectProcessDirectory.getUnzipRootDirectoryBaseExtensions(
                 project
             )
         )

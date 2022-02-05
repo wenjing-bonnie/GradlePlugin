@@ -8,6 +8,6 @@ import com.android.build.gradle.internal.tasks.NewIncrementalTask
 abstract class NewIncrementalWithoutOutputsTask : NewIncrementalTask() {
 
     init {
-        outputs.upToDateWhen { true }
+        outputs.upToDateWhen { false }
     }
 }

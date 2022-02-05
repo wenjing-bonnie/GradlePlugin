@@ -1,12 +1,9 @@
 package com.wj.gradle.apkprotect.tasks.unzip
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkAction
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkWorkParameters
-import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath
-import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getApkDefaultDirectory
-import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getUnzipDefaultRootDirectory
+import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectory
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
@@ -89,12 +86,12 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
 
     private fun setConfigFromExtension() {
         unzipDirectory.set(
-            AppProtectDefaultPath.getUnzipRootDirectoryBaseExtensions(
+            AppProtectProcessDirectory.getUnzipRootDirectoryBaseExtensions(
                 project
             )
         )
         apkDirectory.set(
-            AppProtectDefaultPath.getApkDirectoryBaseExtensions(
+            AppProtectProcessDirectory.getApkDirectoryBaseExtensions(
                 project,
                 variantName
             )
