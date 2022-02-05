@@ -4,21 +4,17 @@ import org.gradle.api.Project
 import java.io.File
 import java.util.regex.Pattern
 
-object ZipAndUnzipApkDefaultPath {
+/**
+ * 默认的路径
+ */
+object AppProtectDefaultPath {
 
     /**
      * 默认的解压之后的apk存放的路径.
      */
     fun getUnzipRootDirectory(project: Project): File {
         val unzipPath = "${project.projectDir.absolutePath}/build/protect/"
-        val unzipDirectory = project.file(unzipPath)
-        //SystemPrint.outPrintln("default = " + unzipDirectory.path)
-        if (unzipDirectory.exists()) {
-            unzipDirectory.delete()
-        } else {
-            unzipDirectory.mkdirs()
-        }
-        return unzipDirectory
+        return createEmptyDirectory(project, unzipPath)
     }
 
     /**
@@ -26,11 +22,15 @@ object ZipAndUnzipApkDefaultPath {
      */
     fun getApkDefaultDirectory(project: Project, variantName: String): File {
         val defaultPath = getApkDefaultPath(project, variantName)
-        val defaultDirectory = project.file(defaultPath)
-        if (!defaultDirectory.exists()) {
-            defaultDirectory.mkdirs()
-        }
-        return defaultDirectory
+        return createEmptyDirectory(project, defaultPath)
+    }
+
+    /**
+     * 默认的处理壳aar的根目录
+     */
+    fun getAarRootDirectory(project: Project): File {
+        val aarPath = "${project.projectDir.absolutePath}/build/protect/aar"
+        return createEmptyDirectory(project, aarPath)
     }
 
     /**
@@ -74,6 +74,20 @@ object ZipAndUnzipApkDefaultPath {
     }
 
     /**
+     * 创建一个空的文件夹
+     */
+    private fun createEmptyDirectory(project: Project, path: String): File {
+        val directory = project.file(path)
+        //SystemPrint.outPrintln("default = " + unzipDirectory.path)
+        if (directory.exists()) {
+            directory.delete()
+        } else {
+            directory.mkdirs()
+        }
+        return directory
+    }
+
+    /**
      * 是debug状态
      */
     private fun isDebugBuildType(variantName: String): Boolean {
@@ -86,6 +100,4 @@ object ZipAndUnzipApkDefaultPath {
     private fun isReleaseBuildType(variantName: String): Boolean {
         return variantName.endsWith("Release")
     }
-
-
 }

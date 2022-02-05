@@ -1,21 +1,15 @@
 package com.wj.gradle.apkprotect.tasks.zip
 
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
-import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkAction
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkWorkParameters
-import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath
 import com.wj.gradle.base.utils.SystemPrint
-import org.gradle.api.DefaultTask
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
-import java.io.File
 
 /**
  * 压缩.apk，消费Task，此时的inputs接收[UnzipApkIncrementalTask]的outputs

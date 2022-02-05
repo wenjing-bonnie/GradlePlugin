@@ -4,8 +4,8 @@ import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkAction
 import com.wj.gradle.apkprotect.tasks.unzip.parallel.UnzipApkWorkParameters
-import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath.getApkDefaultDirectory
-import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath.getUnzipRootDirectory
+import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getApkDefaultDirectory
+import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath.getUnzipRootDirectory
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory

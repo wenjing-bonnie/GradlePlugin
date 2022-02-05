@@ -4,7 +4,7 @@ import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
-import com.wj.gradle.apkprotect.utils.ZipAndUnzipApkDefaultPath
+import com.wj.gradle.apkprotect.utils.AppProtectDefaultPath
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -139,9 +139,12 @@ open class AfterEvaluateTasksManager {
         }
         //TODO 这里的获取方式需要优化
         //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        zipTask.unzipRootDirectory.set(ZipAndUnzipApkDefaultPath.getUnzipRootDirectory(project))
+        zipTask.unzipRootDirectory.set(AppProtectDefaultPath.getUnzipRootDirectory(project))
     }
 
+    /**
+     * 初始化解密task
+     */
     private fun initDecodeIncrementalTask(
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
@@ -158,7 +161,7 @@ open class AfterEvaluateTasksManager {
         }
         //TODO 这里的获取方式需要优化
         //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        decodeTask.dexDirectory.set(ZipAndUnzipApkDefaultPath.getUnzipRootDirectory(project))
+        decodeTask.dexDirectory.set(AppProtectDefaultPath.getUnzipRootDirectory(project))
     }
 
 }

@@ -53,7 +53,7 @@ object ZipAndUnZipApkUtils {
      * @param descDirPath 解压文件存放的目录
      * @return 返回的是解压之后的文件夹的绝对路径
      */
-    private fun unZipFile(zipFile: File, descDirPath: String): String {
+    fun unZipFile(zipFile: File, descDirPath: String): String {
         if (!zipFile.exists()) {
             throw IllegalArgumentException("The zip file not exist !")
         }
@@ -61,7 +61,7 @@ object ZipAndUnZipApkUtils {
         var outputStream: OutputStream? = null
         val buffer = ByteArray(1024)
         //目标的文件夹,以传入的文件名字来创建文件夹
-        val resultFileAbsoluteDir = descDirPath + "/" + getApkName(zipFile)
+        val resultFileAbsoluteDir = descDirPath + "/" + getZipFileNameWithoutSuffix(zipFile)
         try {
             val zip = ZipFile(zipFile)
             val zipEntries = zip.entries()
@@ -200,8 +200,8 @@ object ZipAndUnZipApkUtils {
     /**
      * 获取apk的名字
      */
-    private fun getApkName(zipFile: File): String {
-        return zipFile.name.substring(0, zipFile.name.lastIndexOf(".apk"))
+    private fun getZipFileNameWithoutSuffix(zipFile: File): String {
+        return zipFile.name.substring(0, zipFile.name.lastIndexOf("."))
     }
 
     /**
