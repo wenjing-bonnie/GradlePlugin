@@ -48,9 +48,10 @@ open class AfterEvaluateTasksManager {
      */
 
     fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
-        val shellAar = TaskWrapper.Builder().setAnchorTaskName("preBuild")
+        val shellAar = TaskWrapper.Builder().setAnchorTaskName(EncodeDexIncrementalTask.TAG)
             .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(ShellAar2DexIncrementalTask::class.simpleName + "")
+            .setIsDependsOn(false)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,

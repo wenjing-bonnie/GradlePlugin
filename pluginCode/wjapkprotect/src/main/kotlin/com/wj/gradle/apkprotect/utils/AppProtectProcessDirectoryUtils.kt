@@ -7,6 +7,7 @@ import java.util.regex.Pattern
 
 /**
  * 默认的路径
+ * 放到build目录下有个好处就是在rebuild的时候，可以删除重新生成
  */
 object AppProtectProcessDirectoryUtils {
 
@@ -39,7 +40,7 @@ object AppProtectProcessDirectoryUtils {
     /**
      * 默认的解压之后的apk存放的路径.
      */
-    fun getUnzipDefaultRootDirectory(project: Project): File {
+    private fun getUnzipDefaultRootDirectory(project: Project): File {
         val unzipPath = "${project.projectDir.absolutePath}/build/protect/"
         return createEmptyDirectory(project, unzipPath)
     }
@@ -47,7 +48,7 @@ object AppProtectProcessDirectoryUtils {
     /**
      * 默认的.apk存放的路径.
      */
-    fun getApkDefaultDirectory(project: Project, variantName: String): File {
+    private fun getApkDefaultDirectory(project: Project, variantName: String): File {
         val defaultPath = getApkDefaultPath(project, variantName)
         return createEmptyDirectory(project, defaultPath)
     }

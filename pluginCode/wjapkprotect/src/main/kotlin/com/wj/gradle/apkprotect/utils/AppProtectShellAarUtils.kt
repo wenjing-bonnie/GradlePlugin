@@ -4,15 +4,17 @@ import com.android.build.gradle.AppExtension
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
+import java.io.FileFilter
 import java.io.FilenameFilter
 import java.lang.RuntimeException
 
 /**
  * 将壳aar转化成.dex
  */
-object AppProtectJar2DexUtils {
+object AppProtectShellAarUtils {
 
     private val TAG = javaClass.simpleName
+    private val SHELL_DEX = "shell.dex"
 
     /**
      * 将aar转化成dex文件，默认的存放到build/protect/aar
@@ -22,7 +24,8 @@ object AppProtectJar2DexUtils {
      */
     fun jar2Dex(aarFile: File, project: Project): File {
         //1.获取默认的操作aar文件的路径
-        val aarPath = AppProtectProcessDirectoryUtils.getShellAarDefaultRootDirectory(project).absolutePath
+        val aarPath =
+            AppProtectProcessDirectoryUtils.getShellAarDefaultRootDirectory(project).absolutePath
         //2.解压aar文件到默认的存放aar的路径
         val aarUnzipPath = ZipAndUnZipApkUtils.unZipFile(aarFile, aarPath)
         val aarUnzipDirectory = File(aarUnzipPath)
@@ -37,10 +40,33 @@ object AppProtectJar2DexUtils {
         }
         val classJar = classJars[0]
         //4.将class.jar转化成class.dex,存放到解压文件的同级目录
-        val aarDex = File(aarUnzipDirectory.parent, "classes.dex")
+        val aarDex = File(aarUnzipDirectory.parent, SHELL_DEX)
         //5.执行build tools的dx
         dxCommand(aarDex, classJar, project)
         return aarDex
+    }
+
+    /**
+     * 将壳.dex拷贝到每个解压的文件夹里面
+     */
+    fun copyDex2UnzipApkDirectory(dexFile: File, unzipDirectory: File, project: Project) {
+        val allApks = unzipDirectory.listFiles(object : FileFilter {
+            override fun accept(p0: File?): Boolean {
+                //去除本身
+                return (p0?.isDirectory == true) && (!p0.name.equals(
+                    AppProtectProcessDirectoryUtils.getShellAarDefaultRootDirectory(
+                        project
+                    ).name
+                ))
+            }
+        })
+        for (apk in allApks) {
+            val copyCommand = "cp ${dexFile.absolutePath} ${apk.absolutePath}"
+            val runtimeUtils = AppProtectRuntimeUtils()
+            val error = runtimeUtils.runtimeExecCommand(copyCommand)
+            val okValue = "Finished to copy\n ${dexFile.absolutePath}\n to \n${apk.absolutePath}"
+            printRuntimeResult(error, okValue)
+        }
     }
 
     /**
@@ -54,17 +80,26 @@ object AppProtectJar2DexUtils {
         }
         val runtime = AppProtectRuntimeUtils()
         val command = "$dxTools/dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}"
-        val exitValue = runtime.runtimeExecCommand(command)
-        if (exitValue.isEmpty()) {
+        val error = runtime.runtimeExecCommand(command)
+        printRuntimeResult(
+            error,
+            "The ${classJar.name} to ${aarDex.name} is finished in\n ${aarDex.parent}"
+        )
+    }
+
+    /**
+     * 打印运行结果
+     */
+    private fun printRuntimeResult(error: String, okValue: String) {
+        if (error.isEmpty()) {
             SystemPrint.outPrintln(
                 TAG,
-                "The ${classJar.name} to ${aarDex.name} is finished in\n ${aarDex.parent}"
+                okValue
             )
             return
         }
         //错误信息输出
-        SystemPrint.errorPrintln(TAG, exitValue)
-
+        SystemPrint.errorPrintln(TAG, error)
     }
 
     private fun getDxBuildToolsPath(project: Project): String {
