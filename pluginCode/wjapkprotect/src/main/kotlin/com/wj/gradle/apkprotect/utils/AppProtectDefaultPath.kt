@@ -28,7 +28,7 @@ object AppProtectDefaultPath {
     /**
      * 默认的处理壳aar的根目录
      */
-    fun getAarRootDirectory(project: Project): File {
+    fun getShellAarRootDirectory(project: Project): File {
         val aarPath = "${project.projectDir.absolutePath}/build/protect/aar"
         return createEmptyDirectory(project, aarPath)
     }
