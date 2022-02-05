@@ -38,8 +38,8 @@ open class ApkProtectProject : WjVariantBaseProject() {
         val tasks = mutableListOf<TaskWrapper>()
         tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper(project))
         tasks.add(afterManager.getShellAar2DexTaskWrapper(project))
+        tasks.add(afterManager.getZipIncrementalTaskWrapper(project))
         //tasks.add(afterManager.getDecodeIncrementalTaskWrapper(project))
-        //tasks.add(afterManager.getZipIncrementalTaskWrapper(project))
         return tasks
     }
 

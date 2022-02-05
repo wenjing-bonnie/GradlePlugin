@@ -9,7 +9,7 @@ import java.util.regex.Pattern
  * 默认的路径
  * 放到build目录下有个好处就是在rebuild的时候，可以删除重新生成
  */
-object AppProtectProcessDirectoryUtils {
+object AppProtectDirectoryUtils {
     private val APKS_UNSIGNED = "apks-unsigned"
     private val APKS_SIGNED = "apks-signed"
     private val AAR = "aar"

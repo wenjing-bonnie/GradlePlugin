@@ -3,11 +3,9 @@ package com.wj.gradle.apkprotect.tasks.zip
 import com.android.build.gradle.internal.tasks.NewIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkAction
 import com.wj.gradle.apkprotect.tasks.zip.parallel.ZipApkWorkParameters
-import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectoryUtils
+import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.utils.SystemPrint
-import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.work.Incremental
@@ -42,7 +40,7 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         val unzipDirectory = unzipRootDirectory.get().asFile
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
-            if (AppProtectProcessDirectoryUtils.isValidApkUnzipDirectory(apk)) {
+            if (!AppProtectDirectoryUtils.isValidApkUnzipDirectory(apk)) {
                 continue
             }
             // SystemPrint.outPrintln(TAG, "apk directory is \n" + apk.path)

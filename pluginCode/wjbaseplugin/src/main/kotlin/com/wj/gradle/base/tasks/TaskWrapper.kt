@@ -49,7 +49,7 @@ open class TaskWrapper private constructor(
         private var producerTaskClass: Class<out Task>? = null
         private lateinit var willRunTaskTag: String
         private var producerTaskTag: String? = null
-        private var isDependsOn: Boolean = true
+        private var isDependsOn: Boolean = false
         private lateinit var anchorTaskName: String
         private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
 
@@ -100,7 +100,7 @@ open class TaskWrapper private constructor(
         /**
          * 该Task的Tag
          */
-        @Deprecated("auto use the task class name instead of this set method")
+        //@Deprecated("auto use the task class name instead of this set method")
         fun setWillRunTaskTag(tag: String): Builder {
             this.willRunTaskTag = tag
             return this
@@ -127,7 +127,7 @@ open class TaskWrapper private constructor(
         }
 
         /**
-         * 设置在锚点Task之前还是之后执行Task
+         * 设置在锚点Task之前还是之后执行Task,默认的是在锚点之后执行
          * @param isDependsOn true:在锚点Task之前去执行该Task
          */
         fun setIsDependsOn(isDependsOn: Boolean): Builder {

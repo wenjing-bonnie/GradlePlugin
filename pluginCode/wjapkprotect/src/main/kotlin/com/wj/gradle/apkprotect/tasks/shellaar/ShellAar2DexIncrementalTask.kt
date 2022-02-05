@@ -1,7 +1,7 @@
 package com.wj.gradle.apkprotect.tasks.shellaar
 
 import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
-import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectoryUtils
+import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.apkprotect.utils.AppProtectShellAarUtils
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
@@ -12,6 +12,9 @@ import org.gradle.work.InputChanges
  * 将aar转化成dex
  */
 abstract class ShellAar2DexIncrementalTask : NewIncrementalWithoutOutputsTask() {
+    companion object {
+        val TAG = "ShellAar2DexIncrementalTask"
+    }
 
     @get:InputFile
     @get:Incremental
@@ -24,7 +27,7 @@ abstract class ShellAar2DexIncrementalTask : NewIncrementalWithoutOutputsTask() 
         //将解密.dex拷贝到所有的解压apk的文件夹下
         AppProtectShellAarUtils.copyDex2UnzipApkDirectory(
             dexFile,
-            AppProtectProcessDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project),
+            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project),
             project
         )
     }

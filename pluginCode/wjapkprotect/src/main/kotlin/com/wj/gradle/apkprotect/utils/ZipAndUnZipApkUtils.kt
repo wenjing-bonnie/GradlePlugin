@@ -20,10 +20,8 @@ object ZipAndUnZipApkUtils {
 
     /**
      * 将文件夹压缩成.apk
-     * @param unZipFiles 需要压缩的文件列表
+     * @param unZipApkFolder 需要压缩的文件列表
      * @param zipFileDescPath 保存压缩之后的apk的路径
-     * @param zipFileName 压缩之后的文件名,需要包含后缀名
-     * @param zipSuffix 压缩的后缀名,默认为.apk
      * @return 返回压缩文件保存的绝对路径
      */
     fun zipApk(
@@ -98,9 +96,9 @@ object ZipAndUnZipApkUtils {
     }
 
     /**
-     * @param unZipFiles 需要压缩的文件列表
+     * @param unZipApkFolder 需要压缩的文件夹
      * @param zipFileDescPath 保存压缩之后的apk的路径
-     * @param zipFileName 压缩之后的文件名,需要包含后缀名
+     * @param fileName 压缩之后的文件名,不能包含后缀名
      * @param zipSuffix 压缩的后缀名,默认为.apk
      * @return 返回压缩文件保存的绝对路径
      */
@@ -109,8 +107,9 @@ object ZipAndUnZipApkUtils {
         zipFileDescPath: String,
         zipSuffix: String
     ): File? {
-
-        val zipFile = createZipFile(unZipApkFolder, zipFileDescPath, zipSuffix)
+        //默认采用 文件夹作为压缩文件的名字
+        var zipFileName = unZipApkFolder.name
+        val zipFile = createZipFile(zipFileName, zipFileDescPath, zipSuffix)
         var zipOutputStream: ZipOutputStream? = null
         //压缩文件
         try {
@@ -177,11 +176,11 @@ object ZipAndUnZipApkUtils {
      * 创建最后的压缩文件
      */
     private fun createZipFile(
-        unZipApkFolder: File,
+        zipFileName: String,
         zipFileDescPath: String,
         zipSuffix: String
     ): File {
-        return createFile("$zipFileDescPath/${unZipApkFolder.name}.${getZipFileSuffix(zipSuffix)}")
+        return createFile("$zipFileDescPath/${zipFileName}.${getZipFileSuffix(zipSuffix)}")
     }
 
     /**

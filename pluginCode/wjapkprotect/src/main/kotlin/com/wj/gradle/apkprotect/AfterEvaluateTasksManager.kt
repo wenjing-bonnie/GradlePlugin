@@ -6,7 +6,7 @@ import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
-import com.wj.gradle.apkprotect.utils.AppProtectProcessDirectoryUtils
+import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -30,6 +30,7 @@ open class AfterEvaluateTasksManager {
                     EncodeDexIncrementalTask::class.javaObjectType,
                     UnzipApkIncrementalTask::class.javaObjectType
                 )
+                .setIsDependsOn(true)
                 .setWillRunTaskTag(EncodeDexIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
@@ -50,8 +51,7 @@ open class AfterEvaluateTasksManager {
     fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
         val shellAar = TaskWrapper.Builder().setAnchorTaskName(EncodeDexIncrementalTask.TAG)
             .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ShellAar2DexIncrementalTask::class.simpleName + "")
-            .setIsDependsOn(false)
+            .setWillRunTaskTag(ShellAar2DexIncrementalTask.TAG)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,
@@ -62,6 +62,27 @@ open class AfterEvaluateTasksManager {
             })
         return shellAar.builder()
     }
+
+    /**
+     * 第三步:压缩.apk,生成无签名的.apk
+     * 添加压缩apk的Task
+     */
+    open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
+        val builder = TaskWrapper.Builder()
+            .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
+            .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
+            .setAnchorTaskName(ShellAar2DexIncrementalTask.TAG)
+            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
+                    initZipIncrementalTask(provider, producerProvider, project)
+                }
+            })
+        return builder.builder()
+    }
+
 
     /**
      * 第三步：
@@ -75,7 +96,6 @@ open class AfterEvaluateTasksManager {
         val builder = TaskWrapper.Builder()
             .setWillRunTaskClass(DecodeDexIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(DecodeDexIncrementalTask.TAG)
-            .setIsDependsOn(false)
             .setAnchorTaskName(EncodeDexIncrementalTask.TAG)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
@@ -83,29 +103,6 @@ open class AfterEvaluateTasksManager {
                     producerProvider: TaskProvider<Task>?
                 ) {
                     initDecodeIncrementalTask(provider, producerProvider, project)
-                }
-            })
-        return builder.builder()
-    }
-
-    /**
-     * 最后一步:压缩.apk
-     * TODO 暂时设置TAG_DECODE为锚点，测试加密解密之后可行
-     * 添加压缩apk的Task
-     */
-    open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
-        //TODO 暂时设置TAG_DECODE为锚点，测试加密解密之后可行
-        val builder = TaskWrapper.Builder()
-            .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
-            .setAnchorTaskName(DecodeDexIncrementalTask.TAG)
-            .setIsDependsOn(false)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
-                override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
-                ) {
-                    initZipIncrementalTask(provider, producerProvider, project)
                 }
             })
         return builder.builder()
@@ -190,7 +187,12 @@ open class AfterEvaluateTasksManager {
         //TODO 这里的获取方式需要优化
         //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         zipTask.unzipRootDirectory.set(
-            AppProtectProcessDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
+            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
+                project
+            )
+        )
+        zipTask.zipApkDirectory.set(
+            AppProtectDirectoryUtils.getUnsignedApkZipDirectoryFromUnzipDirectory(
                 project
             )
         )
@@ -216,7 +218,7 @@ open class AfterEvaluateTasksManager {
         //TODO 这里的获取方式需要优化
         //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         decodeTask.dexDirectory.set(
-            AppProtectProcessDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
+            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
                 project
             )
         )
