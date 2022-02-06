@@ -85,7 +85,9 @@ open class AfterEvaluateTasksManager {
 
 
     /**
-     * 第三步：
+     * 第四步：签名apk
+     * 通过apksigner进行签名,默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
+     *
      */
 
     /**
