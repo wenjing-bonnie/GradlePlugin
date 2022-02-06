@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.wj.appprotect.shell.algroithm.AesFileAlgorithm;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InvalidObjectException;
@@ -23,11 +25,8 @@ public class AppProtectShellApplication extends Application {
         super.attachBaseContext(base);
         //第一步：解压.apk文件
         String unzipFilesPath = unzipApk(base);
-        //第二步：找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
-        decodeAllDexs(unzipFilesPath);
-
-        //写回到解压文件夹内
-
+        //第二步：找出所有的加密的dex文件，除去壳.dex.对加密dex进行解密,写回到解压文件夹内
+        File[] decodeDexs = decodeAllDexs(unzipFilesPath);
         //通过hook主动去加载dex，同热修复。参照tentent/thinker热修复 SystemClassLoader…类进行加载
         //一开始的加密dex也会在dex数组中，反射dex数组，将解密之后的所有dex加入到dex数组中
         //通过classloader来加载到解密dex的类，就不会在去加密的dex
@@ -50,6 +49,7 @@ public class AppProtectShellApplication extends Application {
 
     /**
      * 解压.apk文件
+     *
      * @param context
      * @return
      */
@@ -64,9 +64,10 @@ public class AppProtectShellApplication extends Application {
 
     /**
      * 找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
+     *
      * @param unzipFilesPath
      */
-    private void decodeAllDexs(String unzipFilesPath) {
+    private File[] decodeAllDexs(String unzipFilesPath) {
         File[] dexFiles = new File(unzipFilesPath).listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -79,10 +80,13 @@ public class AppProtectShellApplication extends Application {
             } catch (InvalidObjectException e) {
                 e.printStackTrace();
             }
-            return;
+            return null;
         }
         for (File dex : dexFiles) {
             LogUtils.logV("dex = \n" + dex.getName());
+            AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
+            aesFileAlgorithm.decrypt(dex);
         }
+        return dexFiles;
     }
 }
