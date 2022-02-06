@@ -10,7 +10,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-public class LoadApkAlreadyEncodeDexs {
+/**
+ * 用来获取所有的加密的dex文件
+ */
+public class LoadApkAlreadyEncodeDexsUtils {
 
     /**
      * 将.apk解压缩成文件夹

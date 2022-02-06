@@ -5,9 +5,12 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.InvalidObjectException;
 
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
+    private LoadApkAlreadyEncodeDexsUtils encodeDexsUtils = new LoadApkAlreadyEncodeDexsUtils();
 
 
     /**
@@ -18,11 +21,10 @@ public class AppProtectShellApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        //解压.apk文件
-        File apkFile = new File(getApplicationInfo().sourceDir);
-        Log.d(TAG, apkFile.getAbsolutePath());
-
-        //找出所有的dex文件，除去壳.dex
+        //第一步：解压.apk文件
+        String unzipFilesPath = unzipApk(base);
+        //第二步：找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
+        decodeAllDexs(unzipFilesPath);
 
         //写回到解压文件夹内
 
@@ -44,5 +46,43 @@ public class AppProtectShellApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+    }
+
+    /**
+     * 解压.apk文件
+     * @param context
+     * @return
+     */
+    private String unzipApk(Context context) {
+        File apkFile = new File(getApplicationInfo().sourceDir);
+        Log.d(TAG, apkFile.getAbsolutePath());
+        String descDirPath = context.getCacheDir() + "/unzip";
+        String unzipFilesPath = encodeDexsUtils.unZipApk(apkFile, descDirPath);
+        LogUtils.logV("unzipFilesPath = \n" + unzipFilesPath);
+        return unzipFilesPath;
+    }
+
+    /**
+     * 找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
+     * @param unzipFilesPath
+     */
+    private void decodeAllDexs(String unzipFilesPath) {
+        File[] dexFiles = new File(unzipFilesPath).listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".dex") && !name.equals("shell.dex");
+            }
+        });
+        if (dexFiles == null) {
+            try {
+                throw new InvalidObjectException("Invalid apk !");
+            } catch (InvalidObjectException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        for (File dex : dexFiles) {
+            LogUtils.logV("dex = \n" + dex.getName());
+        }
     }
 }
