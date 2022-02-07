@@ -25,6 +25,8 @@ public class AppProtectShellApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        //TODO 需要优化整个过程：这些内容要写到native/so文件中，下面的内容应该通过加载native或so文件来完成对应的操作
+
         //第一步：解压.apk文件
         String unzipFilesPath = unzipApk(base);
         //第二步：找出所有的加密的dex文件，除去壳.dex.对加密dex进行解密,写回到解压文件夹内
