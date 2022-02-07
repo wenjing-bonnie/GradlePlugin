@@ -9,6 +9,8 @@ import com.wj.appprotect.shell.algroithm.AesFileAlgorithm;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
@@ -32,7 +34,7 @@ public class AppProtectShellApplication extends Application {
         //通过classloader来加载到解密dex的类，就不会在去加密的dex
         //所以反射dex在内存中的数组：将解密的dex加载到dex数组中
         //classloader：首先会判断类是否存在，若存在则直接加载，否则通过classloader进行加载
-
+        ReInstallDecodeDexsUtils.reInstallDexes(this, Arrays.asList(decodeDexs));
 
         //在onCreate()中需要使用hook将原来的application加载进来
     }

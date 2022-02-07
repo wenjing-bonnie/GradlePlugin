@@ -25,9 +25,10 @@ public class ClassReflectUtils {
                     return field;
                 }
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+               // e.printStackTrace();
+            } finally {
+                cls = cls.getSuperclass();
             }
-            cls = cls.getSuperclass();
         }
 
         throw new NoSuchFieldException(object.getClass().getSimpleName() + " not find '" + name + "'");
@@ -42,7 +43,9 @@ public class ClassReflectUtils {
      */
     public static Method findMethod(Object object, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         Class<?> cls = object.getClass();
+        //LogUtils.logV("obj = "+object.toString());
         while (cls != Object.class) {
+           // LogUtils.logV(cls.toString());
             try {
                 Method method = cls.getDeclaredMethod(name, parameterTypes);
                 //设置访问权限
@@ -51,9 +54,10 @@ public class ClassReflectUtils {
                     return method;
                 }
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+            }finally {
+                cls = cls.getSuperclass();
             }
-            cls = cls.getSuperclass();
         }
 
         throw new NoSuchMethodException(object.getClass().getSimpleName() + " not find '" + name + "'");
