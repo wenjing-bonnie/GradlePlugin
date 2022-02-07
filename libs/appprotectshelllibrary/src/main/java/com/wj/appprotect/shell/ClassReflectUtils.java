@@ -44,7 +44,7 @@ public class ClassReflectUtils {
         Class<?> cls = object.getClass();
         while (cls != Object.class) {
             try {
-                Method method = cls.getDeclaredMethod(name, parameterTypes)
+                Method method = cls.getDeclaredMethod(name, parameterTypes);
                 //设置访问权限
                 method.setAccessible(true);
                 if (method != null) {
