@@ -66,46 +66,32 @@ public class ReplaceApplicationUtils {
             Class<?> applicationClass = Class.forName(originalApplicationName);
             Object originalApplication = applicationClass.newInstance();
             //第二步:调用Application#attach()
-            Method attachMethod = ClassReflectUtils.findMethod(originalApplication, "attach", Context.class);
-            attachMethod.setAccessible(true);
-            attachMethod.invoke(originalApplication, contextImpl);
+            applicationAttach(originalApplication, contextImpl);
             //第三步:替换所有的application对象
             //1.ContextImpl的  private Context mOuterContext;中的壳application
             //在LoadedApk#makeApplication()中通过appContext.setOuterContext(app);赋值
-            Field mOuterContextField = ClassReflectUtils.findField(contextImpl, "mOuterContext");
-            mOuterContextField.setAccessible(true);
-            mOuterContextField.set(contextImpl, originalApplication);
-            LogUtils.logV(mOuterContextField.get(contextImpl).toString());
+            setOuterContext(originalApplication, contextImpl);
 
             //通过从ContextImpl实例 反射获取mpackageInfo(LoadedApk)和 mMainThread(ActivityThread)。
-            Field loadedApkField = ClassReflectUtils.findField(contextImpl, "mpackageInfo");
+            Field loadedApkField = ClassReflectUtils.findField(contextImpl, "mPackageInfo");
             Field mMainThread = ClassReflectUtils.findField(contextImpl, "mMainThread");
             //2.ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
             //在LoadedApk#makeApplication()中通过mActivityThread.mAllApplications.add(app);
             Object mActivityThreadObject = mMainThread.get(contextImpl);
-            Field mAllApplicationsField = ClassReflectUtils.findField(mActivityThreadObject, "mAllApplications");
-            ArrayList<Application> mAllApplicationsObject = (ArrayList<Application>) mAllApplicationsField.get(mActivityThreadObject);
-            mAllApplicationsObject.remove(application);
-            mAllApplicationsObject.add((Application) originalApplication);
-            mAllApplicationsField.set(mActivityThreadObject, mAllApplicationsObject);
+            setActivityThreadAllApplication(originalApplication, mActivityThreadObject, application);
 
             // 3.LoadedApk的private Application mApplication;中的壳application
             //在LoadedApk#makeApplication()中通过mApplication = app;
-            Object loadedApkObject = loadedApkField.get(contextImpl);
-            Field mApplicationField = ClassReflectUtils.findField(loadedApkObject, "mApplication ");
-            mApplicationField.set(loadedApkObject, originalApplication);
+            setLoadedApkApplication(originalApplication, loadedApkField, contextImpl);
 
             //上面的三个赋值是在LoadedApk#makeApplication()中进行的，返回该方法的返回值赋值给ActivityThread的mInitialApplication
 
             //4.ActivityThread的 Application mInitialApplication;中的壳application
             //在ActivityThread中通过mInitialApplication = context.mPackageInfo.makeApplication(true, null);
-            Field mInitialApplicationField = ClassReflectUtils.findField(mActivityThreadObject, "mInitialApplication");
-            mInitialApplicationField.set(mActivityThreadObject, originalApplication);
+            setActivityThreadApplication(originalApplication, mActivityThreadObject);
             //第四步:
             // originalApplication.onCreate();
-            Method onCreateMethod = ClassReflectUtils.findMethod(originalApplication, "onCreate");
-            onCreateMethod.setAccessible(true);
-            onCreateMethod.invoke(originalApplication);
+            applicationOnCreate(originalApplication);
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -120,8 +106,94 @@ public class ReplaceApplicationUtils {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * 调用 Application#attach(),从而回调到到自定义Application的attachBaseContext()
+     *
+     * @param originalApplication
+     * @param contextImpl
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static void applicationAttach(Object originalApplication, Context contextImpl) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method attachMethod = ClassReflectUtils.findMethod(originalApplication, "attach", Context.class);
+        attachMethod.setAccessible(true);
+        attachMethod.invoke(originalApplication, contextImpl);
+    }
 
+    /**
+     * 1.ContextImpl的  private Context mOuterContext;中的壳application
+     *
+     * @param originalApplication
+     * @param contextImpl
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private static void setOuterContext(Object originalApplication, Context contextImpl) throws NoSuchFieldException, IllegalAccessException {
+        Field mOuterContextField = ClassReflectUtils.findField(contextImpl, "mOuterContext");
+        mOuterContextField.setAccessible(true);
+        mOuterContextField.set(contextImpl, originalApplication);
+        LogUtils.logV(mOuterContextField.get(contextImpl).toString());
+    }
+
+    /**
+     * 2.ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
+     * @param originalApplication
+     * @param mActivityThreadObject
+     * @param shellApplication
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private static void setActivityThreadAllApplication(Object originalApplication, Object mActivityThreadObject, Application shellApplication) throws NoSuchFieldException, IllegalAccessException {
+        Field mAllApplicationsField = ClassReflectUtils.findField(mActivityThreadObject, "mAllApplications");
+        ArrayList<Application> mAllApplicationsObject = (ArrayList<Application>) mAllApplicationsField.get(mActivityThreadObject);
+        mAllApplicationsObject.remove(shellApplication);
+        mAllApplicationsObject.add((Application) originalApplication);
+        mAllApplicationsField.set(mActivityThreadObject, mAllApplicationsObject);
+    }
+
+    /**
+     * 3.LoadedApk的private Application mApplication;中的壳application
+     *
+     * @param originalApplication
+     * @param loadedApkField
+     * @param contextImpl
+     * @throws IllegalAccessException
+     * @throws NoSuchFieldException
+     */
+    private static void setLoadedApkApplication(Object originalApplication, Field loadedApkField, Context contextImpl) throws IllegalAccessException, NoSuchFieldException {
+        Object loadedApkObject = loadedApkField.get(contextImpl);
+        Field mApplicationField = ClassReflectUtils.findField(loadedApkObject, "mApplication");
+        mApplicationField.set(loadedApkObject, originalApplication);
+    }
+
+    /**
+     * 4.ActivityThread的 Application mInitialApplication;中的壳application
+     *
+     * @param originalApplication
+     * @param mActivityThreadObject
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private static void setActivityThreadApplication(Object originalApplication, Object mActivityThreadObject) throws NoSuchFieldException, IllegalAccessException {
+        Field mInitialApplicationField = ClassReflectUtils.findField(mActivityThreadObject, "mInitialApplication");
+        mInitialApplicationField.set(mActivityThreadObject, originalApplication);
+    }
+
+    /**
+     * 调用Application的onCreate
+     *
+     * @param originalApplication
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private static void applicationOnCreate(Object originalApplication) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method onCreateMethod = ClassReflectUtils.findMethod(originalApplication, "onCreate");
+        onCreateMethod.setAccessible(true);
+        onCreateMethod.invoke(originalApplication);
     }
 
 }
