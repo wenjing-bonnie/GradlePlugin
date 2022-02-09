@@ -135,11 +135,12 @@ public class ReplaceApplicationUtils {
         Field mOuterContextField = ClassReflectUtils.findField(contextImpl, "mOuterContext");
         mOuterContextField.setAccessible(true);
         mOuterContextField.set(contextImpl, originalApplication);
-        LogUtils.logV(mOuterContextField.get(contextImpl).toString());
+        // LogUtils.logV(mOuterContextField.get(contextImpl).toString());
     }
 
     /**
      * 2.ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
+     *
      * @param originalApplication
      * @param mActivityThreadObject
      * @param shellApplication
