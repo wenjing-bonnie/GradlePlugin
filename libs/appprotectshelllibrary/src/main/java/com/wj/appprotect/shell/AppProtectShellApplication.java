@@ -39,16 +39,19 @@ public class AppProtectShellApplication extends Application {
         ReInstallDecodeDexsUtils.reInstallDexes(this, Arrays.asList(decodeDexs));
 
         //在onCreate()中需要使用hook将原来的application加载进来
+        //
+
     }
 
     /**
      * 通过hook将原应用的application加载进来
-     * 涉及到ActviityThread反射替换成原应用的application
+     * 涉及到ActivityThread反射替换成原应用的application
      * mInitalAppliation
      */
     @Override
     public void onCreate() {
         super.onCreate();
+        ReplaceApplicationUtils.replaceApplication(this);
     }
 
     /**
@@ -87,7 +90,7 @@ public class AppProtectShellApplication extends Application {
             return null;
         }
         for (File dex : dexFiles) {
-            LogUtils.logV("dex = \n" + dex.getName());
+            // LogUtils.logV("dex = \n" + dex.getName());
             AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
             aesFileAlgorithm.decrypt(dex);
         }

@@ -37,7 +37,7 @@ public class ReInstallDecodeDexsUtils {
         //application.getClass().getClassLoader()就有可能获取到baselassloader，
         // 该情况出现在：在当前app没有自定义application，那么此时的application.getClass().getClassLoader()获取的就是baseclassloader
         ClassLoader classLoader = application.getClassLoader();
-        LogUtils.logV(classLoader.toString());
+        LogUtils.logV("cls = " + classLoader.toString());
         try {
             // 2.反射获取DexPathList的属性对象pathList
             //获取的是所有的dex的pathList private final DexPathList pathList;

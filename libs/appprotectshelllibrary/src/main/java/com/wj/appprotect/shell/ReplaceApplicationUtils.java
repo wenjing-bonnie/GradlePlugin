@@ -3,6 +3,11 @@ package com.wj.appprotect.shell;
 import android.app.Application;
 import android.content.Context;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
 /**
  * create by wenjing.liu at 2022/2/7
  * 将application替换成原app的application
@@ -46,15 +51,75 @@ import android.content.Context;
 public class ReplaceApplicationUtils {
 
     public static void replaceApplication(Application application) {
-        //
 
         // 1.ContextImpl的   private Context mOuterContext;中的壳application
         //从Application的attachBaseContext()中的传入参数就是本app的ContextImpl
         Context contextImpl = application.getBaseContext();
         //有了contextImpl,通过反射contextImpl中获取mpackageInfo(LoadedApk) mMainThread(ActivityThread)
 
-        //2.TODO 原app的application先暂时直接赋值字符串
-        String originalApplication = "com.wj.appprotect.shell.AppProtectShellApplication";
+        //二、得倒原Application实例的方式
+        // 2.直接通过clazz.newInstance();+ app.attach(context);的方式
+        //TODO 原app的application先暂时直接赋值字符串
+        String originalApplicationName = "com.wj.gradle.plugin.GradlePluginApplication";
+        try {
+            //第一步:得到原生Application的对象
+            Class<?> applicationClass = Class.forName(originalApplicationName);
+            Object originalApplication = applicationClass.newInstance();
+            //第二步:调用Application#attach()
+            Method attachMethod = ClassReflectUtils.findMethod(originalApplication, "attach", Context.class);
+            attachMethod.setAccessible(true);
+            attachMethod.invoke(originalApplication, contextImpl);
+            //第三步:替换所有的application对象
+            //1.ContextImpl的  private Context mOuterContext;中的壳application
+            //在LoadedApk#makeApplication()中通过appContext.setOuterContext(app);赋值
+            Field mOuterContextField = ClassReflectUtils.findField(contextImpl, "mOuterContext");
+            mOuterContextField.setAccessible(true);
+            mOuterContextField.set(contextImpl, originalApplication);
+            LogUtils.logV(mOuterContextField.get(contextImpl).toString());
+
+            //通过从ContextImpl实例 反射获取mpackageInfo(LoadedApk)和 mMainThread(ActivityThread)。
+            Field loadedApkField = ClassReflectUtils.findField(contextImpl, "mpackageInfo");
+            Field mMainThread = ClassReflectUtils.findField(contextImpl, "mMainThread");
+            //2.ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
+            //在LoadedApk#makeApplication()中通过mActivityThread.mAllApplications.add(app);
+            Object mActivityThreadObject = mMainThread.get(contextImpl);
+            Field mAllApplicationsField = ClassReflectUtils.findField(mActivityThreadObject, "mAllApplications");
+            ArrayList<Application> mAllApplicationsObject = (ArrayList<Application>) mAllApplicationsField.get(mActivityThreadObject);
+            mAllApplicationsObject.remove(application);
+            mAllApplicationsObject.add((Application) originalApplication);
+            mAllApplicationsField.set(mActivityThreadObject, mAllApplicationsObject);
+
+            // 3.LoadedApk的private Application mApplication;中的壳application
+            //在LoadedApk#makeApplication()中通过mApplication = app;
+            Object loadedApkObject = loadedApkField.get(contextImpl);
+            Field mApplicationField = ClassReflectUtils.findField(loadedApkObject, "mApplication ");
+            mApplicationField.set(loadedApkObject, originalApplication);
+
+            //上面的三个赋值是在LoadedApk#makeApplication()中进行的，返回该方法的返回值赋值给ActivityThread的mInitialApplication
+
+            //4.ActivityThread的 Application mInitialApplication;中的壳application
+            //在ActivityThread中通过mInitialApplication = context.mPackageInfo.makeApplication(true, null);
+            Field mInitialApplicationField = ClassReflectUtils.findField(mActivityThreadObject, "mInitialApplication");
+            mInitialApplicationField.set(mActivityThreadObject, originalApplication);
+            //第四步:
+            // originalApplication.onCreate();
+            Method onCreateMethod = ClassReflectUtils.findMethod(originalApplication, "onCreate");
+            onCreateMethod.setAccessible(true);
+            onCreateMethod.invoke(originalApplication);
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
 
 
     }
