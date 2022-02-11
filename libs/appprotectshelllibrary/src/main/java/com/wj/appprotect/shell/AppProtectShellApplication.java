@@ -2,6 +2,7 @@ package com.wj.appprotect.shell;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.wj.appprotect.shell.algroithm.AesFileAlgorithm;
@@ -51,6 +52,11 @@ public class AppProtectShellApplication extends Application {
     public void onCreate() {
         super.onCreate();
         ReplaceApplicationUtils.replaceApplication(this);
+    }
+
+    @Override
+    public Context createPackageContext(String packageName, int flags) throws PackageManager.NameNotFoundException {
+        return super.createPackageContext(packageName, flags);
     }
 
     /**
