@@ -35,28 +35,28 @@ public class ReplaceApplicationUtils {
             Context contextImpl = application.getBaseContext();
             //2.调用Application#attach()
             applicationAttach(originalApplication, contextImpl);
-            //3.替换所有的application对象
-            //1.ContextImpl的  private Context mOuterContext;中的壳application
+            //3.替换ContextImpl的 private Context mOuterContext;
             //在LoadedApk#makeApplication()中通过appContext.setOuterContext(app);赋值
             setOuterContext(originalApplication, contextImpl);
 
-            //通过从ContextImpl实例 反射获取mpackageInfo(LoadedApk)和 mMainThread(ActivityThread)。
-            Field loadedApkField = ClassReflectUtils.findField(contextImpl, "mPackageInfo");
+            //4.通过从ContextImpl实例 反射获取 mMainThread(ActivityThread)。
+            // 然后修改在LoadedApk#makeApplication()中通过mActivityThread.mAllApplications.add(app);
             Field mMainThread = ClassReflectUtils.findField(contextImpl, "mMainThread");
-            //2.ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
-            //在LoadedApk#makeApplication()中通过mActivityThread.mAllApplications.add(app);
+            //得到ActivityThread的实例对象
             Object mActivityThreadObject = mMainThread.get(contextImpl);
+            //ActivityThread的final ArrayList<Application> mAllApplications = new ArrayList<Application>();中的壳application
             setActivityThreadAllApplication(originalApplication, mActivityThreadObject, application);
 
-            // 3.LoadedApk的private Application mApplication;中的壳application
+            //5.通过从ContextImpl实例 反射获取mpackageInfo(LoadedApk)
+            //然后修改LoadedApk的private Application mApplication;中的壳application
             //在LoadedApk#makeApplication()中通过mApplication = app;
-            setLoadedApkApplication(originalApplication, loadedApkField, contextImpl);
+            setLoadedApkApplication(originalApplication, contextImpl);
 
-            //4.ActivityThread的 Application mInitialApplication;中的壳application
+            //6.ActivityThread的 Application mInitialApplication;中的壳application
             //在ActivityThread中通过mInitialApplication = context.mPackageInfo.makeApplication(true, null);
             setActivityThreadApplication(originalApplication, mActivityThreadObject);
-            //第四步:
-            // originalApplication.onCreate();
+
+            //7.originalApplication.onCreate();
             applicationOnCreate(originalApplication);
             return (Application) originalApplication;
         } catch (ClassNotFoundException e) {
@@ -142,12 +142,12 @@ public class ReplaceApplicationUtils {
      * 3.LoadedApk的private Application mApplication;中的壳application
      *
      * @param originalApplication
-     * @param loadedApkField
      * @param contextImpl
      * @throws IllegalAccessException
      * @throws NoSuchFieldException
      */
-    private static void setLoadedApkApplication(Object originalApplication, Field loadedApkField, Context contextImpl) throws IllegalAccessException, NoSuchFieldException {
+    private static void setLoadedApkApplication(Object originalApplication, Context contextImpl) throws IllegalAccessException, NoSuchFieldException {
+        Field loadedApkField = ClassReflectUtils.findField(contextImpl, "mPackageInfo");
         Object loadedApkObject = loadedApkField.get(contextImpl);
         Field mApplicationField = ClassReflectUtils.findField(loadedApkObject, "mApplication");
         mApplicationField.set(loadedApkObject, originalApplication);
