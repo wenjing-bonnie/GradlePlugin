@@ -76,7 +76,6 @@ public class ReplaceApplicationUtils {
     }
 
 
-
     /**
      * 调用 Application#attach(),从而回调到到自定义Application的attachBaseContext()
      *
@@ -137,6 +136,28 @@ public class ReplaceApplicationUtils {
         Object loadedApkObject = loadedApkField.get(contextImpl);
         Field mApplicationField = ClassReflectUtils.findField(loadedApkObject, "mApplication");
         mApplicationField.set(loadedApkObject, originalApplication);
+
+        setApplicationInfoName(loadedApkObject, originalApplication.getClass().getName());
+    }
+
+    /**
+     * 修改ApplicationInfo的name和className
+     *
+     * @param loadedApkObject
+     * @param originalApplicationName
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private static void setApplicationInfoName(Object loadedApkObject, String originalApplicationName) throws NoSuchFieldException, IllegalAccessException {
+        Field mApplicationInfoField = ClassReflectUtils.findField(loadedApkObject, "mApplicationInfo");
+        Object mApplicationInfoObject = mApplicationInfoField.get(loadedApkObject);
+
+        Field nameField = ClassReflectUtils.findField(mApplicationInfoObject, "name");
+        nameField.setAccessible(true);
+        nameField.set(mApplicationInfoObject, originalApplicationName);
+        Field classNameField = ClassReflectUtils.findField(mApplicationInfoObject, "className");
+        classNameField.setAccessible(true);
+        classNameField.set(mApplicationInfoObject, originalApplicationName);
     }
 
     /**

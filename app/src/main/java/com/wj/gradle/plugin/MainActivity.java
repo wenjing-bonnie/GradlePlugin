@@ -14,5 +14,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LogUtils.logV(getApplication().toString());
+        LogUtils.logV(getApplicationInfo().className);
+        LogUtils.logV(getApplicationInfo().name);
     }
 }

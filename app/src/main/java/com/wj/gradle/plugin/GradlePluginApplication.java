@@ -13,5 +13,7 @@ public class GradlePluginApplication extends Application {
     public void onCreate() {
         super.onCreate();
         LogUtils.logV("GradlePluginApplication onCreate");
+        LogUtils.logV(getApplicationInfo().className);
+        LogUtils.logV(getApplicationInfo().name);
     }
 }
