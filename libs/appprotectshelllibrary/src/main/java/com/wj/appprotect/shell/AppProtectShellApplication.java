@@ -10,12 +10,12 @@ import com.wj.appprotect.shell.algroithm.AesFileAlgorithm;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InvalidObjectException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
     private LoadApkAlreadyEncodeDexsUtils encodeDexsUtils = new LoadApkAlreadyEncodeDexsUtils();
+    private Application originalApplication;
 
 
     /**
@@ -51,12 +51,57 @@ public class AppProtectShellApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ReplaceApplicationUtils.replaceApplication(this);
+        handleBindOriginalApplication();
+    }
+
+
+    @Override
+    public String getPackageName() {
+        //强制改变packageName，让installContentProviders()执行createPackageContext()传入原APP的Application
+        //这里不会影响到APP在使用Application通过getPackageName()获取包名，
+        // 因为APP启动后已经替换成了原APP的Application
+        if (!getOriginalApplicationName().isEmpty()) {
+            return "";
+        }
+        return super.getPackageName();
     }
 
     @Override
     public Context createPackageContext(String packageName, int flags) throws PackageManager.NameNotFoundException {
-        return super.createPackageContext(packageName, flags);
+        if (getOriginalApplicationName().isEmpty()) {
+            return super.createPackageContext(packageName, flags);
+        }
+        handleBindOriginalApplication();
+        return originalApplication;
+    }
+
+    /**
+     * 完成原APP的Application的创建->attach()->onCreate()
+     */
+    private void handleBindOriginalApplication() {
+        if (originalApplication != null) {
+            return;
+        }
+        if (getOriginalApplicationName().isEmpty()) {
+            return;
+        }
+        originalApplication = ReplaceApplicationUtils.replaceApplication(this, getOriginalApplicationName());
+    }
+
+    /**
+     * 获取原APP的Application的名字
+     * TODO 这里需要在进行优化
+     * 因为通过gradle将原APP注册的Application替换了该解密壳的Application
+     * 所以要将原APP的Application想方法保存下来，暂时先直接赋值字符串。
+     * 另外还要判断若APP中没有配置Application，则直接使用"com.android.Application"
+     *
+     * @return
+     */
+    private String getOriginalApplicationName() {
+        //先假设原Manifest中配置的是是名字
+        String dexApplication = "com.wj.gradle.plugin.GradlePluginApplication";
+        //否则设置为"com.android.Application"
+        return dexApplication;
     }
 
     /**

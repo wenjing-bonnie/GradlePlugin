@@ -24,11 +24,11 @@ import java.util.ArrayList;
 public class ReplaceApplicationUtils {
 
 
-    public static Application replaceApplication(Application application) {
+    public static Application replaceApplication(Application application, String originalApplicationName) {
 
         try {
             //1.实例化原APP的Application的对象.直接通过clazz.newInstance();+ app.attach(context);的方式
-            String originalApplicationName = getOriginalApplicationName();
+            //String originalApplicationName = getOriginalApplicationName();
             Class<?> applicationClass = Class.forName(originalApplicationName);
             Object originalApplication = applicationClass.newInstance();
             //得到contextImpl,通过反射contextImpl中获取mpackageInfo(LoadedApk) mMainThread(ActivityThread)
@@ -75,21 +75,7 @@ public class ReplaceApplicationUtils {
         return application;
     }
 
-    /**
-     * 获取原APP的Application的名字
-     * TODO 这里需要在进行优化
-     * 因为通过gradle将原APP注册的Application替换了该解密壳的Application
-     * 所以要将原APP的Application想方法保存下来，暂时先直接赋值字符串。
-     * 另外还要判断若APP中没有配置Application，则直接使用"com.android.Application"
-     *
-     * @return
-     */
-    private static String getOriginalApplicationName() {
-        //先假设原Manifest中配置的是是名字
-        String dexApplication = "com.wj.gradle.plugin.GradlePluginApplication";
-        //否则设置为"com.android.Application"
-        return dexApplication;
-    }
+
 
     /**
      * 调用 Application#attach(),从而回调到到自定义Application的attachBaseContext()
