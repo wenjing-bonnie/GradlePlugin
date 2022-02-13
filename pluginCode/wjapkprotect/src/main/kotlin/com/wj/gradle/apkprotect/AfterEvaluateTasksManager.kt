@@ -4,7 +4,7 @@ import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
-import com.wj.gradle.apkprotect.tasks.manifest.ReplaceApplicationFroManifestTask
+import com.wj.gradle.apkprotect.tasks.manifest.ReplaceApplicationForManifestTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
@@ -30,14 +30,14 @@ open class AfterEvaluateTasksManager {
         val anchorTaskName = "process${variantName}Manifest"
         val manifestTaskBuilder = TaskWrapper.Builder()
             .setAnchorTaskName(anchorTaskName)
-            .setWillRunTaskClass(ReplaceApplicationFroManifestTask::class.javaObjectType)
-            .setWillRunTaskTag(ReplaceApplicationFroManifestTask.TAG)
+            .setWillRunTaskClass(ReplaceApplicationForManifestTask::class.javaObjectType)
+            .setWillRunTaskTag(ReplaceApplicationForManifestTask.TAG)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<Task>,
                     producerProvider: TaskProvider<Task>?
                 ) {
-                    val manifestTask = provider.get() as ReplaceApplicationFroManifestTask
+                    val manifestTask = provider.get() as ReplaceApplicationForManifestTask
                     val processManifestTask =
                         project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
                     manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
