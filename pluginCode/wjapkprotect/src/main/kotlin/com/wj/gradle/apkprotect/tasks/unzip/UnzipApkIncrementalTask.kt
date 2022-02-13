@@ -67,38 +67,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
                 params.unzipDirectory.set(unzipDirectory.get())
             }
         }
-
         SystemPrint.outPrintln(TAG, "size = " + unzipDirectory.get().asFile.listFiles().size)
-
-    }
-
-    /**
-     * 根据配置的内容来设置inputs内容,必须在添加到project的时候进行调用初始化input/output
-     *
-     * 1.配置.apk存放的路径.
-     * 默认的取["${project.projectDir.absolutePath}/build/outputs/apk/"]
-     * 2.配置解压之后的apk存放的路径.
-     * 默认取["${project.projectDir.absolutePath}/build/protect/]
-     */
-    @Deprecated("apkDirectory replace from [packageDebug]")
-    open fun setConfigFromExtensionAfterEvaluate() {
-        project.afterEvaluate {
-            setConfigFromExtension()
-        }
-    }
-
-    private fun setConfigFromExtension() {
-        unzipDirectory.set(
-            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project, variantName
-            )
-        )
-        apkDirectory.set(
-            AppProtectDirectoryUtils.getApkDirectoryBaseExtensions(
-                project,
-                variantName
-            )
-        )
     }
 
     /**

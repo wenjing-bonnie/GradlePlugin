@@ -32,19 +32,6 @@ object AppProtectDirectoryUtils {
     }
 
     /**
-     *  从[ApkProtectExtension]中获取配置的解压文件夹，如果没有设置则使用默认值
-     */
-    fun getApkDirectoryBaseExtensions(project: Project, variantName: String): File {
-        val defaultFile = getApkDefaultDirectory(project, variantName)
-        val extension = project.extensions.findByType(ApkProtectExtension::class.javaObjectType)
-            ?: return defaultFile
-        if (extension.apkDirectory.orNull == null) {
-            return defaultFile
-        }
-        return extension.apkDirectory.get().asFile
-    }
-
-    /**
      * 存放压缩之后的无签名的apk
      */
     fun getUnsignedApkZipDirectoryFromUnzipDirectory(
@@ -79,14 +66,6 @@ object AppProtectDirectoryUtils {
     fun getDefaultApkOutput(project: Project, variantName: String): File {
         val packageTask = project.tasks.getByName("package$variantName") as PackageApplication
         return packageTask.outputDirectory.get().asFile
-    }
-
-    /**
-     * 默认的.apk存放的路径.
-     */
-    private fun getApkDefaultDirectory(project: Project, variantName: String): File {
-        val defaultPath = getApkDefaultPath(project, variantName)
-        return createEmptyDirectory(project, defaultPath)
     }
 
     /**
