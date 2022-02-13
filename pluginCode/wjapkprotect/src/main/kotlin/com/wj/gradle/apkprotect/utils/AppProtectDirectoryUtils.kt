@@ -108,7 +108,8 @@ object AppProtectDirectoryUtils {
         return file.isDirectory &&
                 (!file.name.equals(AAR)) &&
                 (!file.name.equals(APKS_UNSIGNED)) &&
-                (!file.name.equals(APKS_SIGNED))
+                (!file.name.equals(APKS_SIGNED)) &&
+                (!file.name.equals(UNZIP))
     }
 
     /**

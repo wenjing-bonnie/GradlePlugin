@@ -1,7 +1,6 @@
 package com.wj.gradle.apkprotect.tasks.unzip.parallel
 
 import com.wj.gradle.apkprotect.utils.ZipAndUnZipApkUtils
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.workers.WorkAction
 
 /**
@@ -13,8 +12,5 @@ abstract class UnzipApkAction : WorkAction<UnzipApkWorkParameters> {
         val unzipApk = parameters.unzipApk.get().asFile
         val unzipDirectory = parameters.unzipDirectory.get().asFile
         ZipAndUnZipApkUtils.unZipApk(unzipApk, unzipDirectory.path)
-//        SystemPrint.outPrintln(
-//            "The ${unzipApk.name} finished to unzip to \n ${unzipDirectory.absolutePath} in UnzipApkAction"
-//        )
     }
 }

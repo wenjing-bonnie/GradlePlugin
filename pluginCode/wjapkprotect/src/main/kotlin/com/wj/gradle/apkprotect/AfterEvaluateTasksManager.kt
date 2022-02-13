@@ -11,6 +11,7 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -213,12 +214,7 @@ open class AfterEvaluateTasksManager {
         val zipTask = provider.get() as ZipApkIncrementalTask
         val unzipTask =
             project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
-
-        //TODO 这里的获取方式需要优化
-        //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        zipTask.unzipRootDirectory.set(
-            unzipTask.unzipDirectory.get()
-        )
+        zipTask.unzipRootDirectory.set(unzipTask.unzipDirectory.get())
         zipTask.zipApkDirectory.set(
             AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
         )

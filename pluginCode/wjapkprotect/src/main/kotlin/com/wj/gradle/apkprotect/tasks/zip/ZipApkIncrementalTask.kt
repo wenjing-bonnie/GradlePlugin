@@ -38,6 +38,13 @@ abstract class ZipApkIncrementalTask : NewIncrementalTask() {
         SystemPrint.outPrintln(TAG, "The zip begin ...")
         val workQueue = workerExecutor.noIsolation()
         val unzipDirectory = unzipRootDirectory.get().asFile
+        SystemPrint.outPrintln(
+            TAG,
+            AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName).listFiles()
+                .toString()
+        )
+
+        SystemPrint.outPrintln(TAG, "path = " + unzipDirectory.absolutePath)
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
             if (!AppProtectDirectoryUtils.isValidApkUnzipDirectory(apk)) {

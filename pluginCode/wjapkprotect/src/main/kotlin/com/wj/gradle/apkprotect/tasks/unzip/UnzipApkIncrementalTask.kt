@@ -68,6 +68,8 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             }
         }
 
+        SystemPrint.outPrintln(TAG, "size = " + unzipDirectory.get().asFile.listFiles().size)
+
     }
 
     /**
@@ -88,7 +90,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     private fun setConfigFromExtension() {
         unzipDirectory.set(
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project,variantName
+                project, variantName
             )
         )
         apkDirectory.set(
@@ -118,13 +120,5 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
                 allApks.add(file)
             }
         }
-    }
-
-    private fun deleteAndReMkdirsUnzipDirectory() {
-        val unzipDirectory = unzipDirectory.get().asFile
-        if (unzipDirectory.exists()) {
-            unzipDirectory.delete()
-        }
-        unzipDirectory.mkdirs()
     }
 }
