@@ -21,6 +21,7 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
 
     companion object {
         const val TAG = "ReplaceApplicationForManifestTask"
+        const val SHELL_APPLICATION_NAME = "com.wj.appprotect.shell.AppProtectShellApplication"
     }
 
     val attributeName = "{http://schemas.android.com/apk/res/android}name"
@@ -73,7 +74,7 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
                 if (attributeName == attr.toString()) {
                     originalApplicationName = name as String
                     //替换为壳的Application
-                    attributes.replace(attr,shellApplicationName.get())
+                    attributes.replace(attr, shellApplicationName.get())
                     return node
                 }
             }

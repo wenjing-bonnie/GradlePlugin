@@ -18,7 +18,7 @@ import java.lang.IllegalArgumentException
  *
  * 解压缩apk，为生产Task，该Task的outputs为消费Task[ZipApkIncremtentalTask]的inputs
  *
- * 1.配置.apk存放的路径.
+ * 1.配置.apk存放的路径. 需要依赖于最后生成的apk的任务[packageDebug]，从中获取到生成Apk的所在目录"outputDirectory"
  * 默认的取["${project.projectDir.absolutePath}/build/outputs/apk/"]
  * 2.配置解压之后的apk存放的路径.
  * 默认取["${project.projectDir.absolutePath}/build/protect/]
@@ -78,6 +78,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
      * 2.配置解压之后的apk存放的路径.
      * 默认取["${project.projectDir.absolutePath}/build/protect/]
      */
+    @Deprecated("apkDirectory replace from [packageDebug]")
     open fun setConfigFromExtensionAfterEvaluate() {
         project.afterEvaluate {
             setConfigFromExtension()

@@ -42,7 +42,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
                 getVariantName()
             )
         )
-        tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper(project))
+        tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper(project, getVariantName()))
         tasks.add(afterManager.getShellAar2DexTaskWrapper(project))
         tasks.add(afterManager.getZipIncrementalTaskWrapper(project))
         //tasks.add(afterManager.getDecodeIncrementalTaskWrapper(project))

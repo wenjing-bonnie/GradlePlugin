@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect
 
+import com.android.build.gradle.tasks.PackageApplication
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
@@ -10,6 +11,7 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -21,6 +23,7 @@ import org.gradle.api.tasks.TaskProvider
 open class AfterEvaluateTasksManager {
 
     /**
+     * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest]
      * 替换Application为壳的Application
      */
     open fun getReplaceApplicationForManifestTaskWrapper(
@@ -41,7 +44,7 @@ open class AfterEvaluateTasksManager {
                     val processManifestTask =
                         project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
                     manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
-                    manifestTask.shellApplicationName.set("com.wj.appprotect.shell.AppProtectShellApplication")
+                    manifestTask.shellApplicationName.set(ReplaceApplicationForManifestTask.SHELL_APPLICATION_NAME)
                 }
             })
         return manifestTaskBuilder.builder()
@@ -49,17 +52,20 @@ open class AfterEvaluateTasksManager {
 
     /**
      * 第一步:添加解压和加密Task，两个为生产-消费的Task
+     * 需要依赖于最后生成的apk的任务[packageDebug]，从中获取到生成Apk的所在目录"outputDirectory"
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
-    open fun getUnzipApkAndEncodeDexTaskWrapper(project: Project): TaskWrapper {
-        //TODO 还没有找到合适的锚点 assembleHuaweiDebug
+    open fun getUnzipApkAndEncodeDexTaskWrapper(
+        project: Project,
+        variantName: String
+    ): TaskWrapper {
+        val packageDebugTaskName = "package$variantName"
         val unzipTaskBuilder =
-            TaskWrapper.Builder().setAnchorTaskName("preBuild")
+            TaskWrapper.Builder().setAnchorTaskName(packageDebugTaskName)
                 .setWillRunTaskClass(
                     EncodeDexIncrementalTask::class.javaObjectType,
                     UnzipApkIncrementalTask::class.javaObjectType
                 )
-                .setIsDependsOn(true)
                 .setWillRunTaskTag(EncodeDexIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
                 .setWillRunTaskRegisterListener(object :
                     TaskWrapper.IWillRunTaskRegisteredListener {
@@ -67,7 +73,12 @@ open class AfterEvaluateTasksManager {
                         provider: TaskProvider<Task>,
                         producerProvider: TaskProvider<Task>?
                     ) {
-                        initUnzipAndEncodeTask(provider, producerProvider, project)
+                        initUnzipAndEncodeTask(
+                            provider,
+                            producerProvider,
+                            project,
+                            packageDebugTaskName
+                        )
                     }
                 })
         return unzipTaskBuilder.builder()
@@ -146,22 +157,26 @@ open class AfterEvaluateTasksManager {
     private fun initUnzipAndEncodeTask(
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
-        project: Project
+        project: Project,
+        packageDebugTaskName: String
     ) {
         //消费Task
-        val encodeTask = provider.get()
-        if (encodeTask !is EncodeDexIncrementalTask) {
-            return
-        }
+        val encodeTask = provider.get() as EncodeDexIncrementalTask
         //生产Task
         if (producerProvider == null) {
             return
         }
-        val unzipTask = producerProvider.get()
-        if (unzipTask !is UnzipApkIncrementalTask) {
-            return
-        }
-        unzipTask.setConfigFromExtensionAfterEvaluate()
+        val unzipTask = producerProvider.get() as UnzipApkIncrementalTask
+        val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
+        //apkDirectory replace by from [packageDebug] at 2022-02-13
+        //unzipTask.setConfigFromExtensionAfterEvaluate()
+        unzipTask.unzipDirectory.set(
+            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
+                project
+            )
+        )
+        unzipTask.apkDirectory.set(packageTask.outputDirectory.get())
+        //生产-消费的Task
         encodeTask.dexDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
             it.unzipDirectory
         })
