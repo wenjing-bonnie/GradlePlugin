@@ -140,9 +140,9 @@ public class AppProtectShellApplication extends Application {
             return null;
         }
         for (File dex : dexFiles) {
-            // LogUtils.logV("dex = \n" + dex.getName());
             AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
             aesFileAlgorithm.decrypt(dex);
+            LogUtils.logV("dex = \n" + dex.getName());
         }
         return dexFiles;
     }

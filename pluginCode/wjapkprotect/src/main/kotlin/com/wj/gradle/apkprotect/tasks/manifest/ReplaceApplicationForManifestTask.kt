@@ -1,6 +1,7 @@
 package com.wj.gradle.apkprotect.tasks.manifest
 
 import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
+import com.wj.gradle.base.utils.SystemPrint
 import groovy.util.Node
 import groovy.util.XmlParser
 import groovy.xml.XmlUtil
@@ -29,6 +30,7 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
     @get:InputFile
     @get:Incremental
     abstract val mergedManifestFile: RegularFileProperty
+
 
     /**
      * 解密壳的application的名字
@@ -75,11 +77,14 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
                     originalApplicationName = name as String
                     //替换为壳的Application
                     attributes.replace(attr, shellApplicationName.get())
+                    SystemPrint.outPrintln(TAG, "The name is replaced for ${attributes.get(attr)}")
                     return node
                 }
             }
             //如果没有该name，则增加属性
             application.attributes()["android:name"] = shellApplicationName.get()
+            SystemPrint.outPrintln(TAG, "The name is added!")
+
             return node
         }
         return null

@@ -11,6 +11,7 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -59,8 +60,9 @@ open class AfterEvaluateTasksManager {
 
     /**
      * 第三步之：将原Application替换成壳Application
-     * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest]
-     * 替换Application为壳的Application
+     * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest],要在该任务执行之前完成替换
+     * 或者在最后生成的manifest之后进行替换,即取判断multiApkManifestOutputDirectory里面的Manifest进行修改
+     * * 替换Application为壳的Application
      */
     open fun getReplaceApplicationForManifestTaskWrapper(
         project: Project,
@@ -69,6 +71,7 @@ open class AfterEvaluateTasksManager {
         val anchorTaskName = "process${variantName}Manifest"
         val manifestTaskBuilder = TaskWrapper.Builder()
             .setAnchorTaskName(anchorTaskName)
+            .setIsDependsOn(true)
             .setWillRunTaskClass(ReplaceApplicationForManifestTask::class.javaObjectType)
             .setWillRunTaskTag(ReplaceApplicationForManifestTask.TAG)
             .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
@@ -79,12 +82,14 @@ open class AfterEvaluateTasksManager {
                     val manifestTask = provider.get() as ReplaceApplicationForManifestTask
                     val processManifestTask =
                         project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
+                    //processManifestTask.multiApkManifestOutputDirectory
                     manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
                     manifestTask.shellApplicationName.set(ReplaceApplicationForManifestTask.SHELL_APPLICATION_NAME)
                 }
             })
         return manifestTaskBuilder.builder()
     }
+
 
     /**
      * 第三步之：生成解密dex，copy到解压之后的文件夹
