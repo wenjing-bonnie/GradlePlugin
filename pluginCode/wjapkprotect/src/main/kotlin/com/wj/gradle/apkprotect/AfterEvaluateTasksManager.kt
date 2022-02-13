@@ -11,7 +11,6 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -19,39 +18,13 @@ import org.gradle.api.tasks.TaskProvider
 
 /**
  * 处理项目配置之后的Task
+ * TODO 需要重新梳理下文件夹，利用原tasks的task进行签名，对齐
  */
 open class AfterEvaluateTasksManager {
 
-    /**
-     * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest]
-     * 替换Application为壳的Application
-     */
-    open fun getReplaceApplicationForManifestTaskWrapper(
-        project: Project,
-        variantName: String
-    ): TaskWrapper {
-        val anchorTaskName = "process${variantName}Manifest"
-        val manifestTaskBuilder = TaskWrapper.Builder()
-            .setAnchorTaskName(anchorTaskName)
-            .setWillRunTaskClass(ReplaceApplicationForManifestTask::class.javaObjectType)
-            .setWillRunTaskTag(ReplaceApplicationForManifestTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
-                override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
-                ) {
-                    val manifestTask = provider.get() as ReplaceApplicationForManifestTask
-                    val processManifestTask =
-                        project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
-                    manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
-                    manifestTask.shellApplicationName.set(ReplaceApplicationForManifestTask.SHELL_APPLICATION_NAME)
-                }
-            })
-        return manifestTaskBuilder.builder()
-    }
 
     /**
-     * 第一步:添加解压和加密Task，两个为生产-消费的Task
+     * 第二步:添加解压和加密Task，两个为生产-消费的Task
      * 需要依赖于最后生成的apk的任务[packageDebug]，从中获取到生成Apk的所在目录"outputDirectory"
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
@@ -85,9 +58,38 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 第二步：生成解密dex，存放到解压之后的文件夹
+     * 第三步之：将原Application替换成壳Application
+     * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest]
+     * 替换Application为壳的Application
      */
+    open fun getReplaceApplicationForManifestTaskWrapper(
+        project: Project,
+        variantName: String
+    ): TaskWrapper {
+        val anchorTaskName = "process${variantName}Manifest"
+        val manifestTaskBuilder = TaskWrapper.Builder()
+            .setAnchorTaskName(anchorTaskName)
+            .setWillRunTaskClass(ReplaceApplicationForManifestTask::class.javaObjectType)
+            .setWillRunTaskTag(ReplaceApplicationForManifestTask.TAG)
+            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
+                    val manifestTask = provider.get() as ReplaceApplicationForManifestTask
+                    val processManifestTask =
+                        project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
+                    manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
+                    manifestTask.shellApplicationName.set(ReplaceApplicationForManifestTask.SHELL_APPLICATION_NAME)
+                }
+            })
+        return manifestTaskBuilder.builder()
+    }
 
+    /**
+     * 第三步之：生成解密dex，copy到解压之后的文件夹
+     * 依赖于[EncodeDexIncrementalTask]之后执行
+     */
     fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
         val shellAar = TaskWrapper.Builder().setAnchorTaskName(EncodeDexIncrementalTask.TAG)
             .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
@@ -104,8 +106,8 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 第三步:压缩.apk,生成无签名的.apk
-     * 添加压缩apk的Task
+     * 第三步之：压缩.apk,生成无签名的.apk
+     * 依赖于[EncodeDexIncrementalTask]之后执行
      */
     open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
         val builder = TaskWrapper.Builder()
@@ -123,11 +125,10 @@ open class AfterEvaluateTasksManager {
         return builder.builder()
     }
 
-
     /**
      * 第四步：签名apk
-     * 通过apksigner进行签名,默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
-     *
+     * 通过apksigner进行签名对齐,默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
+     * 依赖于原Gradle的任务队列
      */
 
     /**
