@@ -1,8 +1,10 @@
 package com.wj.gradle.apkprotect
 
+import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
+import com.wj.gradle.apkprotect.tasks.manifest.ReplaceApplicationFroManifestTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
@@ -17,6 +19,33 @@ import org.gradle.api.tasks.TaskProvider
  * 处理项目配置之后的Task
  */
 open class AfterEvaluateTasksManager {
+
+    /**
+     * 替换Application为壳的Application
+     */
+    open fun getReplaceApplicationForManifestTaskWrapper(
+        project: Project,
+        variantName: String
+    ): TaskWrapper {
+        val anchorTaskName = "process${variantName}Manifest"
+        val manifestTaskBuilder = TaskWrapper.Builder()
+            .setAnchorTaskName(anchorTaskName)
+            .setWillRunTaskClass(ReplaceApplicationFroManifestTask::class.javaObjectType)
+            .setWillRunTaskTag(ReplaceApplicationFroManifestTask.TAG)
+            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
+                    val manifestTask = provider.get() as ReplaceApplicationFroManifestTask
+                    val processManifestTask =
+                        project.tasks.getByName(anchorTaskName) as ProcessMultiApkApplicationManifest
+                    manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
+                    manifestTask.shellApplicationName.set("com.wj.appprotect.shell.AppProtectShellApplication")
+                }
+            })
+        return manifestTaskBuilder.builder()
+    }
 
     /**
      * 第一步:添加解压和加密Task，两个为生产-消费的Task
