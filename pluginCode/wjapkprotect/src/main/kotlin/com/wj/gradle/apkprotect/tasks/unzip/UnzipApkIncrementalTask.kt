@@ -88,7 +88,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     private fun setConfigFromExtension() {
         unzipDirectory.set(
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project
+                project,variantName
             )
         )
         apkDirectory.set(

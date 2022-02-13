@@ -1,6 +1,7 @@
 package com.wj.gradle.apkprotect.tasks.codedex
 
 import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
+import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.work.Incremental
@@ -13,6 +14,10 @@ import java.io.File
  */
 abstract class CodeDexTemplateIncrementalTask : NewIncrementalWithoutOutputsTask() {
 
+    /**
+     * 解压文件的根目录
+     * 即[AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions]
+     */
     @get:Incremental
     @get:InputDirectory
     abstract val dexDirectory: DirectoryProperty
@@ -24,7 +29,7 @@ abstract class CodeDexTemplateIncrementalTask : NewIncrementalWithoutOutputsTask
 
     override fun doTaskAction(inputChanges: InputChanges) {
         val workQueue = workerExecutor.noIsolation()
-       // SystemPrint.outPrintln(TAG, dexDirectory.get().asFile.path)
+        // SystemPrint.outPrintln(TAG, dexDirectory.get().asFile.path)
         val dexParentFiles = dexDirectory.get().asFile.listFiles()
         for (dexParent in dexParentFiles) {
             //传过来的是生成压缩文件的根目录

@@ -22,10 +22,13 @@ object AppProtectShellAarUtils {
      * @param project
      * @return 返回生成的dex文件
      */
-    fun jar2Dex(aarFile: File, project: Project): File {
+    fun jar2Dex(aarFile: File, project: Project, variantName: String): File {
         //1.获取默认的操作aar文件的路径
         val aarPath =
-            AppProtectDirectoryUtils.getShellAarDefaultRootDirectory(project).absolutePath
+            AppProtectDirectoryUtils.getShellAarDefaultRootDirectory(
+                project,
+                variantName
+            ).absolutePath
         //2.解压aar文件到默认的存放aar的路径
         val aarUnzipPath = ZipAndUnZipApkUtils.unZipFile(aarFile, aarPath)
         val aarUnzipDirectory = File(aarUnzipPath)

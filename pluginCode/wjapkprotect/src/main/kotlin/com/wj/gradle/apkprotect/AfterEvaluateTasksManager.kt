@@ -11,7 +11,6 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -51,7 +50,8 @@ open class AfterEvaluateTasksManager {
                             provider,
                             producerProvider,
                             project,
-                            packageDebugTaskName
+                            packageDebugTaskName,
+                            variantName
                         )
                     }
                 })
@@ -114,7 +114,7 @@ open class AfterEvaluateTasksManager {
      * 第三步之：压缩.apk,生成无签名的.apk
      * 依赖于[EncodeDexIncrementalTask]之后执行
      */
-    open fun getZipIncrementalTaskWrapper(project: Project): TaskWrapper {
+    open fun getZipIncrementalTaskWrapper(project: Project, variantName: String): TaskWrapper {
         val builder = TaskWrapper.Builder()
             .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
@@ -124,7 +124,7 @@ open class AfterEvaluateTasksManager {
                     provider: TaskProvider<Task>,
                     producerProvider: TaskProvider<Task>?
                 ) {
-                    initZipIncrementalTask(provider, producerProvider, project)
+                    initZipIncrementalTask(provider, producerProvider, project, variantName)
                 }
             })
         return builder.builder()
@@ -136,26 +136,6 @@ open class AfterEvaluateTasksManager {
      * 依赖于原Gradle的任务队列
      */
 
-    /**
-     * TODO
-     * 测试加密之后的dex文件，通过解密之后，可压缩可用的apk
-     */
-    open fun getDecodeIncrementalTaskWrapper(project: Project): TaskWrapper {
-        val builder = TaskWrapper.Builder()
-            .setWillRunTaskClass(DecodeDexIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(DecodeDexIncrementalTask.TAG)
-            .setAnchorTaskName(EncodeDexIncrementalTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
-                override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
-                ) {
-                    initDecodeIncrementalTask(provider, producerProvider, project)
-                }
-            })
-        return builder.builder()
-    }
-
 
     /**
      * 初始化解压apk和加密的Task[EncodeDexIncrementalTask]
@@ -164,7 +144,8 @@ open class AfterEvaluateTasksManager {
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
         project: Project,
-        packageDebugTaskName: String
+        packageDebugTaskName: String,
+        variantName: String
     ) {
         //消费Task
         val encodeTask = provider.get() as EncodeDexIncrementalTask
@@ -176,12 +157,13 @@ open class AfterEvaluateTasksManager {
         val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
         //apkDirectory replace by from [packageDebug] at 2022-02-13
         //unzipTask.setConfigFromExtensionAfterEvaluate()
+        val defaultApkOutput = packageTask.outputDirectory.get().asFile
         unzipTask.unzipDirectory.set(
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project
+                project, variantName
             )
         )
-        unzipTask.apkDirectory.set(packageTask.outputDirectory.get())
+        unzipTask.apkDirectory.set(defaultApkOutput)
         //生产-消费的Task
         encodeTask.dexDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
             it.unzipDirectory
@@ -224,56 +206,21 @@ open class AfterEvaluateTasksManager {
     private fun initZipIncrementalTask(
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
-        project: Project
+        project: Project,
+        variantName: String
     ) {
 
-        val zipTask = provider.get()
-        if (zipTask !is ZipApkIncrementalTask) {
-            return
-        }
+        val zipTask = provider.get() as ZipApkIncrementalTask
+        val unzipTask =
+            project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
 
-        val unzipApkIncrementalTask = project.tasks.getByName(UnzipApkIncrementalTask.TAG)
-        if (unzipApkIncrementalTask !is UnzipApkIncrementalTask) {
-            return
-        }
         //TODO 这里的获取方式需要优化
         //zipTask.unzipRootDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
         zipTask.unzipRootDirectory.set(
-            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project
-            )
+            unzipTask.unzipDirectory.get()
         )
         zipTask.zipApkDirectory.set(
-            AppProtectDirectoryUtils.getUnsignedApkZipDirectoryFromUnzipDirectory(
-                project
-            )
+            AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
         )
     }
-
-    /**
-     * 初始化解密task[DecodeDexIncrementalTask]
-     */
-    private fun initDecodeIncrementalTask(
-        provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?,
-        project: Project
-    ) {
-        val decodeTask = provider.get()
-        if (decodeTask !is DecodeDexIncrementalTask) {
-            return
-        }
-
-        val unzipApkIncrementalTask = project.tasks.getByName(UnzipApkIncrementalTask.TAG)
-        if (unzipApkIncrementalTask !is UnzipApkIncrementalTask) {
-            return
-        }
-        //TODO 这里的获取方式需要优化
-        //decodeTask.dexDirectory.set(unzipApkIncrementalTask.unzipDirectory.get())
-        decodeTask.dexDirectory.set(
-            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
-                project
-            )
-        )
-    }
-
 }
