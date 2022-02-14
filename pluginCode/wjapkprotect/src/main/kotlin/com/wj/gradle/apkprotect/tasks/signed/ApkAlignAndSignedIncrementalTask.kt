@@ -1,11 +1,9 @@
 package com.wj.gradle.apkprotect.tasks.signed
 
 import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
-import com.wj.gradle.apkprotect.tasks.signed.parallel.ApkAlignAndSignedAction
 import com.wj.gradle.apkprotect.utils.AppProtectRuntimeUtils
-import com.wj.gradle.base.utils.SystemPrint
-import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
@@ -22,6 +20,11 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
     @get:InputDirectory
     @get:Incremental
     abstract val apkUnsignedDirectory: DirectoryProperty
+
+    abstract val keystoreProperty: Property<String>
+    abstract val keyAliasProperty: Property<String>
+    abstract val storePassProperty: Property<String>
+    abstract val keyPassProperty: Property<String>
 
     override fun doTaskAction(inputChanges: InputChanges) {
         val workQueue = workerExecutor.noIsolation()
@@ -65,11 +68,14 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
      * Keystore password: “android”
      * Key alias: “androiddebugkey”
      * Key password: “android”
-     * TODO 这里需要优化下这里的路径和密码
      */
     private fun apkSigned(apkUnsignedFile: File) {
+        val keystore = keystoreProperty.get() //"/Users/liuwenjing/.android/debug.keystore"
+        val keyAlias = keyAliasProperty.get()//"androiddebugkey"
+        val keyStorePass = storePassProperty.get() //"android"
+        val keyPass = keyPassProperty.get() //"android"
         val command =
-            "apksigner sign --ks /Users/liuwenjing/.android/debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android ${apkUnsignedFile.absolutePath}"
+            "apksigner sign --ks ${keystore} --ks-key-alias ${keyAlias} --ks-pass pass:${keyStorePass} --key-pass pass:${keyPass}  ${apkUnsignedFile.absolutePath}"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
         val okValue = "apk signed is ok !"
         AppProtectRuntimeUtils.printRuntimeResult(error, okValue)

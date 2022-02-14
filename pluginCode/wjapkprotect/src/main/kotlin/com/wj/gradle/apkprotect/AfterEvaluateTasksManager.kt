@@ -11,11 +11,11 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
+import java.util.*
 
 /**
  * 处理项目配置之后的Task
@@ -152,7 +152,13 @@ open class AfterEvaluateTasksManager {
                     provider: TaskProvider<Task>,
                     producerProvider: TaskProvider<Task>?
                 ) {
-                    initApkAlignAndSignedTask(provider, producerProvider, project, variantName,android)
+                    initApkAlignAndSignedTask(
+                        provider,
+                        producerProvider,
+                        project,
+                        variantName,
+                        android
+                    )
                 }
             })
         return builder.builder()
@@ -259,7 +265,19 @@ open class AfterEvaluateTasksManager {
         val alignAndSignTask = provider.get() as ApkAlignAndSignedIncrementalTask
         val signingConfigs = android.signingConfigs
         val defaultSigning = android.defaultConfig.signingConfig
-        SystemPrint.outPrintln(defaultSigning.toString())
+        signingConfigs.forEach {
+            //huaweiDebug
+            val upperName = "${it.name.substring(0, 1).toUpperCase(Locale.getDefault())}${
+                it.name.substring(1, it.name.length)
+            }"
+            if (variantName.contains(upperName)) {
+                // SystemPrint.outPrintln(it.name + " , " + it.storeFile?.absolutePath)
+                alignAndSignTask.keystoreProperty.set(it.storeFile?.absolutePath)
+                alignAndSignTask.keyAliasProperty.set(it.keyAlias)
+                alignAndSignTask.keyPassProperty.set(it.keyPassword)
+                alignAndSignTask.storePassProperty.set(it.storePassword)
+            }
+        }
         // signingConfigs
         alignAndSignTask.apkUnsignedDirectory.set(
             AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
