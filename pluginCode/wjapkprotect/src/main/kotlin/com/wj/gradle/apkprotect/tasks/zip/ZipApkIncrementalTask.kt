@@ -37,7 +37,6 @@ abstract class ZipApkIncrementalTask : NewIncrementalWithoutOutputsTask() {
     //@get:Incremental
     abstract val zipApkDirectory: DirectoryProperty
 
-
     override fun doTaskAction(inputChanges: InputChanges) {
 
         val workQueue = workerExecutor.noIsolation()

@@ -156,16 +156,21 @@ open class AfterEvaluateTasksManager {
             return
         }
         val unzipTask = producerProvider.get() as UnzipApkIncrementalTask
-        val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
         //apkDirectory replace by from [packageDebug] at 2022-02-13
         //unzipTask.setConfigFromExtensionAfterEvaluate()
-        val defaultApkOutput = packageTask.outputDirectory.get().asFile
+       // val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
+        //  val defaultApkOutput = packageTask.outputDirectory.get().asFile
         unzipTask.unzipDirectory.set(
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
                 project, variantName
             )
         )
-        unzipTask.apkDirectory.set(defaultApkOutput)
+        unzipTask.apkDirectory.set(
+            AppProtectDirectoryUtils.getDefaultApkOutput(
+                project,
+                variantName
+            )
+        )
         //生产-消费的Task
         encodeTask.dexDirectory.set((producerProvider as TaskProvider<UnzipApkIncrementalTask>).flatMap {
             it.unzipDirectory

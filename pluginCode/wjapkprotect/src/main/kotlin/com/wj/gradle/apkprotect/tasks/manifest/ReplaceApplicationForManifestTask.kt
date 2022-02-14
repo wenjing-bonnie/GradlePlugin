@@ -25,23 +25,22 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
         const val SHELL_APPLICATION_NAME = "com.wj.appprotect.shell.AppProtectShellApplication"
     }
 
-    val attributeName = "{http://schemas.android.com/apk/res/android}name"
-
     @get:InputFile
     @get:Incremental
     abstract val mergedManifestFile: RegularFileProperty
-
 
     /**
      * 解密壳的application的名字
      */
     abstract val shellApplicationName: Property<String>
 
-    var originalApplicationName = ""
-
+    private val attributeName = "{http://schemas.android.com/apk/res/android}name"
+    /**
+     * APP的原Application
+     */
+    private var originalApplicationName = ""
 
     override fun doTaskAction(inputChanges: InputChanges) {
-
         val manifestFile = mergedManifestFile.get().asFile
         if (!manifestFile.exists()) {
             return
@@ -90,7 +89,6 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
         return null
     }
 
-
     /**
      * 替换application
      */
@@ -100,6 +98,9 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
         manifestFile.writeText(result, Charsets.UTF_8)
     }
 
+    /**
+     * 判断是不是要找的那个node
+     */
     private fun isRightNode(node: Any?, name: String): Boolean {
         return node is Node && node.name().equals(name)
     }
