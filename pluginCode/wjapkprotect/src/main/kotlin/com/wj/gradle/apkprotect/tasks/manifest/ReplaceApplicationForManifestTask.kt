@@ -77,13 +77,13 @@ abstract class ReplaceApplicationForManifestTask : NewIncrementalWithoutOutputsT
                     originalApplicationName = name as String
                     //替换为壳的Application
                     attributes.replace(attr, shellApplicationName.get())
-                    SystemPrint.outPrintln(TAG, "The name is replaced for ${attributes.get(attr)}")
+                    SystemPrint.outPrintln(TAG, "'${originalApplicationName}' is replaced for '${attributes.get(attr)}'")
                     return node
                 }
             }
             //如果没有该name，则增加属性
             application.attributes()["android:name"] = shellApplicationName.get()
-            SystemPrint.outPrintln(TAG, "The name is added!")
+            SystemPrint.outPrintln(TAG, "'$SHELL_APPLICATION_NAME' is added in manifest")
 
             return node
         }

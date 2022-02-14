@@ -16,6 +16,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
+import java.io.File
 
 /**
  * 处理项目配置之后的Task
@@ -216,7 +217,10 @@ open class AfterEvaluateTasksManager {
             project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
         zipTask.unzipRootDirectory.set(unzipTask.unzipDirectory.get())
         zipTask.zipApkDirectory.set(
-            AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
+            AppProtectDirectoryUtils.getDefaultApkOutput(
+                project,
+                variantName
+            )
         )
     }
 }

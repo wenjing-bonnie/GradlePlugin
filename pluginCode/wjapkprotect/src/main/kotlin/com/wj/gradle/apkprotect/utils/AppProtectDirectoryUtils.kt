@@ -2,6 +2,7 @@ package com.wj.gradle.apkprotect.utils
 
 import com.android.build.gradle.tasks.PackageApplication
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
 import java.util.regex.Pattern
@@ -57,7 +58,7 @@ object AppProtectDirectoryUtils {
     private fun getUnzipDefaultRootDirectory(project: Project, variantName: String): File {
         val defaultApkOutput = getDefaultApkOutput(project, variantName)
         val unzipPath = "${defaultApkOutput.absolutePath}/$UNZIP"
-        return createEmptyDirectory(project, unzipPath)
+        return createEmptyDirectory(unzipPath)
     }
 
     /**
@@ -73,7 +74,7 @@ object AppProtectDirectoryUtils {
      */
     fun getShellAarDefaultRootDirectory(project: Project, variantName: String): File {
         val aarPath = "${getDefaultApkOutput(project, variantName)}/${AAR}"
-        return createEmptyDirectory(project, aarPath)
+        return createEmptyDirectory(aarPath)
     }
 
     /**
@@ -133,15 +134,14 @@ object AppProtectDirectoryUtils {
     /**
      * 创建一个空的文件夹
      */
-    private fun createEmptyDirectory(project: Project, path: String): File {
-        val directory = project.file(path)
-        //SystemPrint.outPrintln("default = " + unzipDirectory.path)
+    private fun createEmptyDirectory(path: String): File {
+        val directory = File(path)
         if (directory.exists()) {
-            directory.delete()
+            return directory
         } else {
             directory.mkdirs()
+            return directory
         }
-        return directory
     }
 
     /**
