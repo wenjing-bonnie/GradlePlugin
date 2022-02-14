@@ -69,7 +69,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             if (file.isDirectory || !file.name.endsWith(".apk")) {
                 continue
             }
-            SystemPrint.outPrintln(TAG, "The unzip apk is \n ${file.absolutePath}")
+            //SystemPrint.outPrintln(TAG, "The unzip apk is \n ${file.absolutePath}")
             //SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
             workqueue.submit(UnzipApkAction::class.javaObjectType) { params: UnzipApkWorkParameters ->
                 params.unzipApk.set(file)

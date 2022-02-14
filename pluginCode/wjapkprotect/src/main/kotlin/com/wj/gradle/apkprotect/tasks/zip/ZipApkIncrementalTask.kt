@@ -41,12 +41,8 @@ abstract class ZipApkIncrementalTask : NewIncrementalWithoutOutputsTask() {
 
         val workQueue = workerExecutor.noIsolation()
         val unzipDirectory = unzipRootDirectory.get().asFile
-
         val allApkDirectories = unzipDirectory.listFiles()
         for (apk in allApkDirectories) {
-            if (!AppProtectDirectoryUtils.isValidApkUnzipDirectory(apk)) {
-                continue
-            }
             workQueue.submit(ZipApkAction::class.javaObjectType) { params: ZipApkWorkParameters ->
                 params.unzipApkDirectory.set(apk)
                 params.zipApkDirectory.set(zipApkDirectory)

@@ -27,7 +27,7 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
         val workQueue = workerExecutor.noIsolation()
         val apks = apkUnsignedDirectory.get().asFile.listFiles()
         for (apk in apks) {
-            SystemPrint.outPrintln(TAG, apk.absolutePath)
+            //SystemPrint.outPrintln(TAG, apk.absolutePath)
             if (apk.isDirectory || !apk.endsWith(".apk")) {
                 continue
             }
@@ -71,7 +71,7 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
         val command =
             "apksigner sign --ks /Users/liuwenjing/.android/debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android ${apkUnsignedFile.absolutePath}"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
-        val okValue = "apk sign is ok !"
+        val okValue = "apk signed is ok !"
         AppProtectRuntimeUtils.printRuntimeResult(error, okValue)
     }
 }

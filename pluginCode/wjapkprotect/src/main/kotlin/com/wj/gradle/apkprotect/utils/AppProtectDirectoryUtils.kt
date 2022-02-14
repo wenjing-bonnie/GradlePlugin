@@ -63,8 +63,7 @@ object AppProtectDirectoryUtils {
         if (file == null) {
             return false
         }
-        return file.isDirectory &&
-                file.name.equals(UNZIP)
+        return file.isDirectory && file.name.equals(UNZIP)
     }
 
     /**
