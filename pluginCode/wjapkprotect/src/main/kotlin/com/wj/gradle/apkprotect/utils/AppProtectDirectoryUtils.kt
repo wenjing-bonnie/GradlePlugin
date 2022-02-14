@@ -2,10 +2,8 @@ package com.wj.gradle.apkprotect.utils
 
 import com.android.build.gradle.tasks.PackageApplication
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
-import java.util.regex.Pattern
 
 /**
  * 默认的路径
@@ -91,46 +89,7 @@ object AppProtectDirectoryUtils {
                 (!file.name.equals(APKS_SIGNED)) &&
                 (!file.name.equals(UNZIP))
     }
-
-    /**
-     * 获取android studio默认的debug/release的apk存放的路径
-     */
-    private fun getApkDefaultPath(project: Project, variantName: String): String {
-        val rootPath = "${project.projectDir.absolutePath}/build/outputs/apk/"
-        return if (getApkPathByVariantName(variantName).isEmpty()) {
-            rootPath
-        } else if (isDebugBuildType(variantName)) {
-            "${rootPath}${getApkPathByVariantName(variantName)}/debug"
-        } else if (isReleaseBuildType(variantName)) {
-            "${rootPath}${getApkPathByVariantName(variantName)}/release"
-        } else {
-            rootPath
-        }
-    }
-
-
-    /**
-     * 从默认的debug/release的获取productFlavors
-     * 因为在配置阶段就要调用该方法对[lazyApkDirectory]进行赋值,所以
-     */
-    private fun getApkPathByVariantName(variantName: String): String {
-        var productFlavors = ""
-        //SystemPrint.outPrintln(TAG, "variantName = " + variantName)
-        val regex = if (isDebugBuildType(variantName)) {
-            "(\\w+)Debug"
-        } else {
-            "(\\w+)Release"
-        }
-        val pattern = Pattern.compile(regex)
-        val matcher = pattern.matcher(variantName)
-        if (matcher.find()) {
-            //group(0)整个字符串;group(1)第一个括号内的内容;group(2)第二个括号内的内容
-            productFlavors = matcher.group(1)
-        }
-        //SystemPrint.outPrintln(TAG, "productFlavors = " + productFlavors)
-        return productFlavors
-    }
-
+    
     /**
      * 创建一个空的文件夹
      */
@@ -142,19 +101,5 @@ object AppProtectDirectoryUtils {
             directory.mkdirs()
             return directory
         }
-    }
-
-    /**
-     * 是debug状态
-     */
-    private fun isDebugBuildType(variantName: String): Boolean {
-        return variantName.endsWith("Debug")
-    }
-
-    /**
-     * 是release状态
-     */
-    private fun isReleaseBuildType(variantName: String): Boolean {
-        return variantName.endsWith("Release")
     }
 }
