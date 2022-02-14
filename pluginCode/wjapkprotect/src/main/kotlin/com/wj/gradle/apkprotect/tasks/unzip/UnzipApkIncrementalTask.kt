@@ -57,10 +57,14 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         //deleteAndReMkdirsUnzipDirectory()
         //2.find all apk files in lazyApkDirectory
         val apkDirectory = apkDirectory.get().asFile
-        getAllApksFromApkDirectory(apkDirectory)
-
+        //getAllApksFromApkDirectory(apkDirectory)
+        val apks = apkDirectory.listFiles()
         //3.unzip .apk to unzipDirectory
-        for (file in allApks) {
+        for (file in apks) {
+            //只对apk文件进行处理
+            if (file.isDirectory || !file.endsWith(".apk")) {
+                continue
+            }
             //SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
             workqueue.submit(UnzipApkAction::class.javaObjectType) { params: UnzipApkWorkParameters ->
                 params.unzipApk.set(file)

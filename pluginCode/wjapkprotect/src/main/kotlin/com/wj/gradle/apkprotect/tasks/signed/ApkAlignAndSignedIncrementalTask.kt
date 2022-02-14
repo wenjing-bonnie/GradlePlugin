@@ -28,6 +28,9 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
         val apks = apkUnsignedDirectory.get().asFile.listFiles()
         for (apk in apks) {
             SystemPrint.outPrintln(TAG, apk.absolutePath)
+            if (apk.isDirectory || !apk.endsWith(".apk")) {
+                continue
+            }
             // Could not serialize value of type DefaultProject，所以不使用并行Task
 //            workQueue.submit(ApkAlignAndSignedAction::class.javaObjectType) {
 //                it.apkUnsignedFile.set(apk)
@@ -55,11 +58,18 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
 
     /**
      * 签名 https://developer.android.google.cn/studio/command-line/apksigner
+     * apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk
      *
+     * 默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
+     * Keystore name: “debug.keystore”
+     * Keystore password: “android”
+     * Key alias: “androiddebugkey”
+     * Key password: “android”
      *
      */
     private fun apkSigned(apkUnsignedFile: File) {
-        val command = "apksigner sign --ks debug.keystore ${apkUnsignedFile.absolutePath}"
+        val command =
+            "apksigner sign --ks /Users/liuwenjing/.android/debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android ${apkUnsignedFile.absolutePath}"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
         val okValue = "apk sign is ok !"
         AppProtectRuntimeUtils.printRuntimeResult(error, okValue)

@@ -136,11 +136,6 @@ open class AfterEvaluateTasksManager {
     /**
      * 第四步：签名apk
      * 通过apksigner进行签名
-     * 默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
-     * Keystore name: “debug.keystore”
-     * Keystore password: “android”
-     * Key alias: “androiddebugkey”
-     * Key password: “android”
      *
      * 对齐
      * 依赖于原Gradle的任务队列
@@ -249,6 +244,9 @@ open class AfterEvaluateTasksManager {
         )
     }
 
+    /**
+     * 初始化对齐签名Task[ApkAlignAndSignedIncrementalTask]
+     */
     private fun initApkAlignAndSignedTask(
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
@@ -257,10 +255,7 @@ open class AfterEvaluateTasksManager {
     ) {
         val alignAndSignTask = provider.get() as ApkAlignAndSignedIncrementalTask
         alignAndSignTask.apkUnsignedDirectory.set(
-            AppProtectDirectoryUtils.getUnsignedApkZipRootDirectory(
-                project,
-                variantName
-            )
+            AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
         )
     }
 }
