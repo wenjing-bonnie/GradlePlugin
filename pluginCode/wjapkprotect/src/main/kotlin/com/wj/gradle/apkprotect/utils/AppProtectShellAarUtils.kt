@@ -1,19 +1,15 @@
 package com.wj.gradle.apkprotect.utils
 
-import com.android.build.gradle.AppExtension
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
-import java.lang.RuntimeException
 
 /**
  * 将壳aar转化成.dex
  */
 object AppProtectShellAarUtils {
 
-    private val TAG = javaClass.simpleName
     private val SHELL_DEX = "shell.dex"
 
     /**
@@ -52,7 +48,7 @@ object AppProtectShellAarUtils {
     /**
      * 将壳.dex拷贝到每个解压的文件夹里面
      */
-    fun copyDex2UnzipApkDirectory(dexFile: File, unzipDirectory: File, project: Project) {
+    fun copyDex2UnzipApkDirectory(dexFile: File, unzipDirectory: File) {
         val allApks = unzipDirectory.listFiles(object : FileFilter {
             override fun accept(p0: File?): Boolean {
                 //去除本身
@@ -61,10 +57,9 @@ object AppProtectShellAarUtils {
         })
         for (apk in allApks) {
             val copyCommand = "cp ${dexFile.absolutePath} ${apk.absolutePath}"
-            val runtimeUtils = AppProtectRuntimeUtils()
-            val error = runtimeUtils.runtimeExecCommand(copyCommand)
+            val error = AppProtectRuntimeUtils.runtimeExecCommand(copyCommand)
             val okValue = "Finished to 'copy' \n ${dexFile.absolutePath}\n to \n${apk.absolutePath}"
-            printRuntimeResult(error, okValue)
+            AppProtectRuntimeUtils.printRuntimeResult(error, okValue)
         }
     }
 
@@ -73,38 +68,14 @@ object AppProtectShellAarUtils {
      * 注意[在执行dx的时候，要加上绝对路径，配置dx的环境变量不起作用]
      */
     private fun dxCommand(aarDex: File, classJar: File, project: Project) {
-        val dxTools = getDxBuildToolsPath(project)
-        if (dxTools.isEmpty()) {
-            throw RuntimeException("Can not find \"dx\" , make sure the project set sdk location right")
-        }
-        val runtime = AppProtectRuntimeUtils()
-        val command = "$dxTools/dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}"
-        val error = runtime.runtimeExecCommand(command)
-        printRuntimeResult(
+        val command = "dx --dex --output=${aarDex.absolutePath} ${classJar.absolutePath}"
+        val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
+        AppProtectRuntimeUtils.printRuntimeResult(
             error,
             "Finished to 'dx' ${classJar.name} to ${aarDex.name} in\n ${aarDex.parent}"
         )
     }
 
-    /**
-     * 打印运行结果
-     */
-    private fun printRuntimeResult(error: String, okValue: String) {
-        if (error.isEmpty()) {
-            SystemPrint.outPrintln(
-                TAG,
-                okValue
-            )
-            return
-        }
-        //错误信息输出
-        SystemPrint.errorPrintln(TAG, error)
-    }
 
-    private fun getDxBuildToolsPath(project: Project): String {
-        val androidExtension =
-            project.extensions.findByType(AppExtension::class.javaObjectType)
-                ?: return ""
-        return "${androidExtension.sdkDirectory.absolutePath}/build-tools/${androidExtension.buildToolsVersion}"
-    }
+
 }

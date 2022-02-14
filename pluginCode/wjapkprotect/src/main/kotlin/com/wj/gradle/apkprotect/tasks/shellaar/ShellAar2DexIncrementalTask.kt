@@ -28,8 +28,7 @@ abstract class ShellAar2DexIncrementalTask : NewIncrementalWithoutOutputsTask() 
         //将解密.dex拷贝到所有的解压apk的文件夹下
         AppProtectShellAarUtils.copyDex2UnzipApkDirectory(
             dexFile,
-            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName),
-            project
+            AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName)
         )
     }
 }

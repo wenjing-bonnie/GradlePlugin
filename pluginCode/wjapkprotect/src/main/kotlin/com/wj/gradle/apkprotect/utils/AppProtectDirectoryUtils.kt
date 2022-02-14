@@ -33,12 +33,13 @@ object AppProtectDirectoryUtils {
     /**
      * 存放压缩之后的无签名的apk
      */
-    fun getUnsignedApkZipDirectoryFromUnzipDirectory(
+    fun getUnsignedApkZipRootDirectory(
         project: Project,
         variantName: String
     ): File {
-        val unzipDirectory = getUnzipRootDirectoryBaseExtensions(project, variantName)
-        return File(unzipDirectory, APKS_UNSIGNED)
+        val defaultApkOutput = getDefaultApkOutput(project, variantName)
+        val unzipPath = "${defaultApkOutput.absolutePath}/$APKS_UNSIGNED"
+        return createEmptyDirectory(unzipPath)
     }
 
     /**
@@ -89,7 +90,7 @@ object AppProtectDirectoryUtils {
                 (!file.name.equals(APKS_SIGNED)) &&
                 (!file.name.equals(UNZIP))
     }
-    
+
     /**
      * 创建一个空的文件夹
      */

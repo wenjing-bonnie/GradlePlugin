@@ -7,6 +7,7 @@ import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.manifest.ReplaceApplicationForManifestTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
+import com.wj.gradle.apkprotect.tasks.signed.ApkAlignAndSignedIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
@@ -134,9 +135,31 @@ open class AfterEvaluateTasksManager {
 
     /**
      * 第四步：签名apk
-     * 通过apksigner进行签名对齐,默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
+     * 通过apksigner进行签名
+     * 默认的debug模式的签名在/Users/liuwenjing/.android/debug.keystore
+     * Keystore name: “debug.keystore”
+     * Keystore password: “android”
+     * Key alias: “androiddebugkey”
+     * Key password: “android”
+     *
+     * 对齐
      * 依赖于原Gradle的任务队列
      */
+    open fun getApkAlignAndSignedTaskWrapper(project: Project, variantName: String): TaskWrapper {
+        val builder = TaskWrapper.Builder()
+            .setWillRunTaskClass(ApkAlignAndSignedIncrementalTask::class.javaObjectType)
+            .setWillRunTaskTag(ApkAlignAndSignedIncrementalTask.TAG)
+            .setAnchorTaskName(ZipApkIncrementalTask.TAG)
+            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<Task>,
+                    producerProvider: TaskProvider<Task>?
+                ) {
+                    initApkAlignAndSignedTask(provider, producerProvider, project, variantName)
+                }
+            })
+        return builder.builder()
+    }
 
 
     /**
@@ -158,7 +181,7 @@ open class AfterEvaluateTasksManager {
         val unzipTask = producerProvider.get() as UnzipApkIncrementalTask
         //apkDirectory replace by from [packageDebug] at 2022-02-13
         //unzipTask.setConfigFromExtensionAfterEvaluate()
-       // val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
+        // val packageTask = project.tasks.getByName(packageDebugTaskName) as PackageApplication
         //  val defaultApkOutput = packageTask.outputDirectory.get().asFile
         unzipTask.unzipDirectory.set(
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(
@@ -222,7 +245,22 @@ open class AfterEvaluateTasksManager {
             project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
         zipTask.unzipRootDirectory.set(unzipTask.unzipDirectory.get())
         zipTask.zipApkDirectory.set(
-            AppProtectDirectoryUtils.getDefaultApkOutput(
+            AppProtectDirectoryUtils.getUnsignedApkZipRootDirectory(
+                project,
+                variantName
+            )
+        )
+    }
+
+    private fun initApkAlignAndSignedTask(
+        provider: TaskProvider<Task>,
+        producerProvider: TaskProvider<Task>?,
+        project: Project,
+        variantName: String
+    ) {
+        val alignAndSignTask = provider.get() as ApkAlignAndSignedIncrementalTask
+        alignAndSignTask.apkUnsignedDirectory.set(
+            AppProtectDirectoryUtils.getUnsignedApkZipRootDirectory(
                 project,
                 variantName
             )
