@@ -28,7 +28,7 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
         val apks = apkUnsignedDirectory.get().asFile.listFiles()
         for (apk in apks) {
             //SystemPrint.outPrintln(TAG, apk.absolutePath)
-            if (apk.isDirectory || !apk.endsWith(".apk")) {
+            if (apk.isDirectory || !apk.name.endsWith(".apk")) {
                 continue
             }
             // Could not serialize value of type DefaultProject，所以不使用并行Task
