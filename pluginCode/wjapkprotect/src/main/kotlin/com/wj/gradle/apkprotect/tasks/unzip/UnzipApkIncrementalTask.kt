@@ -70,11 +70,12 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     }
 
     /**
-     * 获取[ //build/outputs/apk/huawei/debug]目录下所有变体下的apk
+     * 获取[build/outputs/apk/huawei/debug]目录下的apk
      */
     private fun getAllApksFromApkDirectory(apkDirectory: File) {
         //  variantName
-        if (!apkDirectory.exists() || apkDirectory.isFile) {
+        if (!apkDirectory.exists() || apkDirectory.isFile
+        ) {
             throw IllegalArgumentException("The apk directory is not exist !")
         }
         val files = apkDirectory.listFiles()
@@ -82,10 +83,9 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
             return
         }
         for (file in files) {
-            if (file.isDirectory) {
-                getAllApksFromApkDirectory(file)
-            } else if (file.isFile && file.name.endsWith(".apk")) {
+            if (file.isFile && file.name.endsWith(".apk")) {
                 allApks.add(file)
+                continue
             }
         }
     }

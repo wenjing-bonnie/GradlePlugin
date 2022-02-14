@@ -39,21 +39,25 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
     }
 
     /**
-     * 对齐
+     * 对齐 https://developer.android.google.cn/studio/command-line/zipalign.html
      * zipalign 是对zip包对齐的工具,使APK包内未压缩的数据有序排列对齐,从而减少APP运行时内存消耗
      * zipalign可以在V1签名后执行, 但zipalign不能在V2签名后执行,只能在V2签名之前执行！！！
      * //zipalign -p -f -v 4 infile.apk outfile.apk
      * //如需确认 existing.apk 的对齐方式，请运行以下命令：
      * //zipalign -c -v 4 existing.apk
-     * https://developer.android.google.cn/studio/command-line/zipalign.html
      */
-    private fun zipAlign(apkUnsignedFile:File) {
+    private fun zipAlign(apkUnsignedFile: File) {
         val command = "zipalign -c -v 4 ${apkUnsignedFile.absolutePath}"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
         val okValue = "zip align is ok !"
         AppProtectRuntimeUtils.printRuntimeResult(error, okValue)
     }
 
+    /**
+     * 签名 https://developer.android.google.cn/studio/command-line/apksigner
+     *
+     *
+     */
     private fun apkSigned(apkUnsignedFile: File) {
         val command = "apksigner sign --ks debug.keystore ${apkUnsignedFile.absolutePath}"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)

@@ -184,7 +184,7 @@ object ZipAndUnZipApkUtils {
     }
 
     /**
-     * 创建文件
+     * 创建文件,若存在，需要删除后重新创建
      */
     private fun createFile(
         filePath: String,
@@ -194,9 +194,10 @@ object ZipAndUnZipApkUtils {
         if (!parentFile.exists()) {
             parentFile.mkdirs()
         }
-        if (!file.exists()) {
-            file.createNewFile()
+        if (file.exists()) {
+            file.delete()
         }
+        file.createNewFile()
         return file
     }
 

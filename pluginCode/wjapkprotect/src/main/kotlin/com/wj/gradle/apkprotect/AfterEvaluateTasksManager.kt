@@ -245,10 +245,7 @@ open class AfterEvaluateTasksManager {
             project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
         zipTask.unzipRootDirectory.set(unzipTask.unzipDirectory.get())
         zipTask.zipApkDirectory.set(
-            AppProtectDirectoryUtils.getUnsignedApkZipRootDirectory(
-                project,
-                variantName
-            )
+            AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
         )
     }
 
