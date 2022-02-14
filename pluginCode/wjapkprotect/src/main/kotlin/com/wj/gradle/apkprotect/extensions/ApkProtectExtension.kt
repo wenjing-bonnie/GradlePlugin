@@ -20,12 +20,14 @@ abstract class ApkProtectExtension {
      * 需要加固的apk存放的路径
      */
     @get:InputDirectory
+    @Deprecated("replace from packageDebug's outputDirectory")
     abstract val apkDirectory: DirectoryProperty
 
     /**
      * 解压之后的apk存放的路径
      */
     @get:InputDirectory
+    @Deprecated("replace from apk output/unzip")
     abstract val unzipDirectory: DirectoryProperty
 
     /**

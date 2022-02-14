@@ -10,8 +10,6 @@ import java.io.File
  * 放到build目录下有个好处就是在rebuild的时候，可以删除重新生成
  */
 object AppProtectDirectoryUtils {
-    private val APKS_UNSIGNED = "apks-unsigned"
-    private val APKS_SIGNED = "apks-signed"
     private val AAR = "aar"
     private val UNZIP = "unzip"
 
@@ -30,25 +28,6 @@ object AppProtectDirectoryUtils {
         return extension.unzipDirectory.get().asFile
     }
 
-    /**
-     * 存放压缩之后的无签名的apk
-     */
-    fun getUnsignedApkZipRootDirectory(
-        project: Project,
-        variantName: String
-    ): File {
-        val defaultApkOutput = getDefaultApkOutput(project, variantName)
-        val unzipPath = "${defaultApkOutput.absolutePath}/$APKS_UNSIGNED"
-        return createEmptyDirectory(unzipPath)
-    }
-
-    /**
-     * 存放压缩之后的签名的apk
-     */
-    fun getSignedApkZipDirectoryFromUnzipDirectory(project: Project, variantName: String): File {
-        val unzipDirectory = getUnzipRootDirectoryBaseExtensions(project, variantName)
-        return File(unzipDirectory, APKS_SIGNED)
-    }
 
     /**
      * 默认的解压之后的apk存放的路径.
@@ -85,9 +64,7 @@ object AppProtectDirectoryUtils {
             return false
         }
         return file.isDirectory &&
-                (!file.name.equals(AAR)) &&
-                (!file.name.equals(APKS_UNSIGNED)) &&
-                (!file.name.equals(APKS_SIGNED))
+                file.name.equals(UNZIP)
     }
 
     /**
@@ -95,11 +72,11 @@ object AppProtectDirectoryUtils {
      */
     private fun createEmptyDirectory(path: String): File {
         val directory = File(path)
-        if (directory.exists()) {
-            return directory
+        return if (directory.exists()) {
+            directory
         } else {
             directory.mkdirs()
-            return directory
+            directory
         }
     }
 }

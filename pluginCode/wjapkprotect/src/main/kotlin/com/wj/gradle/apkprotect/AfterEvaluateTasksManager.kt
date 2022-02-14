@@ -1,9 +1,7 @@
 package com.wj.gradle.apkprotect
 
-import com.android.build.gradle.tasks.PackageApplication
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
-import com.wj.gradle.apkprotect.tasks.codedex.DecodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
 import com.wj.gradle.apkprotect.tasks.manifest.ReplaceApplicationForManifestTask
 import com.wj.gradle.apkprotect.tasks.shellaar.ShellAar2DexIncrementalTask
@@ -12,12 +10,10 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
-import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
-import java.io.File
 
 /**
  * 处理项目配置之后的Task

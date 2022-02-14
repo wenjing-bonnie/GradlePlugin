@@ -8,6 +8,7 @@ import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 import java.io.File
@@ -33,6 +34,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     //No value has been specified for property 'apkDirectory'.
     @get:Incremental
     @get:InputDirectory
+    @get:SkipWhenEmpty
     abstract val apkDirectory: DirectoryProperty
 
     /**
@@ -59,12 +61,15 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
         val apkDirectory = apkDirectory.get().asFile
         //getAllApksFromApkDirectory(apkDirectory)
         val apks = apkDirectory.listFiles()
+       // SystemPrint.outPrintln(TAG, "" + apkDirectory.absolutePath)
         //3.unzip .apk to unzipDirectory
         for (file in apks) {
+            //SystemPrint.outPrintln(TAG, "" + file.absolutePath)
             //只对apk文件进行处理
-            if (file.isDirectory || !file.endsWith(".apk")) {
+            if (file.isDirectory || !file.name.endsWith(".apk")) {
                 continue
             }
+            SystemPrint.outPrintln(TAG, "The unzip apk is \n ${file.absolutePath}")
             //SystemPrint.outPrintln(TAG, "The apks path is \n" + file.path)
             workqueue.submit(UnzipApkAction::class.javaObjectType) { params: UnzipApkWorkParameters ->
                 params.unzipApk.set(file)
@@ -76,6 +81,7 @@ abstract class UnzipApkIncrementalTask : NewIncrementalTask() {
     /**
      * 获取[build/outputs/apk/huawei/debug]目录下的apk
      */
+    @Deprecated("replace from packageDebug's outputDirectory")
     private fun getAllApksFromApkDirectory(apkDirectory: File) {
         //  variantName
         if (!apkDirectory.exists() || apkDirectory.isFile

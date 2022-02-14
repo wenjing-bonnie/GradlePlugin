@@ -12,9 +12,10 @@ import java.io.File
 /**
  * 对apk里面解压之后的所有.dex进行解密
  */
+@Deprecated("Only use to test encode task")
 abstract class DecodeDexIncrementalTask : CodeDexTemplateIncrementalTask() {
 
-    companion object{
+    companion object {
         val TAG: String
             get() = "DecodeDexIncrementalTask"
     }
