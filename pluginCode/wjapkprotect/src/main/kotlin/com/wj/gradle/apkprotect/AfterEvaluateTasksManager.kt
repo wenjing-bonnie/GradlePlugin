@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect
 
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.tasks.ProcessMultiApkApplicationManifest
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.apkprotect.tasks.codedex.EncodeDexIncrementalTask
@@ -10,6 +11,7 @@ import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
 import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -136,7 +138,11 @@ open class AfterEvaluateTasksManager {
      * 对齐
      * 依赖于原Gradle的任务队列
      */
-    open fun getApkAlignAndSignedTaskWrapper(project: Project, variantName: String): TaskWrapper {
+    open fun getApkAlignAndSignedTaskWrapper(
+        project: Project,
+        variantName: String,
+        android: AppExtension
+    ): TaskWrapper {
         val builder = TaskWrapper.Builder()
             .setWillRunTaskClass(ApkAlignAndSignedIncrementalTask::class.javaObjectType)
             .setWillRunTaskTag(ApkAlignAndSignedIncrementalTask.TAG)
@@ -146,7 +152,7 @@ open class AfterEvaluateTasksManager {
                     provider: TaskProvider<Task>,
                     producerProvider: TaskProvider<Task>?
                 ) {
-                    initApkAlignAndSignedTask(provider, producerProvider, project, variantName)
+                    initApkAlignAndSignedTask(provider, producerProvider, project, variantName,android)
                 }
             })
         return builder.builder()
@@ -247,9 +253,14 @@ open class AfterEvaluateTasksManager {
         provider: TaskProvider<Task>,
         producerProvider: TaskProvider<Task>?,
         project: Project,
-        variantName: String
+        variantName: String,
+        android: AppExtension
     ) {
         val alignAndSignTask = provider.get() as ApkAlignAndSignedIncrementalTask
+        val signingConfigs = android.signingConfigs
+        val defaultSigning = android.defaultConfig.signingConfig
+        SystemPrint.outPrintln(defaultSigning.toString())
+        // signingConfigs
         alignAndSignTask.apkUnsignedDirectory.set(
             AppProtectDirectoryUtils.getDefaultApkOutput(project, variantName)
         )

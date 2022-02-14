@@ -45,7 +45,7 @@ open class ApkProtectProject : WjVariantBaseProject() {
         tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper(project, getVariantName()))
         tasks.add(afterManager.getShellAar2DexTaskWrapper(project))
         tasks.add(afterManager.getZipIncrementalTaskWrapper(project, getVariantName()))
-        tasks.add(afterManager.getApkAlignAndSignedTaskWrapper(project, getVariantName()))
+        tasks.add(afterManager.getApkAlignAndSignedTaskWrapper(project, getVariantName(),getAndroidExtension()))
         return tasks
     }
 
