@@ -52,6 +52,8 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private lateinit var analyticsService: Provider<AnalyticsService>
 
+    private lateinit var androidExtension:AppExtension
+
     /**
      * TODO 暂定该方法不可复写
      */
@@ -120,6 +122,13 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     }
 
     /**
+     * 获取android{}
+     */
+    open fun getAndroidExtension():AppExtension{
+        return androidExtension
+    }
+
+    /**
      * 获取注册的extension
      */
     open fun <T> getCreatedExtension(project: Project, clss: Class<T>): T? {
@@ -135,11 +144,11 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * 所以这里将传入project，在task中取得配置的内容
      */
     private fun addTransformTaskByExtension(project: Project) {
-        val extension = project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
+        androidExtension = project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
         val transforms = getRegisterTransformTasks(project)
         //循环取出Transform添加到project中
         transforms.forEach {
-            extension.registerTransform(it)
+            androidExtension.registerTransform(it)
         }
     }
 

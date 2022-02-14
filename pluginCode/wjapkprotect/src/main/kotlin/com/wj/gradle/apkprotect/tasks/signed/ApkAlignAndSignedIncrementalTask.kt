@@ -65,7 +65,7 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
      * Keystore password: “android”
      * Key alias: “androiddebugkey”
      * Key password: “android”
-     *
+     * TODO 这里需要优化下这里的路径和密码
      */
     private fun apkSigned(apkUnsignedFile: File) {
         val command =
