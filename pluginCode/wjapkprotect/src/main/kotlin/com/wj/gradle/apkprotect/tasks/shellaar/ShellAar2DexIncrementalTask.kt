@@ -31,10 +31,5 @@ abstract class ShellAar2DexIncrementalTask : NewIncrementalWithoutOutputsTask() 
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName),
             project
         )
-        SystemPrint.outPrintln(
-            TAG,
-            "" + AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName)
-                .listFiles().size
-        )
     }
 }
