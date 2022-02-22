@@ -115,7 +115,7 @@ public class AppProtectShellApplication extends Application {
         Log.d(TAG, apkFile.getAbsolutePath());
         String descDirPath = context.getCacheDir() + "/unzip";
         String unzipFilesPath = encodeDexsUtils.unZipApk(apkFile, descDirPath);
-        LogUtils.logV("unzipFilesPath = \n" + unzipFilesPath);
+        //LogUtils.logV("unzipFilesPath = \n" + unzipFilesPath);
         return unzipFilesPath;
     }
 
@@ -141,9 +141,13 @@ public class AppProtectShellApplication extends Application {
         }
         for (File dex : dexFiles) {
             AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
-            aesFileAlgorithm.decrypt(dex);
-            LogUtils.logV("dex = \n" + dex.getName());
+            aesFileAlgorithm.decrypt(dex, getDecryptPath());
+            //LogUtils.logV("dex = \n" + dex.getName());
         }
         return dexFiles;
+    }
+
+    private String getDecryptPath() {
+        return getCacheDir() + "/decrypt";
     }
 }

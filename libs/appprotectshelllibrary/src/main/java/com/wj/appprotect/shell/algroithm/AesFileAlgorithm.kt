@@ -1,5 +1,6 @@
 package com.wj.appprotect.shell.algroithm
 
+import com.wj.appprotect.shell.LogUtils
 import java.io.*
 import javax.crypto.Cipher
 import javax.crypto.CipherInputStream
@@ -59,13 +60,16 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
      * 解密
      * @return 返回解密之后的文件
      */
-    open fun decrypt(encodeFile: File): File? {
+    open fun decrypt(encodeFile: File, decryptPath: String): File? {
         var inputStream: FileInputStream? = null
         var outputStream: FileOutputStream? = null
-        val decryptFile = File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
+        val decryptFile = File(decryptPath, encodeFile.name)
+        //  File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
+        // LogUtils.logV("encodeFile = " + encodeFile + " \n" + getFileSuffix(encodeFile.path))
+        // LogUtils.logV("decryptFile = " + decryptFile)
 
         try {
-           // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
+            // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
             inputStream = FileInputStream(encodeFile)
             outputStream = FileOutputStream(decryptFile)
 
@@ -127,18 +131,6 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
      */
     private fun getFileSuffix(sourceFilePath: String): String {
         // suffix
-        return sourceFilePath.substring(sourceFilePath.lastIndexOf(".") + 1)
+        return sourceFilePath.substring(sourceFilePath.lastIndexOf("."))
     }
-
-    /**
-     * test code
-     */
-    fun aesFile() {
-        val aes = AesFileAlgorithm()
-        val path =
-            "/Users/j1/Documents/android/code/GradlePlugin/pluginCode/wjapkprotect/src/main/kotlin/com/wj/gradle/apkprotect/ApkProtectProject.kt"
-        val encodeFile = aes.encrypt(File(path)) ?: return
-        val decodeFile = aes.decrypt(encodeFile)
-    }
-
 }
