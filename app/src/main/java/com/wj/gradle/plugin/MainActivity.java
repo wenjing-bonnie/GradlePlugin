@@ -2,6 +2,7 @@ package com.wj.gradle.plugin;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.wj.appprotect.shell.LogUtils;
 
@@ -13,9 +14,7 @@ public class MainActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LogUtils.logV(getApplication().toString());
-        LogUtils.logV(getApplicationInfo().className);
-        LogUtils.logV(getApplicationInfo().name);
+        Log.d("",getApplication().toString());
         String info = null;
         //LogUtils.logV("" + info.toString());
     }

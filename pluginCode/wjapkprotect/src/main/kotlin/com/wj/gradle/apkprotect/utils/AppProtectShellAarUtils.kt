@@ -10,7 +10,10 @@ import java.io.FilenameFilter
  * 将壳aar转化成.dex
  */
 object AppProtectShellAarUtils {
-    val SHELL_DEX = "shell.dex"
+    /**
+     * 必须命名为classes,否则会找不到代理Application
+     */
+    val SHELL_DEX = "classes.dex"
 
     /**
      * 将aar转化成dex文件，默认的存放到build/protect/aar

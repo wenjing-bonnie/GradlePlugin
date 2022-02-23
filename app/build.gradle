@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    // id 'kotlin-android-extensions'
     //验证Android 12 的适配
     //TODO 暂时隐藏该插件 2021/11/12
     //id 'com.mob.sdk'
@@ -12,15 +13,13 @@ plugins {
     //gradle plugin高级进阶
     //id 'com.wj.seniorapplication'
     //apk加固插件
-    id 'com.wj.apkprotect'
+//    id 'com.wj.apkprotect'
 }
 
 
-apkProtectExtension {
-//    apkDirectory  = file("build/")
-//    unzipDirectory = file("build/")
-    shellAarFile = file("${rootDir.absolutePath}/libs/appprotectshelllibrary/build/outputs/aar/appprotectshelllibrary-debug.aar")
-}
+//apkProtectExtension {
+//    shellAarFile = file("${rootDir.absolutePath}/libs/appprotectshelllibrary/build/outputs/aar/appprotectshelllibrary-debug.aar")
+//}
 
 /**com.wj.manifest中配置的扩展属性*/
 //TODO 暂时隐藏该插件 2022/1/30
@@ -77,8 +76,8 @@ dependencies {
     //用于生成Generated API
     annotationProcessor "com.github.bumptech.glide:compiler:4.11.0"
     //leak canary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
-    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    //debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
+    // implementation "com.squareup.retrofit2:retrofit:2.4.0"
 }
 
 //TODO 暂时隐藏该插件 2022/02/05

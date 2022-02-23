@@ -14,7 +14,7 @@ abstract class EncodeDexAction : WorkAction<EncodeDexWorkParameters> {
         val aesAlgorithm = AesFileAlgorithm()
         //1.加密
         val encodeFile = File(dexFile.parentFile, "$PRE${dexFile.name}")
-        //aesAlgorithm.encrypt(dexFile, encodeFile)
+        aesAlgorithm.encrypt(dexFile, encodeFile)
         dexFile.delete()
         //3.rename
         //encodeFile.renameTo(dexFile)

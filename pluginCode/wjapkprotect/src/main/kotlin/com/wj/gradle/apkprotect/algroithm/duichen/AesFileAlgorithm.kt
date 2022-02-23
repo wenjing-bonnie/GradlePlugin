@@ -32,6 +32,8 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
             inputStream = FileInputStream(sourceFile)
             outputStream = FileOutputStream(encryptFile)
 
+           // val
+
             val cipherInputStream =
                 CipherInputStream(inputStream, getAesCipher(Cipher.ENCRYPT_MODE))
             val cache = ByteArray(1024)
