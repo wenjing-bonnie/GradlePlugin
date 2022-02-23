@@ -17,6 +17,6 @@ public class MainActivity extends Activity {
         LogUtils.logV(getApplicationInfo().className);
         LogUtils.logV(getApplicationInfo().name);
         String info = null;
-        LogUtils.logV("" + info.toString());
+        //LogUtils.logV("" + info.toString());
     }
 }

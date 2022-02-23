@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect.utils
 
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
 import java.io.File
 import java.io.FileFilter
@@ -9,8 +10,7 @@ import java.io.FilenameFilter
  * 将壳aar转化成.dex
  */
 object AppProtectShellAarUtils {
-
-    private val SHELL_DEX = "shell.dex"
+    val SHELL_DEX = "shell.dex"
 
     /**
      * 将aar转化成dex文件，默认的存放到build/protect/aar
@@ -38,6 +38,11 @@ object AppProtectShellAarUtils {
             throw IllegalArgumentException("The aar is invalid")
         }
         val classJar = classJars[0]
+        SystemPrint.outPrintln(
+            "AppProtectShellAarUtils",
+            "classJar's time is " + classJar.lastModified()
+        )
+
         //4.将class.jar转化成class.dex,存放到解压文件的同级目录
         val aarDex = File(aarUnzipDirectory.parent, SHELL_DEX)
         //5.执行build tools的dx
@@ -49,14 +54,11 @@ object AppProtectShellAarUtils {
      * 将壳.dex拷贝到每个解压的文件夹里面
      */
     fun copyDex2UnzipApkDirectory(dexFile: File, unzipDirectory: File) {
-        val allApks = unzipDirectory.listFiles(object : FileFilter {
-            override fun accept(p0: File?): Boolean {
-                //去除本身
-                return AppProtectDirectoryUtils.isValidApkUnzipDirectory(p0)
-            }
-        })
+
+        val allApks = unzipDirectory.listFiles()
         for (apk in allApks) {
             val copyCommand = "cp ${dexFile.absolutePath} ${apk.absolutePath}"
+            SystemPrint.outPrintln(copyCommand)
             val error = AppProtectRuntimeUtils.runtimeExecCommand(copyCommand)
             val okValue = "Finished to 'copy' \n ${dexFile.absolutePath}\n to \n${apk.absolutePath}"
             AppProtectRuntimeUtils.printRuntimeResult(error, okValue)
@@ -75,7 +77,6 @@ object AppProtectShellAarUtils {
             "Finished to 'dx' ${classJar.name} to ${aarDex.name} in\n ${aarDex.parent}"
         )
     }
-
 
 
 }

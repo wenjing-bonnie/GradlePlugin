@@ -60,13 +60,18 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
      * 解密
      * @return 返回解密之后的文件
      */
-    open fun decrypt(encodeFile: File, decryptPath: String): File? {
+    open fun decrypt(encodeFile: File, decryptDirectory: File): File? {
         var inputStream: FileInputStream? = null
         var outputStream: FileOutputStream? = null
-        val decryptFile = File(decryptPath, encodeFile.name)
-        //  File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
+        if (decryptDirectory.exists()) {
+            decryptDirectory.delete()
+        } else {
+            decryptDirectory.mkdirs()
+        }
+        val decryptFile =
+            File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path), decryptDirectory)
         // LogUtils.logV("encodeFile = " + encodeFile + " \n" + getFileSuffix(encodeFile.path))
-        // LogUtils.logV("decryptFile = " + decryptFile)
+        LogUtils.logV("decryptFile = " + decryptFile)
 
         try {
             // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))

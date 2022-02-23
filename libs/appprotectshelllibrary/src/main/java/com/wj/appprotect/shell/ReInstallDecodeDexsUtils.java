@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import dalvik.system.DexFile;
+
 /**
  * created by wenjing.liu at 2022/2/6
  * 1.获取当前应用的pathclassloader
@@ -67,15 +69,18 @@ public class ReInstallDecodeDexsUtils {
             File optimizedDirectory = new File(application.getCacheDir() + "/odx");
             List<IOException> suppressedExceptions = new ArrayList();
             Object[] dexDecodeObjects = (Object[]) makePathElements.invoke(null, dexFiles, optimizedDirectory, suppressedExceptions);
+            LogUtils.logV("dexDecodeObjects = " + dexDecodeObjects.length + "\n" + dexDecodeObjects.toString());
 
             //* 3.2 获取pathList的dexElements属性  private Element[] dexElements;
             Field dexElementsField = ClassReflectUtils.findField(pathList, "dexElements");
             Object[] dexOldElements = (Object[]) dexElementsField.get(pathList);
+            LogUtils.logV("dexOldElements = " + dexOldElements.length + "\n" + dexOldElements.toString());
 
             // * 3.3 合并上面的两个数组，重新赋值到pathList的dexElements属性
             //可以从下面的两种方式得倒Element类：  Class.forName()
             //也可以这样dexOldElements.getClass().getComponentType()
             Object[] newDexElements = (Object[]) Array.newInstance(dexOldElements.getClass().getComponentType(), dexDecodeObjects.length + dexOldElements.length);
+
             System.arraycopy(dexDecodeObjects, 0, newDexElements, 0, dexDecodeObjects.length);
             System.arraycopy(dexOldElements, 0, newDexElements, dexDecodeObjects.length, dexOldElements.length);
             dexElementsField.set(pathList, newDexElements);
@@ -87,5 +92,4 @@ public class ReInstallDecodeDexsUtils {
             e.printStackTrace();
         }
     }
-
 }

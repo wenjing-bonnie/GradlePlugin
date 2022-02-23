@@ -29,7 +29,7 @@ object AppProtectRuntimeUtils {
      */
     fun runtimeExecCommand(command: String): String {
         val runtime = Runtime.getRuntime()
-        //SystemPrint.outPrintln(command)
+        SystemPrint.outPrintln("The running command is \n$command")
         val process = runtime.exec(command)
         try {
             process.waitFor()

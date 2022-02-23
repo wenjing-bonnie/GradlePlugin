@@ -2,6 +2,7 @@ package com.wj.gradle.apkprotect.tasks.codedex
 
 import com.wj.gradle.apkprotect.tasks.base.NewIncrementalWithoutOutputsTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
+import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.work.Incremental

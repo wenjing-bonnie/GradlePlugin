@@ -1,6 +1,5 @@
 package com.wj.gradle.apkprotect.algroithm.duichen
 
-import com.wj.gradle.base.utils.SystemPrint
 import java.io.*
 import javax.crypto.Cipher
 import javax.crypto.CipherInputStream
@@ -23,10 +22,10 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
      * 对文件进行 AES 加密
      * @return 返回的是加密之后的文件
      */
-    open fun encrypt(sourceFile: File): File? {
+    open fun encrypt(sourceFile: File, encryptFile: File): File? {
         var inputStream: FileInputStream? = null
         var outputStream: FileOutputStream? = null
-        val encryptFile = File.createTempFile(sourceFile.name, getFileSuffix(sourceFile.path))
+        //val encryptFile = File.createTempFile(sourceFile.name, getFileSuffix(sourceFile.path),sourceFile.parentFile)
 
         //新建临时加密文件
         try {
@@ -60,10 +59,10 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
      * 解密
      * @return 返回解密之后的文件
      */
-    open fun decrypt(encodeFile: File): File? {
+    open fun decrypt(encodeFile: File, decryptFile: File): File? {
         var inputStream: FileInputStream? = null
         var outputStream: FileOutputStream? = null
-        val decryptFile = File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
+        //val decryptFile = File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path))
 
         try {
             // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
@@ -129,17 +128,6 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
     private fun getFileSuffix(sourceFilePath: String): String {
         // suffix
         return sourceFilePath.substring(sourceFilePath.lastIndexOf("."))
-    }
-
-    /**
-     * test code
-     */
-    fun aesFile() {
-        val aes = AesFileAlgorithm()
-        val path =
-            "/Users/j1/Documents/android/code/GradlePlugin/pluginCode/wjapkprotect/src/main/kotlin/com/wj/gradle/apkprotect/ApkProtectProject.kt"
-        val encodeFile = aes.encrypt(File(path)) ?: return
-        val decodeFile = aes.decrypt(encodeFile)
     }
 
 }

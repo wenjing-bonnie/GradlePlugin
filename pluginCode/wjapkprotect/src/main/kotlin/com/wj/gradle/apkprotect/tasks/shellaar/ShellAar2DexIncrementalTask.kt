@@ -25,7 +25,10 @@ abstract class ShellAar2DexIncrementalTask : NewIncrementalWithoutOutputsTask() 
         val shellAarFile = shellAarFileProperty.get().asFile
         //将解密.aar转化成解密.dex
         val dexFile = AppProtectShellAarUtils.jar2Dex(shellAarFile, project, variantName)
+        SystemPrint.outPrintln(TAG,"dexFile = "+dexFile)
         //将解密.dex拷贝到所有的解压apk的文件夹下
+        SystemPrint.outPrintln(TAG,"dexFile 2 = "+AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName))
+
         AppProtectShellAarUtils.copyDex2UnzipApkDirectory(
             dexFile,
             AppProtectDirectoryUtils.getUnzipRootDirectoryBaseExtensions(project, variantName)
