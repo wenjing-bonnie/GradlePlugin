@@ -5,11 +5,13 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wj.appprotect.shell.LogUtils;
+import com.wj.gradle.plugin.annotation.WjRouter;
 import com.wj.gradle.plugin.crash.CrashHandler;
 
 /**
  * create by wenjing.liu at 2022/2/9
  */
+@WjRouter(key = "/application")
 public class GradlePluginApplication extends Application {
 
     @Override

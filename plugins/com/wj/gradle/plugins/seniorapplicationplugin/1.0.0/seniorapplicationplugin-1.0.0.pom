@@ -29,5 +29,11 @@
       <version>9.2</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>com.wj.gradle.plugins</groupId>
+      <artifactId>variantbaseplugin</artifactId>
+      <version>1.0.0</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 </project>

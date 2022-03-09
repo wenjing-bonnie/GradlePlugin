@@ -4,6 +4,7 @@ import com.android.build.api.transform.DirectoryInput
 import com.android.build.api.transform.Format
 import com.android.build.api.transform.QualifiedContent
 import com.android.utils.FileUtils
+import com.wj.gradle.seniorapplication.tasks.transform.router.WjRouterAnnotationClassVisitor
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -69,7 +70,7 @@ open class AutoLogClassFileHandler(
         //3.实例化自定义的AutoLogClassVisitor
         val autoLogClassVisitor = AutoLogClassVisitor(classWriter, timeout)
         val labelClassVisitor = LabelClassVisitor(autoLogClassVisitor)
-        val annotationClassVisitor = AnnotationClassVisitor(labelClassVisitor)
+        val annotationClassVisitor = WjRouterAnnotationClassVisitor(labelClassVisitor)
         //4.注册AutoLogClassVisitor
         classReader.accept(annotationClassVisitor, ClassReader.SKIP_FRAMES)
 

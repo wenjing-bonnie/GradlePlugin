@@ -5,6 +5,7 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.wj.gradle.seniorapplication.extensions.SeniorApplicationKotlinExtension
 import com.wj.gradle.seniorapplication.tasks.transform.parallel.AutoLogWorkAction
 import com.wj.gradle.seniorapplication.tasks.transform.parallel.AutoLogWorkParameters
+import com.wj.gradle.seniorapplication.tasks.transform.router.WjRouterMap
 import com.wj.gradle.seniorapplication.utils.SystemPrint
 import org.gradle.api.Project
 import org.gradle.workers.WorkerExecutor
