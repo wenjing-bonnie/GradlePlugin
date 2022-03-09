@@ -51,12 +51,30 @@ abstract class ApkAlignAndSignedIncrementalTask : NewIncrementalWithoutOutputsTa
      * //zipalign -p -f -v 4 infile.apk outfile.apk
      * //如需确认 existing.apk 的对齐方式，请运行以下命令：
      * //zipalign -c -v 4 existing.apk
+     * TODO 还没有处理！！！！！ 2022/03/09
+     * Installation failed due to: '-124: Failed parse during installPackageLI: Targeting R+ (version 30 and above) requires the resources.arsc of installed APKs to be stored uncompressed and aligned on a 4-byte boundary'
      */
     private fun zipAlign(apkUnsignedFile: File) {
-        val command = "zipalign -c -v 4 ${apkUnsignedFile.absolutePath}"
+        val originalApk = apkUnsignedFile.name
+        val signApk = "${apkUnsignedFile.parent}/sign-${originalApk}"
+        val command =
+            "zipalign -p -f -v 4 ${apkUnsignedFile.absolutePath} $signApk"
         val error = AppProtectRuntimeUtils.runtimeExecCommand(command, project)
         val okValue = "zip align is ok !"
         AppProtectRuntimeUtils.printRuntimeResult(error, okValue)
+
+        ///确认对齐结果命令，按需使用
+        val confirmCommand = "zipalign -c -v 4 ${signApk}"
+        val confirmError = AppProtectRuntimeUtils.runtimeExecCommand(confirmCommand, project)
+        val confirmOkValue = "zip align confirmed ok !"
+        AppProtectRuntimeUtils.printRuntimeResult(confirmError, confirmOkValue)
+
+        val deleteCommand = "rm ${apkUnsignedFile.absolutePath}"
+        val deleteError = AppProtectRuntimeUtils.runtimeExecCommand(deleteCommand)
+        val deleteErrorOkValue = "delete is ok !"
+        AppProtectRuntimeUtils.printRuntimeResult(deleteError, deleteErrorOkValue)
+
+        File(signApk).renameTo(apkUnsignedFile)
     }
 
     /**

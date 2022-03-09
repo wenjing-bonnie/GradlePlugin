@@ -3,10 +3,12 @@ package com.wj.appprotect.shell;
 import android.app.Application;
 import android.content.Context;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * create by wenjing.liu at 2022/2/7
@@ -27,6 +29,11 @@ public class ReplaceApplicationUtils {
     public static Application replaceApplication(Application application, String originalApplicationName) {
 
         try {
+
+            Class<?> main = Class.forName("com.wj.gradle.plugin.MainActivity");
+            LogUtils.logV("main activity = " + main.getSimpleName());
+
+
             //1.实例化原APP的Application的对象.直接通过clazz.newInstance();+ app.attach(context);的方式
             //String originalApplicationName = getOriginalApplicationName();
             Class<?> applicationClass = Class.forName(originalApplicationName);

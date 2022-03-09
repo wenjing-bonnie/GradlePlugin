@@ -65,18 +65,17 @@ public class AesFileAlgorithm extends AbstractAesAlgorithm {
      *
      * @return 返回解密之后的文件
      */
-    public File decrypt(File encodeFile, File decryptDirectory) {
+    public File decrypt(File encodeFile, File decryptFile) {
         FileInputStream inputStream = null;
         FileOutputStream outputStream = null;
+        File decryptDirectory = new File(decryptFile.getParent());
         if (decryptDirectory.exists()) {
             decryptDirectory.delete();
         } else {
             decryptDirectory.mkdirs();
         }
-        File decryptFile = null;
         try {
-
-            decryptFile = new File(decryptDirectory,encodeFile.getName().substring(3));//File.createTempFile(encodeFile.getName(), getFileSuffix(encodeFile.getPath()), decryptDirectory);
+            // decryptFile = new File(decryptDirectory, encodeFile.getName().substring(3));//File.createTempFile(encodeFile.getName(), getFileSuffix(encodeFile.getPath()), decryptDirectory);
             // LogUtils.logV("encodeFile = " + encodeFile + " \n" + getFileSuffix(encodeFile.path))
             LogUtils.logV("decryptFile = " + decryptFile);
 

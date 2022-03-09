@@ -13,6 +13,11 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO 加固plugin需要考虑：
+ * 1:怎么给到原APP的Application:{@link #getOriginalApplicationName()}
+ * 2:加密文件的前缀:{@link #getEncryptSuffix()}
+ */
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
     private LoadApkAlreadyEncodeDexsUtils encodeDexsUtils = new LoadApkAlreadyEncodeDexsUtils();
@@ -89,6 +94,77 @@ public class AppProtectShellApplication extends Application {
         originalApplication = ReplaceApplicationUtils.replaceApplication(this, getOriginalApplicationName());
     }
 
+
+    /**
+     * 解压.apk文件
+     *
+     * @param context
+     * @return
+     */
+    private String unzipApk(Context context) {
+        File apkFile = new File(getApplicationInfo().sourceDir);
+        Log.d(TAG, apkFile.getAbsolutePath());
+
+        File descDirFile = ShellDirectoryUtils.getUnzipDirectory(context);
+        LogUtils.logV("descDirFile , " + descDirFile.getPath());
+        LogUtils.logV("unzip exist , " + descDirFile.exists());
+        if (descDirFile.exists()) {
+            boolean is = descDirFile.delete();
+            LogUtils.logV("unzip delete , " + is);
+        }
+        String unzipFilesPath = encodeDexsUtils.unZipApk(apkFile, descDirFile.getPath());
+        return unzipFilesPath;
+    }
+
+    /**
+     * 找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
+     *
+     * @param unzipApkFilesPath
+     */
+    private List<File> decodeAllDexs(String unzipApkFilesPath) {
+        File[] dexFiles = new File(unzipApkFilesPath).listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".dex");
+            }
+        });
+        if (dexFiles == null) {
+            try {
+                throw new InvalidObjectException("Invalid apk !");
+            } catch (InvalidObjectException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        List<File> dexList = new ArrayList();
+        AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
+        for (int i = 0; i < dexFiles.length; i++) {
+            File dex = dexFiles[i];
+            LogUtils.logV("123 dex = " + dex.getName());
+
+            if (dex.getName().equals("classes.dex")) {
+                // dexList.add(dex);
+            } else {
+                dexList.add(dex);
+               // dexList.add(aesFileAlgorithm.decrypt(dex, getDecryptFile(dex, unzipApkFilesPath, dexFiles.length)));
+            }
+        }
+        return dexList;
+    }
+
+    private File getDecryptFile(File dex, String unzipApkFilesPath, int length) {
+        String dexName = dex.getName();
+        String suffix = getEncryptSuffix();
+        if (!dexName.startsWith(suffix)) {
+            throw new IllegalStateException(String.format("Make sure the encrypt file suffix has changed? Now is ' %s '", suffix));
+        }
+        LogUtils.logV("suffix.length() = " + suffix.length());
+        LogUtils.logV("\".dex\".lastIndexOf(dexName) = " + dexName.lastIndexOf(".dex"));
+        // int index = length==2?1:
+        String newName = dexName.substring(suffix.length()); //String.format("%s%d.dex", dexName.substring(suffix.length(), dexName.lastIndexOf(".dex")), 1);
+        return new File(ShellDirectoryUtils.getDecryptDirectory(getBaseContext()), newName);
+    }
+
     /**
      * 获取原APP的Application的名字
      * TODO 这里需要在进行优化
@@ -106,55 +182,12 @@ public class AppProtectShellApplication extends Application {
     }
 
     /**
-     * 解压.apk文件
+     * TODO
      *
-     * @param context
      * @return
      */
-    private String unzipApk(Context context) {
-        File apkFile = new File(getApplicationInfo().sourceDir);
-        Log.d(TAG, apkFile.getAbsolutePath());
-        String descDirPath = context.getCacheDir() + "/unzip";
-        String unzipFilesPath = encodeDexsUtils.unZipApk(apkFile, descDirPath);
-        //LogUtils.logV("unzipFilesPath = \n" + unzipFilesPath);
-        return unzipFilesPath;
+    private String getEncryptSuffix() {
+        return "en_";
     }
 
-    /**
-     * 找出所有的加密的dex文件，除去壳.dex，然后对加密dex进行解密
-     *
-     * @param unzipFilesPath
-     */
-    private List<File> decodeAllDexs(String unzipFilesPath) {
-        File[] dexFiles = new File(unzipFilesPath).listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".dex");
-            }
-        });
-        if (dexFiles == null) {
-            try {
-                throw new InvalidObjectException("Invalid apk !");
-            } catch (InvalidObjectException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        List<File> dexList = new ArrayList();
-        AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
-        for (File dex : dexFiles) {
-            LogUtils.logV("dex = " + dex.getName());
-
-            if (dex.getName().equals("classes.dex")) {
-                dexList.add(dex);
-            } else {
-                dexList.add(aesFileAlgorithm.decrypt(dex, getDecryptPath(unzipFilesPath)));
-            }
-        }
-        return dexList;
-    }
-
-    private File getDecryptPath(String unzipFilesPath) {
-        return new File(unzipFilesPath + "/decrypt");
-    }
 }

@@ -1,6 +1,7 @@
 package com.wj.appprotect.shell;
 
 import android.app.Application;
+import android.os.Build;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +10,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import dalvik.system.DexFile;
 
 /**
  * created by wenjing.liu at 2022/2/6
@@ -30,6 +29,7 @@ public class ReInstallDecodeDexsUtils {
      * @param dexFiles
      */
     public static void reInstallDexes(Application application, List<File> dexFiles) {
+        print(dexFiles);
 
         //1.获取当前应用的pathclassloader
         //使用application来获取classloader。
@@ -39,7 +39,6 @@ public class ReInstallDecodeDexsUtils {
         //application.getClass().getClassLoader()就有可能获取到baselassloader，
         // 该情况出现在：在当前app没有自定义application，那么此时的application.getClass().getClassLoader()获取的就是baseclassloader
         ClassLoader classLoader = application.getClassLoader();
-        LogUtils.logV("cls = " + classLoader.toString());
         try {
             // 2.反射获取DexPathList的属性对象pathList
             //获取的是所有的dex的pathList private final DexPathList pathList;
@@ -62,19 +61,19 @@ public class ReInstallDecodeDexsUtils {
             //this.dexElements = makeDexElements(splitDexPath(dexPath), optimizedDirectory,
             //                                          suppressedExceptions, definingContext, isTrusted);
 
-            Method makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", List.class, File.class, List.class);
+            Method makePathElements = makePathElements(pathList);
             //makePathElements()为静态方法，所以传入第一个参数为null，而第二个参数就是调用的参数
             // 第一个参数：在"哪个对象"上调用该方法。若是静态方法，则传null
             // 第二个参数：方法的调用参数
-            File optimizedDirectory = new File(application.getCacheDir() + "/odx");
+            File optimizedDirectory = ShellDirectoryUtils.getOptimizedDirectory(application);
             List<IOException> suppressedExceptions = new ArrayList();
-            Object[] dexDecodeObjects = (Object[]) makePathElements.invoke(null, dexFiles, optimizedDirectory, suppressedExceptions);
-            LogUtils.logV("dexDecodeObjects = " + dexDecodeObjects.length + "\n" + dexDecodeObjects.toString());
+            Object[] dexDecodeObjects = (Object[]) makePathElements.invoke(pathList, dexFiles, optimizedDirectory, suppressedExceptions);
+            LogUtils.logV("new dexDecodeObjects = " + dexDecodeObjects.length + "\n" + dexDecodeObjects.toString());
 
             //* 3.2 获取pathList的dexElements属性  private Element[] dexElements;
             Field dexElementsField = ClassReflectUtils.findField(pathList, "dexElements");
             Object[] dexOldElements = (Object[]) dexElementsField.get(pathList);
-            LogUtils.logV("dexOldElements = " + dexOldElements.length + "\n" + dexOldElements.toString());
+            LogUtils.logV("old dexOldElements = " + dexOldElements.length + "\n" + dexOldElements.toString());
 
             // * 3.3 合并上面的两个数组，重新赋值到pathList的dexElements属性
             //可以从下面的两种方式得倒Element类：  Class.forName()
@@ -84,6 +83,7 @@ public class ReInstallDecodeDexsUtils {
             System.arraycopy(dexDecodeObjects, 0, newDexElements, 0, dexDecodeObjects.length);
             System.arraycopy(dexOldElements, 0, newDexElements, dexDecodeObjects.length, dexOldElements.length);
             dexElementsField.set(pathList, newDexElements);
+            LogUtils.logV("merged DexElements = " + newDexElements.length);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
@@ -91,5 +91,30 @@ public class ReInstallDecodeDexsUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    private static void print(List<File> dexList) {
+        for (int i = 0; i < dexList.size(); i++) {
+            LogUtils.logV("print = " + i + " , " + dexList.get(i));
+        }
+    }
+
+
+    /**
+     * 适配不同版本
+     *
+     * @param pathList
+     * @return
+     * @throws NoSuchMethodException
+     */
+    private static Method makePathElements(Object pathList) throws NoSuchMethodException {
+        Method makePathElements;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", ArrayList.class, File.class, ArrayList.class);
+        } else {
+            makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", List.class, File.class, List.class);
+        }
+        return makePathElements;
     }
 }
