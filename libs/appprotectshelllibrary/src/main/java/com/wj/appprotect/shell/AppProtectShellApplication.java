@@ -16,6 +16,11 @@ import java.util.List;
 /**
  * TODO 加固plugin需要考虑：
  * 1:怎么给到原APP的Application:{@link #getOriginalApplicationName()}
+ * 2.在ApkAlignAndSignedIncrementalTask中
+ * * Installation failed due to: '-124: Failed parse during installPackageLI: Targeting R+ (version 30 and above) requires the resources.arsc of installed APKs to be stored uncompressed and aligned on a 4-byte boundary'
+ * 3.需要设置minifyEnabled false，否则找不到Application，因为无用的类被删除了
+ * 4.AES加密获取getAesSecretKey()有问题,暂时用固定字符串代替
+ * 5.需要优化整个过程：这些内容要写到native/so文件中，下面的内容应该通过加载native或so文件来完成对应的操作
  */
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
@@ -31,7 +36,6 @@ public class AppProtectShellApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        //TODO 需要优化整个过程：这些内容要写到native/so文件中，下面的内容应该通过加载native或so文件来完成对应的操作
 
         //第一步：解压.apk文件
         String unzipFilesPath = unzipApk(base);
