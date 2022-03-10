@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * TODO 加固plugin需要考虑：
  * 1:怎么给到原APP的Application:{@link #getOriginalApplicationName()}
- * 2:加密文件的前缀:{@link #getEncryptSuffix()}
  */
 public class AppProtectShellApplication extends Application {
     private String TAG = "AppProtectShellApplication";
@@ -161,14 +160,4 @@ public class AppProtectShellApplication extends Application {
         //否则设置为"com.android.Application"
         return dexApplication;
     }
-
-    /**
-     * TODO
-     *
-     * @return
-     */
-    private String getEncryptSuffix() {
-        return "en_";
-    }
-
 }
