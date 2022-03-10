@@ -30,10 +30,6 @@ public class ReplaceApplicationUtils {
 
         try {
 
-            Class<?> main = Class.forName("com.wj.gradle.plugin.MainActivity");
-            LogUtils.logV("main activity = " + main.getSimpleName());
-
-
             //1.实例化原APP的Application的对象.直接通过clazz.newInstance();+ app.attach(context);的方式
             //String originalApplicationName = getOriginalApplicationName();
             Class<?> applicationClass = Class.forName(originalApplicationName);
