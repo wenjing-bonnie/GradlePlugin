@@ -34,7 +34,6 @@ public class AesFileAlgorithm extends AbstractAesAlgorithm {
         FileInputStream inputStream = null;
         FileOutputStream outputStream = null;
         try {
-            LogUtils.logV("decryptFile = " + decryptFile);
             inputStream = new FileInputStream(encodeFile);
             outputStream = new FileOutputStream(decryptFile);
 
