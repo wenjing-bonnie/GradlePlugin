@@ -1,5 +1,6 @@
 package com.wj.gradle.apkprotect.tasks.codedex
 
+import com.wj.gradle.apkprotect.algroithm.duichen.AesFileAlgorithm
 import com.wj.gradle.apkprotect.tasks.codedex.parallel.EncodeDexAction
 import com.wj.gradle.apkprotect.tasks.codedex.parallel.EncodeDexWorkParameters
 import com.wj.gradle.apkprotect.utils.AppProtectShellAarUtils
@@ -28,5 +29,15 @@ abstract class EncodeDexIncrementalTask : CodeDexTemplateIncrementalTask() {
             it.dexFile.set(dex)
         }
         SystemPrint.outPrintln(TAG, "The ${dex.name} finished to encode .")
+        testDecrypt();
+    }
+
+    fun testDecrypt() {
+        val path = "/Users/liuwenjing/Documents/code/GradlePlugin/app/inputs/1.txt"
+        val decrypt = "/Users/liuwenjing/Documents/code/GradlePlugin/app/inputs/1111111.txt"
+        val aesAlgorithm = AesFileAlgorithm()
+//        //1.加密
+        val encodeFile = File(path)
+        aesAlgorithm.encrypt(encodeFile, File(decrypt))
     }
 }

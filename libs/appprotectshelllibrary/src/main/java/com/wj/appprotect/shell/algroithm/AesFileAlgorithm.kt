@@ -1,10 +1,8 @@
 package com.wj.appprotect.shell.algroithm
 
-import com.wj.appprotect.shell.LogUtils
+import com.wj.appprotect.shell.algroithm.java.Base64
 import java.io.*
 import javax.crypto.Cipher
-import javax.crypto.CipherInputStream
-import javax.crypto.CipherOutputStream
 
 /**
  * Created by wenjing.liu on 2022/1/21 in J1.
@@ -19,94 +17,73 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
         return "123456"
     }
 
-    /**
-     * 对文件进行 AES 加密
-     * @return 返回的是加密之后的文件
-     */
-    open fun encrypt(sourceFile: File): File? {
-        var inputStream: FileInputStream? = null
-        var outputStream: FileOutputStream? = null
-        val encryptFile = File.createTempFile(sourceFile.name, getFileSuffix(sourceFile.path))
-
-        //新建临时加密文件
+    open fun decrypt(encodeFile: File, decryptFile: File): File? {
+        val encryptByte: ByteArray = getFileContent(encodeFile)
+        val aesCipher = getAesCipher(Cipher.DECRYPT_MODE)
         try {
-            inputStream = FileInputStream(sourceFile)
-            outputStream = FileOutputStream(encryptFile)
-
-            val cipherInputStream =
-                CipherInputStream(inputStream, getAesCipher(Cipher.ENCRYPT_MODE))
-            val cache = ByteArray(1024)
-            var lineByte: Int = cipherInputStream.read(cache)
-            while (lineByte > 0) {
-                outputStream.write(cache, 0, lineByte)
-                lineByte = cipherInputStream.read(cache)
-            }
-            cipherInputStream.close()
-
-        } catch (e: Exception) {
-
-        } finally {
-            try {
-                inputStream?.close()
-                outputStream?.close()
-            } catch (e: Exception) {
-
-            }
+            val fos = FileOutputStream(decryptFile)
+            val base64 = Base64.decode(encryptByte)
+            val decryptBytes = aesCipher.doFinal(base64)
+            fos.write(decryptBytes)
+            fos.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
-        return encryptFile
+        getFileContent(decryptFile)
+        return decryptFile
     }
 
     /**
      * 解密
      * @return 返回解密之后的文件
      */
-    open fun decrypt(encodeFile: File, decryptDirectory: File): File? {
-        var inputStream: FileInputStream? = null
-        var outputStream: FileOutputStream? = null
-        if (decryptDirectory.exists()) {
-            decryptDirectory.delete()
-        } else {
-            decryptDirectory.mkdirs()
-        }
-        val decryptFile =
-            File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path), decryptDirectory)
-        // LogUtils.logV("encodeFile = " + encodeFile + " \n" + getFileSuffix(encodeFile.path))
-        LogUtils.logV("decryptFile = " + decryptFile)
-
-        try {
-            // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
-            inputStream = FileInputStream(encodeFile)
-            outputStream = FileOutputStream(decryptFile)
-
-            val cipherOutputStream =
-                CipherOutputStream(outputStream, getAesCipher(Cipher.DECRYPT_MODE))
-            val cache = ByteArray(1024)
-            var lineByte = inputStream.read(cache)
-            while (lineByte > 0) {
-                cipherOutputStream.write(cache, 0, lineByte)
-                lineByte = inputStream.read(cache)
-            }
-            cipherOutputStream.close()
-
-        } catch (e: Exception) {
-
-        } finally {
-            try {
-                inputStream?.close()
-                outputStream?.close()
-            } catch (e: Exception) {
-            }
-
-        }
-        return decryptFile
-    }
+//    open fun decrypt(encodeFile: File, decryptDirectory: File): File? {
+//        var inputStream: FileInputStream? = null
+//        var outputStream: FileOutputStream? = null
+//        if (decryptDirectory.exists()) {
+//            decryptDirectory.delete()
+//        } else {
+//            decryptDirectory.mkdirs()
+//        }
+//        val decryptFile =
+//            File.createTempFile(encodeFile.name, getFileSuffix(encodeFile.path), decryptDirectory)
+//        // LogUtils.logV("encodeFile = " + encodeFile + " \n" + getFileSuffix(encodeFile.path))
+//        LogUtils.logV("decryptFile = " + decryptFile)
+//
+//        try {
+//            // SystemPrint.outPrintln(getFileSuffix(encodeFile.path))
+//            inputStream = FileInputStream(encodeFile)
+//            outputStream = FileOutputStream(decryptFile)
+//
+//            val cipherOutputStream =
+//                CipherOutputStream(outputStream, getAesCipher(Cipher.DECRYPT_MODE))
+//            val cache = ByteArray(1024)
+//            var lineByte = inputStream.read(cache)
+//            while (lineByte > 0) {
+//                cipherOutputStream.write(cache, 0, lineByte)
+//                lineByte = inputStream.read(cache)
+//            }
+//            cipherOutputStream.close()
+//
+//        } catch (e: Exception) {
+//
+//        } finally {
+//            try {
+//                inputStream?.close()
+//                outputStream?.close()
+//            } catch (e: Exception) {
+//            }
+//
+//        }
+//        return decryptFile
+//    }
 
     /**
      * 获取到文件内容
      */
-    open fun getFileContent(file: File?): String {
+    open fun getFileContent(file: File?): ByteArray {
         if (file == null) {
-            return ""
+            return ByteArray(0)
         }
         var bufferReader: BufferedReader? = null
         var buffer = StringBuffer()
@@ -118,7 +95,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
                 buffer.append("\n")
                 content = bufferReader.readLine()
             }
-            return buffer.toString()
+            return buffer.toString().toByteArray(Charsets.UTF_8)
         } catch (e: Exception) {
 
         } finally {
@@ -128,14 +105,7 @@ open class AesFileAlgorithm : AbstractAesAlgorithm() {
             }
 
         }
-        return buffer.toString()
+        return buffer.toString().toByteArray(Charsets.UTF_8)
     }
 
-    /**
-     * 获取到文件的后缀名
-     */
-    private fun getFileSuffix(sourceFilePath: String): String {
-        // suffix
-        return sourceFilePath.substring(sourceFilePath.lastIndexOf("."))
-    }
 }

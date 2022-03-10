@@ -33,7 +33,8 @@ abstract class AbstractAesAlgorithm {
             //1.获取一个密码器
             Cipher cipher = Cipher.getInstance(AES);
             //2.初始化密码器
-            cipher.init(opmode, getAesSecretKey());
+            cipher.init(opmode, new SecretKeySpec(getPassword().getBytes(), AES));
+            //cipher.init(opmode, getAesSecretKey());
             return cipher;
         } catch (Exception e) {
         }
@@ -55,7 +56,7 @@ abstract class AbstractAesAlgorithm {
         secureRandom.setSeed(getPassword().getBytes(CHARSET));
         kgen.init(KET_SIZE, secureRandom);
         //3.产生原始对称密钥
-        SecretKey originalKey= kgen.generateKey();
+        SecretKey originalKey = kgen.generateKey();
         //4.获取原始对称密钥字节数组
         byte[] key = originalKey.getEncoded();
         //5.根据字节数组生成AES密钥

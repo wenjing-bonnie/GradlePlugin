@@ -140,29 +140,19 @@ public class AppProtectShellApplication extends Application {
         AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
         for (int i = 0; i < dexFiles.length; i++) {
             File dex = dexFiles[i];
-            LogUtils.logV("123 dex = " + dex.getName());
-
+            LogUtils.logV("123 dex = " + dex.getPath());
             if (dex.getName().equals("classes.dex")) {
                 // dexList.add(dex);
             } else {
-                dexList.add(dex);
-               // dexList.add(aesFileAlgorithm.decrypt(dex, getDecryptFile(dex, unzipApkFilesPath, dexFiles.length)));
+                dexList.add(aesFileAlgorithm.decrypt(dex, getDecryptFile(dex)));
             }
         }
         return dexList;
     }
 
-    private File getDecryptFile(File dex, String unzipApkFilesPath, int length) {
-        String dexName = dex.getName();
-        String suffix = getEncryptSuffix();
-        if (!dexName.startsWith(suffix)) {
-            throw new IllegalStateException(String.format("Make sure the encrypt file suffix has changed? Now is ' %s '", suffix));
-        }
-        LogUtils.logV("suffix.length() = " + suffix.length());
-        LogUtils.logV("\".dex\".lastIndexOf(dexName) = " + dexName.lastIndexOf(".dex"));
-        // int index = length==2?1:
-        String newName = dexName.substring(suffix.length()); //String.format("%s%d.dex", dexName.substring(suffix.length(), dexName.lastIndexOf(".dex")), 1);
-        return new File(ShellDirectoryUtils.getDecryptDirectory(getBaseContext()), newName);
+    private File getDecryptFile(File dex) {
+        File directory = ShellDirectoryUtils.getDecryptDirectory(getBaseContext());
+        return new File(directory, dex.getName());
     }
 
     /**

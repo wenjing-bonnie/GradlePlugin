@@ -17,7 +17,6 @@ import javax.crypto.spec.SecretKeySpec
 abstract class AbstractAesAlgorithm {
     private val AES = "AES"
     private val KET_SIZE = 128
-    //private val PASSWORD = "123456"
     val CHARSET = Charsets.UTF_8
 
     abstract fun getPassword(): String;
@@ -29,7 +28,8 @@ abstract class AbstractAesAlgorithm {
         //1.获取一个密码器
         val cipher = Cipher.getInstance(AES)
         //2.初始化密码器
-        cipher.init(opmode, getAesSecretKey())
+        // cipher.init(opmode, getAesSecretKey())
+        cipher.init(opmode, SecretKeySpec(getPassword().toByteArray(), AES))
         return cipher
     }
 

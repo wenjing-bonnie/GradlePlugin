@@ -11,15 +11,21 @@ public class ShellDirectoryUtils {
 
 
     public static File getUnzipDirectory(Context context) {
-        return new File(getDecryptRootDirectory(context) + "/unzip");
+      File directory =   new File(getDecryptRootDirectory(context) + "/unzip");
+        createAndDeleteDirectory(directory);
+        return directory;
     }
 
     public static File getDecryptDirectory(Context context) {
-        return new File(getUnzipDirectory(context).getPath() + "/decrypt");
+        File directory = new File(getUnzipDirectory(context).getPath() + "/decrypt");
+        createAndDeleteDirectory(directory);
+        return directory;
     }
 
     public static File getOptimizedDirectory(Context context) {
-        return new File(getDecryptRootDirectory(context) + "/odx");
+        File directory = new File(getDecryptRootDirectory(context) + "/odx");
+        createAndDeleteDirectory(directory);
+        return directory;
     }
 
     /**
@@ -30,5 +36,13 @@ public class ShellDirectoryUtils {
      */
     private static String getDecryptRootDirectory(Context context) {
         return context.getFilesDir().getPath();
+    }
+
+    private static void createAndDeleteDirectory(File directory){
+        if (directory.exists()) {
+            directory.delete();
+        } else {
+            directory.mkdirs();
+        }
     }
 }
