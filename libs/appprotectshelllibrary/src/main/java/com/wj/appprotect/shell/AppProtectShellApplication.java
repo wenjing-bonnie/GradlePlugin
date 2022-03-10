@@ -106,12 +106,6 @@ public class AppProtectShellApplication extends Application {
         Log.d(TAG, apkFile.getAbsolutePath());
 
         File descDirFile = ShellDirectoryUtils.getUnzipDirectory(context);
-        LogUtils.logV("descDirFile , " + descDirFile.getPath());
-        LogUtils.logV("unzip exist , " + descDirFile.exists());
-        if (descDirFile.exists()) {
-            boolean is = descDirFile.delete();
-            LogUtils.logV("unzip delete , " + is);
-        }
         String unzipFilesPath = encodeDexsUtils.unZipApk(apkFile, descDirFile.getPath());
         return unzipFilesPath;
     }
@@ -140,10 +134,7 @@ public class AppProtectShellApplication extends Application {
         AesFileAlgorithm aesFileAlgorithm = new AesFileAlgorithm();
         for (int i = 0; i < dexFiles.length; i++) {
             File dex = dexFiles[i];
-            LogUtils.logV("123 dex = " + dex.getPath());
-            if (dex.getName().equals("classes.dex")) {
-                // dexList.add(dex);
-            } else {
+            if (!dex.getName().equals("classes.dex")) {
                 dexList.add(aesFileAlgorithm.decrypt(dex, getDecryptFile(dex)));
             }
         }

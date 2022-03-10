@@ -30,22 +30,6 @@ public class AesFileAlgorithm extends AbstractAesAlgorithm {
      *
      * @return 返回解密之后的文件
      */
-//    public File decrypt(File encodeFile, File decryptFile) {
-//        byte[] encryptByte = getFileContent(encodeFile);
-//        LogUtils.logV(encodeFile.getName() + " encryptByte size = " + encryptByte.length);
-//        Cipher aesCipher = getAesCipher(Cipher.DECRYPT_MODE);
-//        try {
-//            FileOutputStream fos = new FileOutputStream(decryptFile);
-//            byte[] base64 = Base64.decode(encryptByte);
-//            byte[] decryptBytes = aesCipher.doFinal(base64); //DesAlgorithm.decrypt(base64,"123456");//
-//            LogUtils.logV(encodeFile.getName() + " size = " + decryptBytes.length);
-//            fos.write(decryptBytes);
-//            fos.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return decryptFile;
-//    }
     public File decrypt(File encodeFile, File decryptFile) {
         FileInputStream inputStream = null;
         FileOutputStream outputStream = null;
@@ -70,7 +54,6 @@ public class AesFileAlgorithm extends AbstractAesAlgorithm {
                 outputStream.close();
             } catch (Exception e) {
             }
-
         }
         return decryptFile;
     }

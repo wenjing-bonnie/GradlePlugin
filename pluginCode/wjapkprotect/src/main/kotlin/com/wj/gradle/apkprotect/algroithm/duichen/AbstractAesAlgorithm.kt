@@ -38,6 +38,7 @@ abstract class AbstractAesAlgorithm {
      * 根据传入的seed构建密钥生成器
      */
     private fun getAesSecretKey(): SecretKeySpec {
+        TODO("这种方式没有验证成功,还导致我一直调试不成功")
         //1.构建密钥生成器
         val kgen: KeyGenerator = KeyGenerator.getInstance(AES)
         //2.初始化生成器

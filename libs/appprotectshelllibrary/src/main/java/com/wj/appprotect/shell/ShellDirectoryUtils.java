@@ -6,25 +6,44 @@ import java.io.File;
 
 /**
  * create by wenjing.liu at 2022/3/9
+ * <p>
+ * 所有的文件夹
  */
 public class ShellDirectoryUtils {
 
-
+    /**
+     * 解压缩文件夹
+     *
+     * @param context
+     * @return
+     */
     public static File getUnzipDirectory(Context context) {
-      File directory =   new File(getDecryptRootDirectory(context) + "/unzip");
-        createAndDeleteDirectory(directory);
+        File directory = new File(getDecryptRootDirectory(context) + "/unzip");
+        createDirectory(directory);
         return directory;
     }
 
+    /**
+     * 解密文件夹
+     *
+     * @param context
+     * @return
+     */
     public static File getDecryptDirectory(Context context) {
         File directory = new File(getUnzipDirectory(context).getPath() + "/decrypt");
-        createAndDeleteDirectory(directory);
+        createDirectory(directory);
         return directory;
     }
 
+    /**
+     * odx文件夹
+     *
+     * @param context
+     * @return
+     */
     public static File getOptimizedDirectory(Context context) {
         File directory = new File(getDecryptRootDirectory(context) + "/odx");
-        createAndDeleteDirectory(directory);
+        createDirectory(directory);
         return directory;
     }
 
@@ -38,11 +57,11 @@ public class ShellDirectoryUtils {
         return context.getFilesDir().getPath();
     }
 
-    private static void createAndDeleteDirectory(File directory){
+    private static void createDirectory(File directory) {
         if (directory.exists()) {
-            directory.delete();
-        } else {
-            directory.mkdirs();
+            return;
         }
+        directory.mkdirs();
+
     }
 }

@@ -20,11 +20,4 @@ abstract class EncodeDexAction : WorkAction<EncodeDexWorkParameters> {
         //3.rename
         //encodeFile.renameTo(dexFile)
     }
-    //Test 仅用来测试
-//    override fun execute() {
-//        val dexFile = parameters.dexFile.get().asFile
-//        val encodeFile = File(dexFile.parentFile, "$PRE${dexFile.name}")
-//        //rename
-//        dexFile.renameTo(encodeFile)
-//    }
 }
