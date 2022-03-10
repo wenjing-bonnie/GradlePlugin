@@ -10,6 +10,6 @@ abstract class DecodeDexAction : WorkAction<EncodeDexWorkParameters> {
     override fun execute() {
         val dexFile = parameters.dexFile.get().asFile
         val aesFileAlgorithm = AesFileAlgorithm()
-        aesFileAlgorithm.decrypt(dexFile, dexFile)
+       // aesFileAlgorithm.decrypt(dexFile, dexFile)
     }
 }
