@@ -4,7 +4,7 @@ import com.android.build.api.transform.Transform
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.profile.AnalyticsService
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
-import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.tasks.TaskWrapperGeneric
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.regex.Pattern
@@ -52,7 +52,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      */
     private lateinit var analyticsService: Provider<AnalyticsService>
 
-    private lateinit var androidExtension:AppExtension
+    private lateinit var androidExtension: AppExtension
 
     /**
      * TODO 暂定该方法不可复写
@@ -102,7 +102,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      *
      * 注意：虽然并不是所有的plugin都存在这种类型的Task，但仍然需要重载，如果无该类型的Task返回一个空集合即可。
      */
-    abstract fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapper>
+    abstract fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapperGeneric<out Task>>
 
     /**
      * 继承自{@ Transform}的Task必须在apply()开始的时候就要添加Task
@@ -124,7 +124,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     /**
      * 获取android{}
      */
-    open fun getAndroidExtension():AppExtension{
+    open fun getAndroidExtension(): AppExtension {
         return androidExtension
     }
 
@@ -144,7 +144,8 @@ abstract class WjVariantBaseProject : Plugin<Project> {
      * 所以这里将传入project，在task中取得配置的内容
      */
     private fun addTransformTaskByExtension(project: Project) {
-        androidExtension = project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
+        androidExtension =
+            project.extensions.findByType(AppExtension::class.javaObjectType) ?: return
         val transforms = getRegisterTransformTasks(project)
         //循环取出Transform添加到project中
         transforms.forEach {
@@ -162,7 +163,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
             val tasks = getAfterEvaluateTasks(project)
             //循环取出Task添加到project中
             tasks.forEach {
-                registerTaskAfterEvaluate(project, it)
+                registerEveryTaskAfterEvaluate(project, it)
             }
         }
     }
@@ -170,19 +171,25 @@ abstract class WjVariantBaseProject : Plugin<Project> {
     /**
      * 为每个Task注册到project中
      */
-    private fun registerTaskAfterEvaluate(project: Project, wrapper: TaskWrapper) {
+    private fun <IRunTask : Task> registerEveryTaskAfterEvaluate(
+        project: Project,
+        wrapper: TaskWrapperGeneric<IRunTask>
+    ) {
         SystemPrint.outPrintln(wrapper.toString())
         //要执行的Task，也是生产-消费Task中的消费Task,最终添加到项目依赖
         val provider =
-            project.tasks.register(wrapper.tag, wrapper.willRunTaskClass) as TaskProvider<Task>
+            project.tasks.register(
+                wrapper.willRunTaskTag,
+                wrapper.willRunTaskClass
+            )
         val dependsOnTask = project.tasks.getByPath(wrapper.anchorTaskName)
-        var producerTaskProvider: TaskProvider<Task>? = null
+        var producerTaskProvider: TaskProvider<out Task>? = null
         if (wrapper.isConsumerProducerTask()) {
             producerTaskProvider =
                 project.tasks.register(
-                    wrapper.producerTag,
+                    wrapper.producerTaskTag,
                     wrapper.producerTaskClass
-                ) as TaskProvider<Task>?
+                )
         }
 
         if (wrapper.isDependsOn) {
@@ -194,22 +201,24 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         initAndroidVariantTask(provider)
         //生产Task
         initAndroidVariantTask(producerTaskProvider)
+
         //回调返回每个Task实例
-        if (wrapper.taskRegisterListener == null) {
-            return
+        wrapper.taskRegisterListener?.let {
+            it.willRunTaskRegistered(provider, producerTaskProvider)
         }
-        wrapper.taskRegisterListener.willRunTaskRegistered(provider, producerTaskProvider)
     }
 
     /**
      * 初始化AndroidVariantTask的[AndroidVariantTask#variantName]和[AndroidVariantTask#analyticsService]
      */
-    private fun initAndroidVariantTask(provider: TaskProvider<Task>?) {
-        if (provider == null || provider.get() !is AndroidVariantTask) {
-            return
+    private fun <ITask : Task> initAndroidVariantTask(provider: TaskProvider<ITask>?) {
+        //takeIf: 返回true,返回it本身，否则返回false
+        provider?.takeIf {
+            it.get() is AndroidVariantTask
+        }?.let {
+            (provider.get() as AndroidVariantTask).variantName = variantName
+            (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
         }
-        (provider.get() as AndroidVariantTask).variantName = variantName
-        (provider.get() as AndroidVariantTask).analyticsService.set(analyticsService)
     }
 
 

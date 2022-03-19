@@ -10,7 +10,8 @@ import com.wj.gradle.apkprotect.tasks.signed.ApkAlignAndSignedIncrementalTask
 import com.wj.gradle.apkprotect.tasks.unzip.UnzipApkIncrementalTask
 import com.wj.gradle.apkprotect.tasks.zip.ZipApkIncrementalTask
 import com.wj.gradle.apkprotect.utils.AppProtectDirectoryUtils
-import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.tasks.IWillRunTaskRegisteredListener
+import com.wj.gradle.base.tasks.TaskWrapperGeneric
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
@@ -32,31 +33,32 @@ open class AfterEvaluateTasksManager {
     open fun getUnzipApkAndEncodeDexTaskWrapper(
         project: Project,
         variantName: String
-    ): TaskWrapper {
+    ): TaskWrapperGeneric<EncodeDexIncrementalTask> {
         val packageDebugTaskName = "package$variantName"
-        val unzipTaskBuilder =
-            TaskWrapper.Builder().setAnchorTaskName(packageDebugTaskName)
-                .setWillRunTaskClass(
-                    EncodeDexIncrementalTask::class.javaObjectType,
-                    UnzipApkIncrementalTask::class.javaObjectType
-                )
-                .setWillRunTaskTag(EncodeDexIncrementalTask.TAG, UnzipApkIncrementalTask.TAG)
-                .setWillRunTaskRegisterListener(object :
-                    TaskWrapper.IWillRunTaskRegisteredListener {
-                    override fun willRunTaskRegistered(
-                        provider: TaskProvider<Task>,
-                        producerProvider: TaskProvider<Task>?
-                    ) {
-                        initUnzipAndEncodeTask(
-                            provider,
-                            producerProvider,
-                            project,
-                            packageDebugTaskName,
-                            variantName
-                        )
-                    }
-                })
-        return unzipTaskBuilder.builder()
+        val unzipTask =
+            TaskWrapperGeneric(
+                EncodeDexIncrementalTask::class.javaObjectType,
+                EncodeDexIncrementalTask.TAG,
+                packageDebugTaskName
+            )
+        unzipTask.producerTaskClass = UnzipApkIncrementalTask::class.javaObjectType
+        unzipTask.producerTaskTag = UnzipApkIncrementalTask.TAG
+        unzipTask.taskRegisterListener =
+            object : IWillRunTaskRegisteredListener<EncodeDexIncrementalTask> {
+                override fun willRunTaskRegistered(
+                    provider: TaskProvider<EncodeDexIncrementalTask>,
+                    producerProvider: TaskProvider<out Task>?
+                ) {
+                    initUnzipAndEncodeTask(
+                        provider,
+                        producerProvider,
+                        project,
+                        packageDebugTaskName,
+                        variantName
+                    )
+                }
+            }
+        return unzipTask
     }
 
     /**
@@ -68,17 +70,19 @@ open class AfterEvaluateTasksManager {
     open fun getReplaceApplicationForManifestTaskWrapper(
         project: Project,
         variantName: String
-    ): TaskWrapper {
+    ): TaskWrapperGeneric<ReplaceApplicationForManifestTask> {
         val anchorTaskName = "process${variantName}Manifest"
-        val manifestTaskBuilder = TaskWrapper.Builder()
-            .setAnchorTaskName(anchorTaskName)
-            .setIsDependsOn(true)
-            .setWillRunTaskClass(ReplaceApplicationForManifestTask::class.javaObjectType)
-            .setWillRunTaskTag(ReplaceApplicationForManifestTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+        val manifestTask = TaskWrapperGeneric(
+            ReplaceApplicationForManifestTask::class.javaObjectType,
+            ReplaceApplicationForManifestTask.TAG,
+            anchorTaskName
+        )
+        manifestTask.isDependsOn = true
+        manifestTask.taskRegisterListener =
+            object : IWillRunTaskRegisteredListener<ReplaceApplicationForManifestTask> {
                 override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
+                    provider: TaskProvider<ReplaceApplicationForManifestTask>,
+                    producerProvider: TaskProvider<out Task>?
                 ) {
                     val manifestTask = provider.get() as ReplaceApplicationForManifestTask
                     val processManifestTask =
@@ -87,8 +91,8 @@ open class AfterEvaluateTasksManager {
                     manifestTask.mergedManifestFile.set(processManifestTask.mainMergedManifest)
                     manifestTask.shellApplicationName.set(ReplaceApplicationForManifestTask.SHELL_APPLICATION_NAME)
                 }
-            })
-        return manifestTaskBuilder.builder()
+            }
+        return manifestTask
     }
 
 
@@ -96,39 +100,50 @@ open class AfterEvaluateTasksManager {
      * 第三步之：生成解密dex，copy到解压之后的文件夹
      * 依赖于[EncodeDexIncrementalTask]之后执行
      */
-    fun getShellAar2DexTaskWrapper(project: Project): TaskWrapper {
-        val shellAar = TaskWrapper.Builder().setAnchorTaskName(EncodeDexIncrementalTask.TAG)
-            .setWillRunTaskClass(ShellAar2DexIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ShellAar2DexIncrementalTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+    fun getShellAar2DexTaskWrapper(project: Project): TaskWrapperGeneric<ShellAar2DexIncrementalTask> {
+
+
+        val shellAar = TaskWrapperGeneric(
+            ShellAar2DexIncrementalTask::class.javaObjectType,
+            ShellAar2DexIncrementalTask.TAG,
+            EncodeDexIncrementalTask.TAG
+        )
+        shellAar.taskRegisterListener =
+            object : IWillRunTaskRegisteredListener<ShellAar2DexIncrementalTask> {
                 override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
+                    provider: TaskProvider<ShellAar2DexIncrementalTask>,
+                    producerProvider: TaskProvider<out Task>?
                 ) {
                     initShellAar2DexIncrementalTask(provider, producerProvider, project)
                 }
-            })
-        return shellAar.builder()
+            }
+        return shellAar
     }
 
     /**
      * 第三步之：压缩.apk,生成无签名的.apk
      * 依赖于[EncodeDexIncrementalTask]之后执行
      */
-    open fun getZipIncrementalTaskWrapper(project: Project, variantName: String): TaskWrapper {
-        val builder = TaskWrapper.Builder()
-            .setWillRunTaskClass(ZipApkIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ZipApkIncrementalTask.TAG)
-            .setAnchorTaskName(ShellAar2DexIncrementalTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+    open fun getZipIncrementalTaskWrapper(
+        project: Project,
+        variantName: String
+    ): TaskWrapperGeneric<ZipApkIncrementalTask> {
+
+        val zipApkIncrementalTask = TaskWrapperGeneric(
+            ZipApkIncrementalTask::class.javaObjectType,
+            ZipApkIncrementalTask.TAG,
+            ShellAar2DexIncrementalTask.TAG
+        )
+        zipApkIncrementalTask.taskRegisterListener =
+            object : IWillRunTaskRegisteredListener<ZipApkIncrementalTask> {
                 override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
+                    provider: TaskProvider<ZipApkIncrementalTask>,
+                    producerProvider: TaskProvider<out Task>?
                 ) {
                     initZipIncrementalTask(provider, producerProvider, project, variantName)
                 }
-            })
-        return builder.builder()
+            }
+        return zipApkIncrementalTask
     }
 
     /**
@@ -142,15 +157,18 @@ open class AfterEvaluateTasksManager {
         project: Project,
         variantName: String,
         android: AppExtension
-    ): TaskWrapper {
-        val builder = TaskWrapper.Builder()
-            .setWillRunTaskClass(ApkAlignAndSignedIncrementalTask::class.javaObjectType)
-            .setWillRunTaskTag(ApkAlignAndSignedIncrementalTask.TAG)
-            .setAnchorTaskName(ZipApkIncrementalTask.TAG)
-            .setWillRunTaskRegisterListener(object : TaskWrapper.IWillRunTaskRegisteredListener {
+    ): TaskWrapperGeneric<ApkAlignAndSignedIncrementalTask> {
+
+        val apkAlignAndSignedTask = TaskWrapperGeneric(
+            ApkAlignAndSignedIncrementalTask::class.javaObjectType,
+            ApkAlignAndSignedIncrementalTask.TAG,
+            ZipApkIncrementalTask.TAG
+        )
+        apkAlignAndSignedTask.taskRegisterListener =
+            object : IWillRunTaskRegisteredListener<ApkAlignAndSignedIncrementalTask> {
                 override fun willRunTaskRegistered(
-                    provider: TaskProvider<Task>,
-                    producerProvider: TaskProvider<Task>?
+                    provider: TaskProvider<ApkAlignAndSignedIncrementalTask>,
+                    producerProvider: TaskProvider<out Task>?
                 ) {
                     initApkAlignAndSignedTask(
                         provider,
@@ -160,8 +178,9 @@ open class AfterEvaluateTasksManager {
                         android
                     )
                 }
-            })
-        return builder.builder()
+            }
+
+        return apkAlignAndSignedTask
     }
 
 
@@ -169,14 +188,14 @@ open class AfterEvaluateTasksManager {
      * 初始化解压apk和加密的Task[EncodeDexIncrementalTask]
      */
     private fun initUnzipAndEncodeTask(
-        provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?,
+        provider: TaskProvider<EncodeDexIncrementalTask>,
+        producerProvider: TaskProvider<out Task>?,
         project: Project,
         packageDebugTaskName: String,
         variantName: String
     ) {
         //消费Task
-        val encodeTask = provider.get() as EncodeDexIncrementalTask
+        val encodeTask = provider.get()
         //生产Task
         if (producerProvider == null) {
             return
@@ -207,14 +226,11 @@ open class AfterEvaluateTasksManager {
      * 初始化[ShellAar2DexIncrementalTask]
      */
     private fun initShellAar2DexIncrementalTask(
-        provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?,
+        provider: TaskProvider<ShellAar2DexIncrementalTask>,
+        producerProvider: TaskProvider<out Task>?,
         project: Project
     ) {
         val aarTask = provider.get()
-        if (aarTask !is ShellAar2DexIncrementalTask) {
-            return
-        }
         aarTask.shellAarFileProperty.set(getAarFileFromExtension(project))
     }
 
@@ -237,13 +253,13 @@ open class AfterEvaluateTasksManager {
      * 初始化压缩apk的Task[ZipApkIncrementalTask]
      */
     private fun initZipIncrementalTask(
-        provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?,
+        provider: TaskProvider<ZipApkIncrementalTask>,
+        producerProvider: TaskProvider<out Task>?,
         project: Project,
         variantName: String
     ) {
 
-        val zipTask = provider.get() as ZipApkIncrementalTask
+        val zipTask = provider.get()
         val unzipTask =
             project.tasks.getByName(UnzipApkIncrementalTask.TAG) as UnzipApkIncrementalTask
         zipTask.unzipRootDirectory.set(unzipTask.unzipDirectory.get())
@@ -256,13 +272,13 @@ open class AfterEvaluateTasksManager {
      * 初始化对齐签名Task[ApkAlignAndSignedIncrementalTask]
      */
     private fun initApkAlignAndSignedTask(
-        provider: TaskProvider<Task>,
-        producerProvider: TaskProvider<Task>?,
+        provider: TaskProvider<ApkAlignAndSignedIncrementalTask>,
+        producerProvider: TaskProvider<out Task>?,
         project: Project,
         variantName: String,
         android: AppExtension
     ) {
-        val alignAndSignTask = provider.get() as ApkAlignAndSignedIncrementalTask
+        val alignAndSignTask = provider.get()
         val signingConfigs = android.signingConfigs
         val defaultSigning = android.defaultConfig.signingConfig
         signingConfigs.forEach {

@@ -4,8 +4,10 @@ import com.android.build.api.transform.Transform
 import com.wj.gradle.apkprotect.extensions.ApkProtectExtension
 import com.wj.gradle.base.WjVariantBaseProject
 import com.wj.gradle.base.tasks.TaskWrapper
+import com.wj.gradle.base.tasks.TaskWrapperGeneric
 import com.wj.gradle.base.utils.SystemPrint
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 /**
  * Created by wenjing.liu on 2022/1/19 in J1.
@@ -33,9 +35,9 @@ open class ApkProtectProject : WjVariantBaseProject() {
     /**
      * 在项目配置完成之后添加Task
      */
-    override fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapper> {
+    override fun getAfterEvaluateTasks(project: Project): MutableList<TaskWrapperGeneric<out Task>> {
         val afterManager = AfterEvaluateTasksManager()
-        val tasks = mutableListOf<TaskWrapper>()
+        val tasks = mutableListOf<TaskWrapperGeneric<out Task>>()
         tasks.add(
             afterManager.getReplaceApplicationForManifestTaskWrapper(
                 project,
@@ -45,7 +47,13 @@ open class ApkProtectProject : WjVariantBaseProject() {
         tasks.add(afterManager.getUnzipApkAndEncodeDexTaskWrapper(project, getVariantName()))
         tasks.add(afterManager.getShellAar2DexTaskWrapper(project))
         tasks.add(afterManager.getZipIncrementalTaskWrapper(project, getVariantName()))
-        tasks.add(afterManager.getApkAlignAndSignedTaskWrapper(project, getVariantName(),getAndroidExtension()))
+        tasks.add(
+            afterManager.getApkAlignAndSignedTaskWrapper(
+                project,
+                getVariantName(),
+                getAndroidExtension()
+            )
+        )
         return tasks
     }
 

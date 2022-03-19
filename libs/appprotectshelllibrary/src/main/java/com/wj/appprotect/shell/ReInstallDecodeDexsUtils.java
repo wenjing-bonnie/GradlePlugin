@@ -93,11 +93,11 @@ public class ReInstallDecodeDexsUtils {
      */
     private static Method makePathElements(Object pathList) throws NoSuchMethodException {
         Method makePathElements;
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", ArrayList.class, File.class, ArrayList.class);
-        } else {
+ //       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+//            makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", ArrayList.class, File.class, ArrayList.class);
+//        } else {
             makePathElements = ClassReflectUtils.findMethod(pathList, "makePathElements", List.class, File.class, List.class);
-        }
+//        }
         return makePathElements;
     }
 

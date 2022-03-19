@@ -11,6 +11,7 @@ import java.lang.IllegalArgumentException
  *
  * @author wenjing.liu
  */
+@Deprecated("use TaskWrapperGeneric by generic type")
 open class TaskWrapper private constructor(
     /**获取即将加入的Task的类名,生产-消费Task中的消费Task,最终添加到项目依赖*/
     val willRunTaskClass: Class<out Task>,
@@ -25,7 +26,7 @@ open class TaskWrapper private constructor(
     /**在锚点Task之前还是之后执行Task*/
     val isDependsOn: Boolean,
     /**回调监听*/
-    val taskRegisterListener: IWillRunTaskRegisteredListener?
+    val taskRegisterListener: IWillRunTaskRegisteredListener1?
 ) {
 
     override fun toString(): String {
@@ -51,7 +52,7 @@ open class TaskWrapper private constructor(
         private var producerTaskTag: String? = null
         private var isDependsOn: Boolean = false
         private lateinit var anchorTaskName: String
-        private var taskRegisterListener: IWillRunTaskRegisteredListener? = null
+        private var taskRegisterListener: IWillRunTaskRegisteredListener1? = null
 
 //
 //        /**
@@ -121,7 +122,7 @@ open class TaskWrapper private constructor(
          * 设置监听回调
          * TODO 暂时没有想到怎么将传入的类作为返回，目前需要进行强制转化一下！！！ 2022/02/05
          */
-        fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener): Builder {
+        fun setWillRunTaskRegisterListener(listener: IWillRunTaskRegisteredListener1): Builder {
             this.taskRegisterListener = listener
             return this
         }
@@ -168,7 +169,7 @@ open class TaskWrapper private constructor(
     /**
      * 监听在Project中register之后返回provider实例
      */
-    interface IWillRunTaskRegisteredListener {
+    interface IWillRunTaskRegisteredListener1 {
         /**
          * 将注册到Project的provider返回
          * @param provider 可通过provider.get()得到Task
