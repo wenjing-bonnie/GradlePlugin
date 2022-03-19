@@ -21,32 +21,19 @@ open class TaskWrapperGeneric<IRunTask : Task>(
     var anchorTaskName: String
 ) {
 
+    /**生产Task，若有则赋值*/
+    var producerTaskClass: Class<out Task>? = null
+    /**生产Task的Tag，若有则赋值*/
+    var producerTaskTag: String? = null
+    /**在锚点Task之前还是之后执行Task*/
+    var isDependsOn: Boolean = false
+    /**回调监听*/
+    var willRunTaskRegisterListener: IWillRunTaskRegisteredListener<IRunTask>? = null
+
     init {
         //检测是不是控制
         checkArgument()
     }
-
-    /**获取即将加入的Task的类名,生产-消费Task中的消费Task,最终添加到项目依赖*/
-    // var willRunTaskClass: Class<IRunTask>,
-
-    /**生产Task，若有则赋值*/
-    var producerTaskClass: Class<out Task>? = null
-
-    /**该即将加入的Task的Tag*/
-    // var willRunTaskTag: String,
-
-    /**生产Task的Tag，若有则赋值*/
-    var producerTaskTag: String? = null
-
-    /**该锚点TaskTask的名字*/
-    // var anchorTaskName: String,
-
-    /**在锚点Task之前还是之后执行Task*/
-    var isDependsOn: Boolean = false
-
-    /**回调监听*/
-    var taskRegisterListener: IWillRunTaskRegisteredListener<IRunTask>? = null
-
 
     override fun toString(): String {
         return "will run task is '${willRunTaskClass.simpleName}' , tag is $willRunTaskTag ; \n" +

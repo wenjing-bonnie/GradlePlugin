@@ -43,7 +43,7 @@ open class AfterEvaluateTasksManager {
             )
         unzipTask.producerTaskClass = UnzipApkIncrementalTask::class.javaObjectType
         unzipTask.producerTaskTag = UnzipApkIncrementalTask.TAG
-        unzipTask.taskRegisterListener =
+        unzipTask.willRunTaskRegisterListener =
             object : IWillRunTaskRegisteredListener<EncodeDexIncrementalTask> {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<EncodeDexIncrementalTask>,
@@ -78,7 +78,7 @@ open class AfterEvaluateTasksManager {
             anchorTaskName
         )
         manifestTask.isDependsOn = true
-        manifestTask.taskRegisterListener =
+        manifestTask.willRunTaskRegisterListener =
             object : IWillRunTaskRegisteredListener<ReplaceApplicationForManifestTask> {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<ReplaceApplicationForManifestTask>,
@@ -108,7 +108,7 @@ open class AfterEvaluateTasksManager {
             ShellAar2DexIncrementalTask.TAG,
             EncodeDexIncrementalTask.TAG
         )
-        shellAar.taskRegisterListener =
+        shellAar.willRunTaskRegisterListener =
             object : IWillRunTaskRegisteredListener<ShellAar2DexIncrementalTask> {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<ShellAar2DexIncrementalTask>,
@@ -134,7 +134,7 @@ open class AfterEvaluateTasksManager {
             ZipApkIncrementalTask.TAG,
             ShellAar2DexIncrementalTask.TAG
         )
-        zipApkIncrementalTask.taskRegisterListener =
+        zipApkIncrementalTask.willRunTaskRegisterListener =
             object : IWillRunTaskRegisteredListener<ZipApkIncrementalTask> {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<ZipApkIncrementalTask>,
@@ -164,7 +164,7 @@ open class AfterEvaluateTasksManager {
             ApkAlignAndSignedIncrementalTask.TAG,
             ZipApkIncrementalTask.TAG
         )
-        apkAlignAndSignedTask.taskRegisterListener =
+        apkAlignAndSignedTask.willRunTaskRegisterListener =
             object : IWillRunTaskRegisteredListener<ApkAlignAndSignedIncrementalTask> {
                 override fun willRunTaskRegistered(
                     provider: TaskProvider<ApkAlignAndSignedIncrementalTask>,

@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
  *
  * @author wenjing.liu
  */
-@Deprecated("use TaskWrapperGeneric by generic type")
+@Deprecated("replace by TaskWrapperGeneric to use generic type of run task")
 open class TaskWrapper private constructor(
     /**获取即将加入的Task的类名,生产-消费Task中的消费Task,最终添加到项目依赖*/
     val willRunTaskClass: Class<out Task>,

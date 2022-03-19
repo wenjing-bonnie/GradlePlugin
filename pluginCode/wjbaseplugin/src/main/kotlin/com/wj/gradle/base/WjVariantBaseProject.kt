@@ -203,7 +203,7 @@ abstract class WjVariantBaseProject : Plugin<Project> {
         initAndroidVariantTask(producerTaskProvider)
 
         //回调返回每个Task实例
-        wrapper.taskRegisterListener?.let {
+        wrapper.willRunTaskRegisterListener?.let {
             it.willRunTaskRegistered(provider, producerTaskProvider)
         }
     }
