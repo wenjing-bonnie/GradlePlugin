@@ -26,7 +26,7 @@ open class AfterEvaluateTasksManager {
 
 
     /**
-     * 第二步:添加解压和加密Task，两个为生产-消费的Task
+     * 第1步:添加解压和加密Task，两个为生产-消费的Task
      * 需要依赖于最后生成的apk的任务[packageDebug]，从中获取到生成Apk的所在目录"outputDirectory"
      * 获取[UnzipApkIncrementalTask]的TaskWrapper,添加到project中
      */
@@ -62,7 +62,7 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 第三步之：将原Application替换成壳Application
+     * 第2步之：将原Application替换成壳Application
      * 需要依赖于最后生成的最后的Manifest的任务[processDebugManifest],要在该任务执行之前完成替换
      * 或者在最后生成的manifest之后进行替换,即取判断multiApkManifestOutputDirectory里面的Manifest进行修改
      * * 替换Application为壳的Application
@@ -97,7 +97,7 @@ open class AfterEvaluateTasksManager {
 
 
     /**
-     * 第三步之：生成解密dex，copy到解压之后的文件夹
+     * 第3步之：生成解密dex，copy到解压之后的文件夹
      * 依赖于[EncodeDexIncrementalTask]之后执行
      */
     fun getShellAar2DexTaskWrapper(project: Project): TaskWrapperGeneric<ShellAar2DexIncrementalTask> {
@@ -121,7 +121,7 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 第三步之：压缩.apk,生成无签名的.apk
+     * 第4步之：压缩.apk,生成无签名的.apk
      * 依赖于[EncodeDexIncrementalTask]之后执行
      */
     open fun getZipIncrementalTaskWrapper(
@@ -147,7 +147,7 @@ open class AfterEvaluateTasksManager {
     }
 
     /**
-     * 第四步：签名apk
+     * 第5步：签名apk
      * 通过apksigner进行签名
      *
      * 对齐
