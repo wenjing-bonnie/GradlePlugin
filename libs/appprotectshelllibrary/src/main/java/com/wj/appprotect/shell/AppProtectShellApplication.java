@@ -45,11 +45,10 @@ public class AppProtectShellApplication extends Application {
         //通过hook主动去加载dex，同热修复。参照tentent/thinker热修复 SystemClassLoader…类进行加载
         //一开始的加密dex也会在dex数组中，反射dex数组，将解密之后的所有dex加入到dex数组中
         //通过classloader来加载到解密dex的类，就不会在去加密的dex
-        //所以反射dex在内存中的数组：将解密的dex加载到dex数组中
+        //第三步：反射dex在内存中的数组：将解密的dex加载到dex数组中
         //classloader：首先会判断类是否存在，若存在则直接加载，否则通过classloader进行加载
         ReInstallDecodeDexsUtils.reInstallDexes(this, decodeDexs);
-        //在onCreate()中需要使用hook将原来的application加载进来
-
+        //第四步：在onCreate()中需要使用hook将原来的application加载进来
     }
 
     /**
